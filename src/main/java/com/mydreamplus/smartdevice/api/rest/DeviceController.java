@@ -40,7 +40,7 @@ public class DeviceController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "注册设备")
     public BaseResponse registerDevice(@RequestBody DeviceRegisterRequest deviceRegisterRequest) {
-        log.info(String.format(":::::设备注册, mac:%s", deviceRegisterRequest.getMacAddress()));
+        log.info(String.format(":::::设备注册, mac:%s", ""));
         DeviceDto deviceDto = new DeviceDto();
         BeanUtils.copyProperties(deviceRegisterRequest, deviceDto);
         this.deviceService.registerDevice(deviceDto);
