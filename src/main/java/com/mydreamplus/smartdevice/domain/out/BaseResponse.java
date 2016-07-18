@@ -9,6 +9,23 @@ package com.mydreamplus.smartdevice.domain.out;
  */
 public class BaseResponse {
 
+    /**
+     * 状态码
+     */
+    private int code = 0;
+    /**
+     * 信息
+     */
+    private String message = "FAILURE";
+    /**
+     * 详细内容
+     */
+    private String details = "";
+    /**
+     * 返回DTO数据
+     */
+    private Object data;
+
     public BaseResponse() {
     }
 
@@ -21,26 +38,6 @@ public class BaseResponse {
         this.message = message;
         this.details = details;
     }
-
-    /**
-     * 状态码
-     */
-    private int code = 0;
-
-    /**
-     * 信息
-     */
-    private String message = "FAILURE";
-
-    /**
-     * 详细内容
-     */
-    private String details = "";
-
-    /**
-     * 返回DTO数据
-     */
-    private Object data;
 
     /**
      * Gets code.
