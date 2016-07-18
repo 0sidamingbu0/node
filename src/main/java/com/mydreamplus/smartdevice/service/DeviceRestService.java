@@ -1,7 +1,7 @@
 package com.mydreamplus.smartdevice.service;
 
-import com.mydreamplus.smartdevice.domain.out.DeviceMessage;
-import org.apache.commons.logging.Log;
+import com.mydreamplus.smartdevice.domain.in.DeviceMessageRequest;
+import com.mydreamplus.smartdevice.domain.out.WebSocketMessageResponse;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class DeviceRestService {
     private final Logger log = LoggerFactory.getLogger(DeviceRestService.class);
 
     @Async(value = "messageExecutor")
-    public void registerFeedback(DeviceMessage message) {
+    public void registerFeedback(DeviceMessageRequest message) {
         RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject("http://www.baidu.com",String.class);
         System.out.println(result);
@@ -39,46 +39,48 @@ public class DeviceRestService {
 ////        String result = restTemplate.getForObject("http://www.baidu.com",String.class);
         String url = "http://qa.websocket.aws.mxj.mx/api/websocket/sendMessageToClient";
 //
-//        HttpEntity<Message> request = new HttpEntity<>(new Message("id","message"));
-//        restTemplate.postForLocation(url, request, Message.class);
-//        System.out.println(result);
+        int timeout = 5000;
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
+                new HttpComponentsClientHttpRequestFactory();
+        clientHttpRequestFactory.setConnectTimeout(timeout);
+        RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory);
 
-//
-//        ResponseEntity<Message> response = restTemplate.
-//                exchange(url, HttpMethod.POST, request, Message.class);
+        /*HttpComponentsClientHttpRequestFactory rf =
+                (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory();
+        rf.setReadTimeout(1 * 1000);
+        rf.setConnectTimeout(1 * 1000);*/
 
-        RestTemplate restTemplate = new RestTemplate();
-        Message user = null;
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         try {
-            JSONObject jsonCredentials = new JSONObject();
-            jsonCredentials.put("deviceId", "");
-            jsonCredentials.put("message", "");
-//            Log.e("tt", ">>>>>>>>>>>>>>>> JSON credentials " + jsonCredentials.toString());
-            HttpEntity<String> entityCredentials = new HttpEntity<String>(jsonCredentials.toString(), httpHeaders);
-            ResponseEntity<Message> responseEntity = restTemplate.exchange(url,
-                    HttpMethod.POST, entityCredentials, Message.class);
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("deviceId", "123");
+            jsonObj.put("message", "message");
+            System.out.println(">>>>>>>>>>>>>>>> JSON credentials " + jsonObj.toString());
+            HttpEntity<String> entityCredentials = new HttpEntity<>(jsonObj.toString(), httpHeaders);
+            /*ResponseEntity<WebSocketMessageResponse> responseEntity = restTemplate.exchange(url,
+                    HttpMethod.POST, entityCredentials, WebSocketMessageResponse.class);
             if (responseEntity != null) {
-                user = responseEntity.getBody();
+                WebSocketMessageResponse response = responseEntity.getBody();
+                System.out.println(response.getSuccess() + response.getErrorMessage());
+            }*/
+            /*String result = restTemplate.getForObject("http://www.baidu.com",String.class);
+            System.out.println(result);*/
+
+
+
+            ResponseEntity<WebSocketMessageResponse> responseEntity = restTemplate.exchange(url,
+                    HttpMethod.POST, entityCredentials, WebSocketMessageResponse.class);
+            if (responseEntity != null) {
+                WebSocketMessageResponse response = responseEntity.getBody();
+                System.out.println(response.getSuccess() + response.getErrorMessage());
             }
+
 //            return user;
         } catch (Exception e) {
 //            Log.e(Constants.APP_NAME, ">>>>>>>>>>>>>>>> " + e.getLocalizedMessage());
         }
 //        return null;
     }
-
-
-   static class Message{
-        private String deviceId;
-        private String message;
-
-        public Message(String deviceId, String message) {
-            this.deviceId = deviceId;
-            this.message = message;
-        }
-    }
-
 }

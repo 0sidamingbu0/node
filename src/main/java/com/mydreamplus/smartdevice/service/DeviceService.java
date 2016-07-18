@@ -7,7 +7,6 @@ import com.mydreamplus.smartdevice.dao.jpa.PIRespository;
 import com.mydreamplus.smartdevice.domain.DeviceDto;
 import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.domain.PIDeviceDto;
-import com.mydreamplus.smartdevice.domain.out.DeviceMessage;
 import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.DeviceType;
 import com.mydreamplus.smartdevice.entity.PI;
@@ -69,7 +68,7 @@ public class DeviceService {
         device.setDeviceState(DeviceStateEnum.ONLINE);
         log.info(String.format("智能设备:%s | MAC地址:%s,注册成功!", deviceDto.getDeviceType(), deviceDto.getMacAddress()));
         deviceRepository.save(device);
-//        deviceRestService.registerFeedback(new DeviceMessage());
+//        deviceRestService.registerFeedback(new DeviceMessageRequest());
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.mydreamplus.smartdevice.domain.in;
 
-import java.util.Date;
+import com.mydreamplus.smartdevice.domain.DeviceRegisterDto;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,144 +11,41 @@ import java.util.Date;
  * Time: 下午8:01
  * To change this template use File | Settings | File Templates.
  */
-public class DeviceRegisterRequest extends BaseRequest{
+public class DeviceRegisterRequest extends BaseRequest {
 
     /**
-     * 设备的唯一标识,由NODE解析生成(mac地址)
+     * 拆分前的设备类型
      */
-    private String symbol;
+    private String parentDeviceType;
 
     /**
-     * 设备所在的PI设备
+     * 注册设备信息
      */
-    private Long PIID;
+    private List<DeviceRegisterDto> deviceRegisters;
 
     /**
-     * 设备的类型
-     */
-    private String deviceType;
-
-    /**
-     * 设备的MAC地址
-     */
-    private String macAddress;
-
-    /**
-     * 短地址
-     */
-    private int shortAddress;
-
-    /**
-     * 资源序号
-     */
-    private int index;
-
-    /**
-     * Gets symbol.
+     * Gets device registers.
      *
-     * @return the symbol
+     * @return the device registers
      */
-    public String getSymbol() {
-        return symbol;
+    public List<DeviceRegisterDto> getDeviceRegisters() {
+        return deviceRegisters;
     }
 
     /**
-     * Sets symbol.
+     * Sets device registers.
      *
-     * @param symbol the symbol
+     * @param deviceRegisters the device registers
      */
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
+    public void setDeviceRegisters(List<DeviceRegisterDto> deviceRegisters) {
+        this.deviceRegisters = deviceRegisters;
     }
 
-    /**
-     * Gets piid.
-     *
-     * @return the piid
-     */
-    public Long getPIID() {
-        return PIID;
+    public String getParentDeviceType() {
+        return parentDeviceType;
     }
 
-    /**
-     * Sets piid.
-     *
-     * @param PIID the piid
-     */
-    public void setPIID(Long PIID) {
-        this.PIID = PIID;
-    }
-
-    /**
-     * Gets device type.
-     *
-     * @return the device type
-     */
-    public String getDeviceType() {
-        return deviceType;
-    }
-
-    /**
-     * Sets device type.
-     *
-     * @param deviceType the device type
-     */
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    /**
-     * Gets mac address.
-     *
-     * @return the mac address
-     */
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    /**
-     * Sets mac address.
-     *
-     * @param macAddress the mac address
-     */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-
-    /**
-     * Gets short address.
-     *
-     * @return the short address
-     */
-    public int getShortAddress() {
-        return shortAddress;
-    }
-
-    /**
-     * Sets short address.
-     *
-     * @param shortAddress the short address
-     */
-    public void setShortAddress(int shortAddress) {
-        this.shortAddress = shortAddress;
-    }
-
-    /**
-     * Gets index.
-     *
-     * @return the index
-     */
-    public int getIndex() {
-        return index;
-    }
-
-    /**
-     * Sets index.
-     *
-     * @param index the index
-     */
-    public void setIndex(int index) {
-        this.index = index;
+    public void setParentDeviceType(String parentDeviceType) {
+        this.parentDeviceType = parentDeviceType;
     }
 }
