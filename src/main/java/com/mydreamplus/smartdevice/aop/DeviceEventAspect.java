@@ -30,6 +30,11 @@ public class DeviceEventAspect {
     private LogRepository logRepository;
 
 
+    /**
+     * 记录设备产生的时间信息
+     * @param deviceDto
+     * @throws Throwable
+     */
     @Before("execution(public * com.mydreamplus.smartdevice.service.DeviceService.*(..)) &&" + "args(deviceDto,..)")
     public void fillCreateInformation(DeviceDto deviceDto) throws Throwable {
 

@@ -56,7 +56,7 @@ public class DeviceService {
                 throw new DeviceTypeNotFoundException(String.format("没有找到该设备类型:%s, 注册失败!", deviceDto.getDeviceType()));
             }
             device.setDeviceType(deviceType);
-            PI pi = piRespository.findOne(deviceDto.getPIID());
+            PI pi = piRespository.findByMacAddress(deviceDto.getPIID());
             if (pi == null) {
                 throw new PINotFoundException("没有绑定PI,注册失败!");
             }

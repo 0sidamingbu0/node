@@ -30,7 +30,7 @@ public class EventLogDto extends BaseLogDto {
     /**
      * PI的ID
      */
-    private Long PIID;
+    private String PIID;
 
     /**
      * PI名字
@@ -111,24 +111,6 @@ public class EventLogDto extends BaseLogDto {
      */
     public void setDeviceDescription(String deviceDescription) {
         this.deviceDescription = deviceDescription;
-    }
-
-    /**
-     * Gets piid.
-     *
-     * @return the piid
-     */
-    public Long getPIID() {
-        return PIID;
-    }
-
-    /**
-     * Sets piid.
-     *
-     * @param PIID the piid
-     */
-    public void setPIID(Long PIID) {
-        this.PIID = PIID;
     }
 
     /**
@@ -219,5 +201,13 @@ public class EventLogDto extends BaseLogDto {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getPIID() {
+        return PIID;
+    }
+
+    public void setPIID(String PIID) {
+        this.PIID = PIID;
     }
 }

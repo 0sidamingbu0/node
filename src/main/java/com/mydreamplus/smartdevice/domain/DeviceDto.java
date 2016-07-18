@@ -1,7 +1,5 @@
 package com.mydreamplus.smartdevice.domain;
 
-import com.mydreamplus.smartdevice.entity.DeviceType;
-
 import java.util.Date;
 
 /**
@@ -39,9 +37,9 @@ public class DeviceDto {
     private String symbol;
 
     /**
-     * 设备所在的PI设备
+     * 设备所在的PI设备 PI的mac地址
      */
-    private Long PIID;
+    private String PIID;
 
     /**
      * 设备的名称
@@ -106,7 +104,7 @@ public class DeviceDto {
      *
      * @return the piid
      */
-    public Long getPIID() {
+    public String getPIID() {
         return PIID;
     }
 
@@ -115,7 +113,7 @@ public class DeviceDto {
      *
      * @param PIID the piid
      */
-    public void setPIID(Long PIID) {
+    public void setPIID(String PIID) {
         this.PIID = PIID;
     }
 
