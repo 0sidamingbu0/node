@@ -9,20 +9,33 @@ package com.mydreamplus.smartdevice.domain.out;
  */
 public class BaseResponse {
 
+    public BaseResponse() {
+    }
+
+    public BaseResponse(String message) {
+        this.message = message;
+    }
+
+    public BaseResponse(int code, String message, String details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
+
     /**
      * 状态码
      */
-    private int code;
+    private int code = 0;
 
     /**
      * 信息
      */
-    private String message;
+    private String message = "FAILURE";
 
     /**
      * 详细内容
      */
-    private String details;
+    private String details = "";
 
     /**
      * 返回DTO数据
