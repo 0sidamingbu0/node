@@ -47,7 +47,7 @@ public class DeviceService {
      * @param deviceDto the device dto
      */
     public void registerDevice(DeviceDto deviceDto) {
-        Device device = deviceRepository.findByMacAddress(deviceDto.getMacAddress());
+        Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
         // 设备第一次注册
         if (device == null) {
             device = new Device();
@@ -66,9 +66,8 @@ public class DeviceService {
         }
         device.setRegisteTime(new Date());
         device.setDeviceState(DeviceStateEnum.ONLINE);
-        log.info(String.format("智能设备:%s | MAC地址:%s,注册成功!", deviceDto.getDeviceType(), deviceDto.getMacAddress()));
+        log.info(String.format("智能设备:%s | :%s,注册成功!", deviceDto.getDeviceType(), deviceDto.getSymbol()));
         deviceRepository.save(device);
-//        deviceRestService.registerFeedback(new DeviceMessageRequest());
     }
 
     /**
@@ -97,9 +96,9 @@ public class DeviceService {
      * @param deviceDto the device dto
      */
     public void updateDeviceSituation(DeviceDto deviceDto){
-        Device device = deviceRepository.findByMacAddress(deviceDto.getMacAddress());
+        Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
         if(device == null){
-            throw new DeviceNotFoundException(String.format("没有找到设备:%s",deviceDto.getMacAddress()));
+            throw new DeviceNotFoundException(String.format("没有找到设备:%s",deviceDto.getSymbol()));
         }
         device.setDeviceSituation(deviceDto.getDeviceSituation());
         deviceRepository.save(device);
@@ -111,7 +110,7 @@ public class DeviceService {
      * @param deviceDto the device dto
      */
     public void reset(DeviceDto deviceDto) {
-        Device device = deviceRepository.findByMacAddress(deviceDto.getMacAddress());
+        Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
         device.setDeviceState(DeviceStateEnum.RESET);
         deviceRepository.save(device);
     }

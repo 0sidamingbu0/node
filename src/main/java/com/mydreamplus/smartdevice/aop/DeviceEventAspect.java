@@ -38,7 +38,7 @@ public class DeviceEventAspect {
             EventLogDto eventLogDto = new EventLogDto();
             eventLogDto.setCreateAt(new Date());
             eventLogDto.setPIID(deviceDto.getPIID());
-            eventLogDto.setDeviceName(deviceDto.getMacAddress());
+            eventLogDto.setDeviceName(deviceDto.getSymbol());
             logRepository.saveEventLog(eventLogDto);
         }
     }

@@ -18,6 +18,12 @@ import java.util.Date;
 public class Device extends BaseEntity {
 
     /**
+     * 拆分前的设备类型
+     */
+    @Column
+    private String parentDeviceType;
+
+    /**
      * 设备的唯一标识,由NODE解析生成(mac地址)
      */
     @Column(unique = true)
@@ -254,5 +260,13 @@ public class Device extends BaseEntity {
      */
     public void setRegisteTime(Date registeTime) {
         this.registeTime = registeTime;
+    }
+
+    public String getParentDeviceType() {
+        return parentDeviceType;
+    }
+
+    public void setParentDeviceType(String parentDeviceType) {
+        this.parentDeviceType = parentDeviceType;
     }
 }

@@ -1,6 +1,7 @@
 package com.mydreamplus.smartdevice.api.rest;
 
 import com.mydreamplus.smartdevice.domain.*;
+import com.mydreamplus.smartdevice.domain.in.BaseRequest;
 import com.mydreamplus.smartdevice.domain.in.DevicePolicyRequest;
 import com.mydreamplus.smartdevice.domain.in.DeviceQueryRequest;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
@@ -50,10 +51,11 @@ public class DeviceManagerController extends AbstractRestHandler {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建设备事件", notes = "")
-    public void createDeviceEvent(@RequestBody DeviceEventDto deviceEventDto) {
+    public BaseResponse createDeviceEvent(@RequestBody DeviceEventDto deviceEventDto) {
         DeviceEvent deviceEvent = new DeviceEvent();
         BeanUtils.copyProperties(deviceEventDto, deviceEvent);
         this.deviceManager.saveDeviceEvent(deviceEvent);
+        return new BaseResponse(RESPONSE_SUCCESS);
     }
 
     /**
@@ -66,10 +68,11 @@ public class DeviceManagerController extends AbstractRestHandler {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "创建设备被操作方法", notes = "")
-    public void createDeviceFunction(@RequestBody DeviceFunctionDto deviceFunctionDto) {
+    public BaseResponse createDeviceFunction(@RequestBody DeviceFunctionDto deviceFunctionDto) {
         DeviceFunction deviceFunction = new DeviceFunction();
         BeanUtils.copyProperties(deviceFunctionDto, deviceFunction);
         this.deviceManager.saveDeviceFunction(deviceFunction);
+        return new BaseResponse(RESPONSE_SUCCESS);
     }
 
     /**
@@ -82,7 +85,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "创建设备类型")
-    public void createDeviceType(@RequestBody DeviceTypeDto deviceTypeDto) {
+    public BaseResponse createDeviceType(@RequestBody DeviceTypeDto deviceTypeDto) {
         DeviceType deviceType = new DeviceType();
         BeanUtils.copyProperties(deviceTypeDto, deviceType, "deviceEvents", "deviceFunctions");
         List<DeviceEvent> deviceEventList = new ArrayList<>();
@@ -104,6 +107,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         deviceType.setDeviceFunctions(deviceFunctionList);
         deviceType.setDeviceEvents(deviceEventList);
         this.deviceManager.saveDeviceType(deviceType);
+        return new BaseResponse(RESPONSE_SUCCESS);
     }
 
     /**

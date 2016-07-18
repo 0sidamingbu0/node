@@ -23,6 +23,15 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      */
     Device findByMacAddress(String macAddress);
 
+
+    /**
+     * Find by symbol device.
+     *
+     * @param symbol the symbol
+     * @return the device
+     */
+    Device findBySymbol(String symbol);
+
     /**
      * Find all by mac address and name iterable.
      *

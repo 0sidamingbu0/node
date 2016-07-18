@@ -13,12 +13,25 @@ import java.util.Date;
  */
 public class DeviceDto {
 
+    /**
+     * Instantiates a new Device dto.
+     */
     public DeviceDto() {
     }
 
+    /**
+     * Instantiates a new Device dto.
+     *
+     * @param macAddress the mac address
+     */
     public DeviceDto(String macAddress) {
         this.macAddress = macAddress;
     }
+
+    /**
+     * 拆分前的设备类型
+     */
+    private String parentDeviceType;
 
     /**
      * 设备的唯一标识,由NODE解析生成(mac地址)
@@ -239,6 +252,25 @@ public class DeviceDto {
      */
     public Date getRegisteTime() {
         return registeTime;
+    }
+
+
+    /**
+     * Gets parent device type.
+     *
+     * @return the parent device type
+     */
+    public String getParentDeviceType() {
+        return parentDeviceType;
+    }
+
+    /**
+     * Sets parent device type.
+     *
+     * @param parentDeviceType the parent device type
+     */
+    public void setParentDeviceType(String parentDeviceType) {
+        this.parentDeviceType = parentDeviceType;
     }
 
     /**
