@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -113,7 +114,7 @@ public class DeviceManager {
      * @return the iterable
      */
     public Iterable<Device> findAllDevicesByPredicate(DeviceQueryRequest request, PageDto pageDto) {
-        return null;
+        return new ArrayList<>();
     }
 
     /**

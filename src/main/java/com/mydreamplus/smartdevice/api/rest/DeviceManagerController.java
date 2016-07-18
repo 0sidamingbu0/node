@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  * 设备管理API,提供给web页面管理设备
  */
+
 @RestController
 @RequestMapping(value = "/device/manager")
 @Api(value = "设备管理API", description = "设备管理API,提供设备管理接口,web页面调用")
@@ -60,7 +62,7 @@ public class DeviceManagerController extends AbstractRestHandler {
      * @param deviceFunctionDto the device function dto
      */
     @RequestMapping(value = "/deviceFunction/create",
-            method = {RequestMethod.POST, RequestMethod.GET},
+            method = {RequestMethod.POST},
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "创建设备被操作方法", notes = "")
@@ -79,7 +81,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "创建设备被操作方法")
+    @ApiOperation(value = "创建设备类型")
     public void createDeviceType(@RequestBody DeviceTypeDto deviceTypeDto) {
         DeviceType deviceType = new DeviceType();
         BeanUtils.copyProperties(deviceTypeDto, deviceType, "deviceEvents", "deviceFunctions");
@@ -190,4 +192,12 @@ public class DeviceManagerController extends AbstractRestHandler {
     }
 
 
+    @RequestMapping(value = "/test",
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "test")
+    public BaseResponse test() {
+        BaseResponse response = new BaseResponse();
+        return response;
+    }
 }

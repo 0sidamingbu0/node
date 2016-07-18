@@ -2,8 +2,8 @@
 ### This fils is in Yaml format but you can also do this using the traditional
 ### Java properties file.
 
-spring.jmx:
-   enabled: false
+#spring.jmx:
+#   enabled: false
 
 spring.datasource:
     driverClassName: com.mysql.jdbc.Driver
@@ -13,33 +13,30 @@ spring.datasource:
 
 
 server:
-  port: 8090
+  port: 8899
 
 #todo: make sure to always enable security in production
-security:
-  basic:
-    enabled: false
+#security:
+#  basic:
+#    enabled: false
 
 #management endpoints on a separate port
 management:
-  port: 8091
-  security:
-    enabled: false # management port is internal only. no need to secure it.
+  port: 8898
+#  security:
+#    enabled: false # management port is internal only. no need to secure it.
 
 #default project info followed by actual injected pom-specified values.
 project:
-  name: spring-boot-rest-example
+  name: device-server
   version: 0.1
-  description: boot-example default description
+  description: device server description
 info:
   build:
     artifact: ${project.artifactId}
     name: ${project.name}
     description: ${project.description}
     version: ${project.version}
-
-hotel.service:
-  name: 'default profile:'
 spring:
   jpa:
     hibernate:
