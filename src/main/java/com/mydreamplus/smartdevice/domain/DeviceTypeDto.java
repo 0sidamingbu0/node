@@ -44,6 +44,9 @@ public class DeviceTypeDto {
      */
     private List<Long> deviceFunctions;
 
+    private Long parentDeviceType;
+
+
     /**
      * Gets device functions.
      *
@@ -168,5 +171,23 @@ public class DeviceTypeDto {
      */
     public void setDeviceEvents(List<Long> deviceEvents) {
         this.deviceEvents = deviceEvents;
+    }
+
+    /**
+     * Gets parent device type.
+     *
+     * @return the parent device type
+     */
+    public Long getParentDeviceType() {
+        return parentDeviceType;
+    }
+
+    /**
+     * Sets parent device type.
+     *
+     * @param parentDeviceType the parent device type
+     */
+    public void setParentDeviceType(Long parentDeviceType) {
+        this.parentDeviceType = parentDeviceType;
     }
 }

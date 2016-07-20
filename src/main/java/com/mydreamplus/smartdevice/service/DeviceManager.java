@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Date;
 
 
 /**
@@ -63,7 +63,14 @@ public class DeviceManager {
      * @return the device event
      */
     public DeviceEvent saveDeviceEvent(DeviceEvent deviceEvent) {
-        return deviceEventRepository.save(deviceEvent);
+        // 修改
+        if(deviceEvent.getID() != 0){
+            DeviceEvent deviceEvent1 = deviceEventRepository.findOne(deviceEvent.getID());
+            BeanUtils.copyProperties(deviceEvent, deviceEvent1);
+            return deviceEventRepository.save(deviceEvent1);
+        }else {
+            return deviceEventRepository.save(deviceEvent);
+        }
     }
 
     /**
@@ -124,7 +131,11 @@ public class DeviceManager {
      */
     public void savePolicy(PolicyDto policyDto) {
         Policy policy = new Policy();
-        BeanUtils.copyProperties(policyDto, policy ,"rootPolicy");
+        BeanUtils.copyProperties(policyDto, policy, "rootPolicy");
         policyRepository.save(policy);
+    }
+
+    public void saveParentDeviceType(ParentDeviceType parentDeviceType) {
+
     }
 }

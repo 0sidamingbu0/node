@@ -1,6 +1,8 @@
 package com.mydreamplus.smartdevice.domain.in;
 
-import com.mydreamplus.smartdevice.domain.DeviceSituationEnum;
+import com.mydreamplus.smartdevice.domain.DeviceSituationDto;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,28 +11,33 @@ import com.mydreamplus.smartdevice.domain.DeviceSituationEnum;
  * Time: 下午12:04
  * To change this template use File | Settings | File Templates.
  */
-public class DeviceSituationRequest extends BaseDeviceRequest {
+public class DeviceSituationRequest{
 
     /**
-     * 设备的运行状态
+     * PI MAC 地址
      */
-    private DeviceSituationEnum situation;
+    private String piMacAddr;
 
     /**
-     * Gets situation.
-     *
-     * @return the situation
+     * 设备状态集合
      */
-    public DeviceSituationEnum getSituation() {
-        return situation;
+    private List<DeviceSituationDto> deviceSituationDtos;
+
+    public List<DeviceSituationDto> getDeviceSituationDtos() {
+        return deviceSituationDtos;
     }
 
-    /**
-     * Sets situation.
-     *
-     * @param situation the situation
-     */
-    public void setSituation(DeviceSituationEnum situation) {
-        this.situation = situation;
+    public void setDeviceSituationDtos(List<DeviceSituationDto> deviceSituationDtos) {
+        this.deviceSituationDtos = deviceSituationDtos;
     }
+
+    public String getPiMacAddr() {
+        return piMacAddr;
+    }
+
+    public void setPiMacAddr(String piMacAddr) {
+        this.piMacAddr = piMacAddr;
+    }
+
+
 }

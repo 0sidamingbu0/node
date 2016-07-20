@@ -1,6 +1,5 @@
 package com.mydreamplus.smartdevice.service;
 
-import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
 import com.mydreamplus.smartdevice.dao.jpa.DeviceTypeRepository;
 import com.mydreamplus.smartdevice.dao.jpa.PIRespository;
@@ -15,6 +14,7 @@ import com.mydreamplus.smartdevice.exception.DeviceTypeNotFoundException;
 import com.mydreamplus.smartdevice.exception.PINotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,17 +46,18 @@ public class DeviceService {
      *
      * @param deviceDto the device dto
      */
-    public void registerDevice(DeviceDto deviceDto) {
+    public void registerDevice(DeviceDto deviceDto, String piMacAddr) {
         Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
         // 设备第一次注册
         if (device == null) {
             device = new Device();
+            BeanUtils.copyProperties(deviceDto, device, "pi", "deviceType");
             DeviceType deviceType = deviceTypeRepository.findByName(deviceDto.getDeviceType());
             if (deviceType == null) {
                 throw new DeviceTypeNotFoundException(String.format("没有找到该设备类型:%s, 注册失败!", deviceDto.getDeviceType()));
             }
             device.setDeviceType(deviceType);
-            PI pi = piRespository.findByMacAddress(deviceDto.getPIID());
+            PI pi = piRespository.findByMacAddress(piMacAddr);
             if (pi == null) {
                 throw new PINotFoundException("没有绑定PI,注册失败!");
             }
@@ -82,7 +83,6 @@ public class DeviceService {
             pi = new PI();
             pi.setMacAddress(piDeviceDto.getMacAddress());
             pi.setCreateTime(new Date());
-            pi.setCreateBy(Constant.DEFAULT_CREATE_USER);
         }
         pi.setRegisterTime(new Date());
         log.info(String.format("MAC地址: %s PI注册成功!", pi.getMacAddress()));
@@ -95,10 +95,10 @@ public class DeviceService {
      *
      * @param deviceDto the device dto
      */
-    public void updateDeviceSituation(DeviceDto deviceDto){
+    public void updateDeviceSituation(DeviceDto deviceDto) {
         Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
-        if(device == null){
-            throw new DeviceNotFoundException(String.format("没有找到设备:%s",deviceDto.getSymbol()));
+        if (device == null) {
+            throw new DeviceNotFoundException(String.format("没有找到设备,symbol:%s ", deviceDto.getSymbol()));
         }
         device.setDeviceSituation(deviceDto.getDeviceSituation());
         deviceRepository.save(device);
@@ -114,4 +114,5 @@ public class DeviceService {
         device.setDeviceState(DeviceStateEnum.RESET);
         deviceRepository.save(device);
     }
+
 }

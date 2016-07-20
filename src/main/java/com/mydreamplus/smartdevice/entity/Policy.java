@@ -13,59 +13,52 @@ import java.util.Map;
  * 场景策略
  */
 @Entity
-public class Policy extends BaseEntity{
+public class Policy extends BaseEntity {
 
     /**
      * 场景名称
      */
     @Column(name = "policy_name", unique = true)
     private String name;
-
     /**
      * 场景的描述
      */
     @Column(name = "policy_description")
     private String description;
-
     /**
      * 关联的云端场景策略
      */
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="root_policy_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "root_policy_id")
     private RootPolicy rootPolicy;
-
     /**
      * 关联了云端策略,策略下发到终端上,
      * 终端根据该属性判断是否要提交到云端执行操作。
      */
     private boolean hasRootPolicy;
-
     /**
      * 主控设备触发事件
-     * Key:设备的ID
+     * Key:设备的symbol ,value:设备上的event
      */
     @ElementCollection
-    @MapKeyColumn(name="device")
-    @Column(name="event")
-    @CollectionTable(name="master_device_map", joinColumns=@JoinColumn(name="policy_id"))
-    private Map<Long, Long> masterDeviceMap;
-
+    @MapKeyColumn(name = "device")
+    @Column(name = "event")
+    @CollectionTable(name = "master_device_map", joinColumns = @JoinColumn(name = "policy_id"))
+    private Map<String, String> masterDeviceMap;
     /**
      * 被控设备事件方法
+     * Key:设备的symbol ,value:设备上的function
      */
     @ElementCollection
-    @MapKeyColumn(name="device")
-    @Column(name="function")
-    @CollectionTable(name="slave_device_map", joinColumns=@JoinColumn(name="policy_id"))
-    private Map<Long, Long> slaveDeviceMap;
-
-
+    @MapKeyColumn(name = "device")
+    @Column(name = "function")
+    @CollectionTable(name = "slave_device_map", joinColumns = @JoinColumn(name = "policy_id"))
+    private Map<String, String> slaveDeviceMap;
     /**
      * 关联的PI
      */
     @ManyToMany(mappedBy = "policies")
     private List<PI> pis;
-
 
     /**
      * Gets pis.
@@ -162,7 +155,7 @@ public class Policy extends BaseEntity{
      *
      * @return the master device map
      */
-    public Map<Long, Long> getMasterDeviceMap() {
+    public Map<String, String> getMasterDeviceMap() {
         return masterDeviceMap;
     }
 
@@ -171,7 +164,7 @@ public class Policy extends BaseEntity{
      *
      * @param masterDeviceMap the master device map
      */
-    public void setMasterDeviceMap(Map<Long, Long> masterDeviceMap) {
+    public void setMasterDeviceMap(Map<String, String> masterDeviceMap) {
         this.masterDeviceMap = masterDeviceMap;
     }
 
@@ -180,7 +173,7 @@ public class Policy extends BaseEntity{
      *
      * @return the slave device map
      */
-    public Map<Long, Long> getSlaveDeviceMap() {
+    public Map<String, String> getSlaveDeviceMap() {
         return slaveDeviceMap;
     }
 
@@ -189,7 +182,7 @@ public class Policy extends BaseEntity{
      *
      * @param slaveDeviceMap the slave device map
      */
-    public void setSlaveDeviceMap(Map<Long, Long> slaveDeviceMap) {
+    public void setSlaveDeviceMap(Map<String, String> slaveDeviceMap) {
         this.slaveDeviceMap = slaveDeviceMap;
     }
 }

@@ -1,12 +1,15 @@
 package com.mydreamplus.smartdevice.api.rest;
 
 import com.mydreamplus.smartdevice.domain.DeviceDto;
+import com.mydreamplus.smartdevice.domain.DeviceSituationEnum;
 import com.mydreamplus.smartdevice.domain.PIDeviceDto;
 import com.mydreamplus.smartdevice.domain.PingDto;
 import com.mydreamplus.smartdevice.domain.in.*;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
+import com.mydreamplus.smartdevice.service.DeviceRestService;
 import com.mydreamplus.smartdevice.service.DeviceService;
 import com.mydreamplus.smartdevice.service.PingFactory;
+import com.mydreamplus.smartdevice.service.PolicyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -34,19 +37,27 @@ public class DeviceController extends AbstractRestHandler {
     @Autowired
     private DeviceService deviceService;
 
+    @Autowired
+    private PolicyService policyService;
+
+    @Autowired
+    private DeviceRestService deviceRestService;
+
     @RequestMapping(value = "/register",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "注册设备")
     public BaseResponse registerDevice(@RequestBody DeviceRegisterRequest deviceRegisterRequest) {
+        this.policyService.parsePolicy(deviceRegisterRequest);
         deviceRegisterRequest.getDeviceRegisters().forEach(deviceRegisterDto -> {
             DeviceDto deviceDto = new DeviceDto();
             BeanUtils.copyProperties(deviceRegisterDto, deviceDto);
             deviceDto.setParentDeviceType(deviceRegisterRequest.getParentDeviceType());
             log.info(String.format(":::::设备注册, mac:%s", deviceDto.getSymbol()));
-            this.deviceService.registerDevice(deviceDto);
+            this.deviceService.registerDevice(deviceDto, deviceRegisterRequest.getPIID());
         });
+        this.deviceRestService.registerFeedback(deviceRegisterRequest.getPIID(), deviceRegisterRequest.getShortAddress());
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
@@ -68,11 +79,17 @@ public class DeviceController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "更新设备状态,设备主动发送过来")
     public BaseResponse status(@RequestBody DeviceSituationRequest request) {
-        log.info(String.format(":::::设备状态改变:%s , mac:%s", request.getSituation(), request.getMacAddress()));
-        DeviceDto deviceDto = new DeviceDto();
-        deviceDto.setMacAddress(request.getMacAddress());
-        deviceDto.setDeviceSituation(request.getSituation());
-        this.deviceService.updateDeviceSituation(deviceDto);
+        log.info(String.format(":::::设备状态反馈:  mac:%s", request.getPiMacAddr()));
+        request.getDeviceSituationDtos().forEach(deviceSituationDto -> {
+            DeviceDto deviceDto = new DeviceDto();
+            deviceDto.setSymbol(deviceSituationDto.getSymbol());
+            if(0 == deviceSituationDto.getValue()){
+                deviceDto.setDeviceSituation(DeviceSituationEnum.OFF);
+            }else{
+                deviceDto.setDeviceSituation(DeviceSituationEnum.ON);
+            }
+            this.deviceService.updateDeviceSituation(deviceDto);
+        });
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 

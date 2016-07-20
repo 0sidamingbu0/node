@@ -20,28 +20,29 @@ public class PI extends BaseEntity {
      */
     @Column(unique = true, name = "pi_name")
     private String name;
-
     /**
      * PI的mac地址
      */
     private String macAddress;
-
     /**
      * PI的描述信息
      */
     private String description;
-
     /**
      * 连接到这个PI上的ZIGBEE设备
      */
-    @OneToMany(mappedBy="pi")
+    @OneToMany(mappedBy = "pi")
     private List<Device> zbDeviceList;
-
     /**
      * 下发的策略
      */
     @ManyToMany
     private List<Policy> policies;
+    /**
+     * 最近一次注册时间
+     */
+    private Date registerTime;
+
 
     /**
      * Gets register time.
@@ -60,11 +61,6 @@ public class PI extends BaseEntity {
     public void setRegisterTime(Date registerTime) {
         this.registerTime = registerTime;
     }
-
-    /**
-     * 最近一次注册时间
-     */
-    private Date registerTime;
 
     /**
      * Gets policies.

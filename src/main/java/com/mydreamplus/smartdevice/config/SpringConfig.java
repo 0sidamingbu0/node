@@ -19,6 +19,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class SpringConfig {
 
+    /**
+     * 线程池参数配
+     */
     private final int corePoolSize = 10;
     private final int maxPoolSize = 200;
     private final int queueCapacity = 10;
@@ -40,12 +43,12 @@ public class SpringConfig {
 
     @Bean
     public Executor logExecutor(){
-        return initExecutor("log-executor-");
+        return initExecutor("LOG-");
     }
 
     @Bean
     public Executor messageExecutor(){
-        return initExecutor("message-executor-");
+        return initExecutor("MESSAGE-");
     }
 
 

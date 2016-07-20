@@ -15,72 +15,63 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "zb_device")
-public class Device extends BaseEntity {
+public class Device extends BaseEntity{
 
     /**
      * 拆分前的设备类型
      */
     @Column
     private String parentDeviceType;
-
     /**
      * 设备的唯一标识,由NODE解析生成(mac地址)
      */
     @Column(unique = true)
     private String symbol;
-
     /**
      * 设备所在的PI设备
      */
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="pi_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pi_id")
     private PI pi;
-
     /**
      * 设备的名称
      */
     @Column(unique = true, name = "device_name")
     private String name;
-
     /**
      * 设备的别名,在云端设置
      */
     private String aliases;
-
     /**
      * 设备的描述信息
      */
     private String description;
-
     /**
      * 设备的类型
      */
-    @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="device_type_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_type_id")
     private DeviceType deviceType;
-
     /**
      * 设备的MAC地址
      */
-    @Column(unique = true)
+    @Column
     private String macAddress;
-
     /**
      * 设备状态
      */
     @Enumerated(EnumType.STRING)
     private DeviceStateEnum deviceState;
-
     /**
      * 设备的状况, 开启/关闭
      */
     @Enumerated(EnumType.STRING)
     private DeviceSituationEnum deviceSituation;
-
     /**
      * 设备的注册时间
      */
     private Date registeTime;
+
 
     /**
      * Gets symbol.

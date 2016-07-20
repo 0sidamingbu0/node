@@ -12,18 +12,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class DeviceEventDto {
 
-    private String name;
+    private Long ID;
 
+    private String name;
     /**
      * 事件的别名
      */
     private String alias;
-
     /**
      * 事件的描述信息
      */
 
     private String description;
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
 
     /**
      * Gets name.

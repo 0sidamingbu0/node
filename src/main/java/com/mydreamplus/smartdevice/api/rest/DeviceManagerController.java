@@ -1,13 +1,13 @@
 package com.mydreamplus.smartdevice.api.rest;
 
 import com.mydreamplus.smartdevice.domain.*;
-import com.mydreamplus.smartdevice.domain.in.BaseRequest;
 import com.mydreamplus.smartdevice.domain.in.DevicePolicyRequest;
 import com.mydreamplus.smartdevice.domain.in.DeviceQueryRequest;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
 import com.mydreamplus.smartdevice.entity.DeviceEvent;
 import com.mydreamplus.smartdevice.entity.DeviceFunction;
 import com.mydreamplus.smartdevice.entity.DeviceType;
+import com.mydreamplus.smartdevice.entity.ParentDeviceType;
 import com.mydreamplus.smartdevice.service.DeviceManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +17,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -106,6 +105,8 @@ public class DeviceManagerController extends AbstractRestHandler {
         });
         deviceType.setDeviceFunctions(deviceFunctionList);
         deviceType.setDeviceEvents(deviceEventList);
+        ParentDeviceType parentDeviceType = new ParentDeviceType();
+        parentDeviceType.setID(deviceTypeDto.getParentDeviceType());
         this.deviceManager.saveDeviceType(deviceType);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
@@ -167,7 +168,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         log.info(request.toString());
         BaseResponse response = new BaseResponse();
         PolicyDto policyDto = new PolicyDto();
-        BeanUtils.copyProperties(request, policyDto, "masterDeviceMap", "slaveDeviceMap", "policyMap");
+        BeanUtils.copyProperties(request, policyDto, "policyMap");
         // convert device event
         /*Map<Device, DeviceEvent> masterDeviceMap = new HashMap<>();
         Map<Long, Long> masterLongMap = request.getMasterDeviceMap();

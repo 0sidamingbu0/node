@@ -16,45 +16,12 @@ public class DeviceRegisterDto {
     private String symbol;
 
     /**
-     * 设备所在的PI设备, PI的MAC地址
-     */
-    private String PIID;
-
-    /**
-     * 设备的类型
-     */
-    private String deviceType;
-
-    /**
-     * 设备的MAC地址
-     */
-    private String macAddress;
-
-    /**
-     * 短地址
-     */
-    private int shortAddress;
-
-    /**
      * 资源序号
      */
     private int index;
 
-    public String getSymbol() {
-        return symbol;
-    }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getPIID() {
-        return PIID;
-    }
-
-    public void setPIID(String PIID) {
-        this.PIID = PIID;
-    }
+    private String deviceType;
 
     public String getDeviceType() {
         return deviceType;
@@ -64,20 +31,12 @@ public class DeviceRegisterDto {
         this.deviceType = deviceType;
     }
 
-    public String getMacAddress() {
-        return macAddress;
+    public String getSymbol() {
+        return symbol;
     }
 
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    public int getShortAddress() {
-        return shortAddress;
-    }
-
-    public void setShortAddress(int shortAddress) {
-        this.shortAddress = shortAddress;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     public int getIndex() {

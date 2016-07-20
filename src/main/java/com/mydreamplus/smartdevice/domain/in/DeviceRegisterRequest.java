@@ -19,27 +19,24 @@ public class DeviceRegisterRequest extends BaseRequest {
     private String parentDeviceType;
 
     /**
+     * 设备所在的PI设备, PI的MAC地址
+     */
+    private String PIID;
+
+    /**
+     * 设备的MAC地址
+     */
+    private String macAddress;
+
+    /**
+     * 短地址
+     */
+    private int shortAddress;
+
+    /**
      * 注册设备信息
      */
     private List<DeviceRegisterDto> deviceRegisters;
-
-    /**
-     * Gets device registers.
-     *
-     * @return the device registers
-     */
-    public List<DeviceRegisterDto> getDeviceRegisters() {
-        return deviceRegisters;
-    }
-
-    /**
-     * Sets device registers.
-     *
-     * @param deviceRegisters the device registers
-     */
-    public void setDeviceRegisters(List<DeviceRegisterDto> deviceRegisters) {
-        this.deviceRegisters = deviceRegisters;
-    }
 
     public String getParentDeviceType() {
         return parentDeviceType;
@@ -47,5 +44,37 @@ public class DeviceRegisterRequest extends BaseRequest {
 
     public void setParentDeviceType(String parentDeviceType) {
         this.parentDeviceType = parentDeviceType;
+    }
+
+    public String getPIID() {
+        return PIID;
+    }
+
+    public void setPIID(String PIID) {
+        this.PIID = PIID;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public int getShortAddress() {
+        return shortAddress;
+    }
+
+    public void setShortAddress(int shortAddress) {
+        this.shortAddress = shortAddress;
+    }
+
+    public List<DeviceRegisterDto> getDeviceRegisters() {
+        return deviceRegisters;
+    }
+
+    public void setDeviceRegisters(List<DeviceRegisterDto> deviceRegisters) {
+        this.deviceRegisters = deviceRegisters;
     }
 }

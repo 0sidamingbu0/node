@@ -17,4 +17,9 @@ public class Constant {
 
     public static final String DEFAULT_CREATE_USER = "system";
 
+    /**
+     * n路灯开关面板
+     */
+    public static final String PARENT_DEVICE_TYPE_N_SWITCHLIGHTPANEL = "N_SwitchLightPanel";
+
 }

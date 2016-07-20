@@ -18,27 +18,22 @@ public class DeviceEvent extends BaseEntity {
      */
     @Column(name = "event_name", nullable = false, unique = true)
     private String name;
-
     /**
      * 事件的别名
      */
     @Column()
     private String alias;
-
     /**
      * 事件的描述信息
      */
     @Column()
     private String description;
-
-
     @ManyToMany
     @JoinTable(
-            name="device_type_on_device_event",
-            joinColumns=@JoinColumn(name="type_id", referencedColumnName="ID"),
-            inverseJoinColumns=@JoinColumn(name="event_id", referencedColumnName="ID"))
+            name = "device_type_on_device_event",
+            joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "type_id", referencedColumnName = "ID"))
     private List<DeviceType> deviceTypes;
-
 
     /**
      * Gets device types.

@@ -1,8 +1,5 @@
 package com.mydreamplus.smartdevice.domain;
 
-import com.mydreamplus.smartdevice.entity.Device;
-import com.mydreamplus.smartdevice.entity.DeviceEvent;
-import com.mydreamplus.smartdevice.entity.DeviceFunction;
 import com.mydreamplus.smartdevice.entity.RootPolicy;
 
 import java.util.Map;
@@ -43,14 +40,14 @@ public class PolicyDto {
 
     /**
      * 主控设备触发事件
-     * Key:设备的ID
+     * Key:设备的symbol
      */
-    private Map<Long, Long> masterDeviceMap;
+    private Map<String, String> masterDeviceMap;
 
     /**
      * 被控设备事件方法
      */
-    private Map<Long, Long> slaveDeviceMap;
+    private Map<String, String> slaveDeviceMap;
 
     /**
      * 策略之间有控制关系, key 策略控制 value  策略
@@ -175,7 +172,7 @@ public class PolicyDto {
      *
      * @return the master device map
      */
-    public Map<Long, Long> getMasterDeviceMap() {
+    public Map<String, String> getMasterDeviceMap() {
         return masterDeviceMap;
     }
 
@@ -184,7 +181,7 @@ public class PolicyDto {
      *
      * @param masterDeviceMap the master device map
      */
-    public void setMasterDeviceMap(Map<Long, Long> masterDeviceMap) {
+    public void setMasterDeviceMap(Map<String, String> masterDeviceMap) {
         this.masterDeviceMap = masterDeviceMap;
     }
 
@@ -193,7 +190,7 @@ public class PolicyDto {
      *
      * @return the slave device map
      */
-    public Map<Long, Long> getSlaveDeviceMap() {
+    public Map<String, String> getSlaveDeviceMap() {
         return slaveDeviceMap;
     }
 
@@ -202,7 +199,7 @@ public class PolicyDto {
      *
      * @param slaveDeviceMap the slave device map
      */
-    public void setSlaveDeviceMap(Map<Long, Long> slaveDeviceMap) {
+    public void setSlaveDeviceMap(Map<String, String> slaveDeviceMap) {
         this.slaveDeviceMap = slaveDeviceMap;
     }
 

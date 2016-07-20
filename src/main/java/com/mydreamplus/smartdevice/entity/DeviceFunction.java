@@ -18,25 +18,23 @@ public class DeviceFunction extends BaseEntity {
      */
     @Column(unique = true, name = "function_name")
     private String name;
-
     /**
      * 设备方法的描述
      */
     @Column
     private String description;
-
     /**
      * 对该设备方法的别称
      */
     @Column
     private String alias;
-
     @ManyToMany
     @JoinTable(
             name = "device_type_on_device_function",
-            joinColumns = @JoinColumn(name = "type_id", referencedColumnName = "ID"),
-            inverseJoinColumns = @JoinColumn(name = "function_id", referencedColumnName = "ID"))
+            joinColumns = @JoinColumn(name = "function_id", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "type_id", referencedColumnName = "ID"))
     private List<DeviceType> deviceTypes;
+
 
     /**
      * Gets name.

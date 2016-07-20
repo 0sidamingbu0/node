@@ -1,4 +1,4 @@
-package com.mydreamplus.smartdevice.domain.out;
+package com.mydreamplus.smartdevice.domain.message;
 
 /**
  * Created with IntelliJ IDEA.

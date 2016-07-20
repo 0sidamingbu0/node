@@ -4,6 +4,7 @@ import com.mydreamplus.smartdevice.domain.DeviceFunctionTypeEnum;
 import com.mydreamplus.smartdevice.domain.DeviceSourceEnum;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-public class DeviceType extends BaseEntity {
+public class DeviceType extends BaseEntity{
 
     /**
      * 设备类型名称
@@ -25,31 +26,26 @@ public class DeviceType extends BaseEntity {
      * 设备类型的描述
      */
     private String description;
-
     /**
      * 设备的别名,例如SensorBody_MI
      * 类型 + 设备的来源
      */
     private String aliases;
-
     /**
      * 设备制造的来源
      */
     @Enumerated(EnumType.STRING)
     private DeviceSourceEnum deviceSource;
-
     /**
      * 设备的职能分类
      */
     @Enumerated(EnumType.STRING)
     private DeviceFunctionTypeEnum deviceFunctionType;
-
     /**
      * 设备事件
      */
     @ManyToMany(mappedBy = "deviceTypes", cascade = CascadeType.ALL)
     private List<DeviceEvent> deviceEvents;
-
     /**
      * 设备可以被施放的方法
      *
@@ -57,7 +53,6 @@ public class DeviceType extends BaseEntity {
      */
     @ManyToMany(mappedBy = "deviceTypes", cascade = CascadeType.ALL)
     private List<DeviceFunction> deviceFunctions;
-
 
     /**
      * Gets description.

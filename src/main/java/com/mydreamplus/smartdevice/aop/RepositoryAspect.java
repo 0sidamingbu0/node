@@ -1,7 +1,6 @@
 package com.mydreamplus.smartdevice.aop;
 
 import com.mydreamplus.smartdevice.config.Constant;
-import com.mydreamplus.smartdevice.entity.BaseEntity;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -19,9 +18,8 @@ import java.util.Date;
 @Component(value = "repositoryAspect")
 public class RepositoryAspect {
 
-    @Before("execution(public * com.mydreamplus.smartdevice.service.*Service.save*(..)) &&" + "args(entity,..)")
+    /*@Before("execution(public * com.mydreamplus.smartdevice.service.*Service.save*(..)) &&" + "args(entity,..)")
     public void fillCreateInformation(BaseEntity entity) throws Throwable {
-
         if(entity != null){
             entity.setCreateTime(new Date(System.currentTimeMillis()));
             entity.setUpdateTime(entity.getCreateTime());
@@ -37,5 +35,5 @@ public class RepositoryAspect {
             entity.setUpdateTime(entity.getCreateTime());
         }
         System.out.println(":::::AOP Before Service update call:::::" + entity);
-    }
+    }*/
 }

@@ -28,14 +28,15 @@ public class DevicePolicyRequest extends BaseRequest {
 
     /**
      * 主控设备触发事件
-     * Key:设备的ID
+     * Key:设备的symbol , value ,事件name
      */
-    private Map<Long, Long> masterDeviceMap;
+    private Map<String, String> masterDeviceMap;
 
     /**
      * 被控设备事件方法
+     * Key:设备的symbol , value ,方法name
      */
-    private Map<Long, Long> slaveDeviceMap;
+    private Map<String, String> slaveDeviceMap;
 
     /**
      * 策略之间有控制关系, key 策略控制 value  策略
@@ -66,28 +67,28 @@ public class DevicePolicyRequest extends BaseRequest {
         this.rootPolicy = rootPolicy;
     }
 
-    public Map<Long, Long> getMasterDeviceMap() {
-        return masterDeviceMap;
-    }
-
-    public void setMasterDeviceMap(Map<Long, Long> masterDeviceMap) {
-        this.masterDeviceMap = masterDeviceMap;
-    }
-
-    public Map<Long, Long> getSlaveDeviceMap() {
-        return slaveDeviceMap;
-    }
-
-    public void setSlaveDeviceMap(Map<Long, Long> slaveDeviceMap) {
-        this.slaveDeviceMap = slaveDeviceMap;
-    }
-
     public Map<Long, Long> getPolicyMap() {
         return policyMap;
     }
 
     public void setPolicyMap(Map<Long, Long> policyMap) {
         this.policyMap = policyMap;
+    }
+
+    public Map<String, String> getMasterDeviceMap() {
+        return masterDeviceMap;
+    }
+
+    public void setMasterDeviceMap(Map<String, String> masterDeviceMap) {
+        this.masterDeviceMap = masterDeviceMap;
+    }
+
+    public Map<String, String> getSlaveDeviceMap() {
+        return slaveDeviceMap;
+    }
+
+    public void setSlaveDeviceMap(Map<String, String> slaveDeviceMap) {
+        this.slaveDeviceMap = slaveDeviceMap;
     }
 
     @Override

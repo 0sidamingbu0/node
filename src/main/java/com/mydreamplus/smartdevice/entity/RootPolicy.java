@@ -21,12 +21,10 @@ public class RootPolicy extends BaseEntity {
      */
     @Column(unique = true, name = "root_policy_name")
     private String name;
-
     /**
      * 场景的描述
      */
     private String description;
-
     /**
      * 关联到PI上的场景策略
      */

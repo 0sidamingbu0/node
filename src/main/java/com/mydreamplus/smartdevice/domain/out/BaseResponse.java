@@ -21,6 +21,7 @@ public class BaseResponse {
      * 详细内容
      */
     private String details = "";
+
     /**
      * 返回DTO数据
      */
