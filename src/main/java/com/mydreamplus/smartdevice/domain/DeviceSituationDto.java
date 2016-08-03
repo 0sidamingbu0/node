@@ -54,4 +54,12 @@ public class DeviceSituationDto {
     public void setValue(int value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "DeviceSituationDto{" +
+                "value=" + value +
+                ", symbol='" + symbol + '\'' +
+                '}';
+    }
 }

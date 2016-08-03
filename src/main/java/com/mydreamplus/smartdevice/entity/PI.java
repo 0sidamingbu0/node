@@ -36,7 +36,7 @@ public class PI extends BaseEntity {
     /**
      * 下发的策略
      */
-    @ManyToMany
+    @OneToMany(mappedBy = "pi")
     private List<Policy> policies;
     /**
      * 最近一次注册时间

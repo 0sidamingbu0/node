@@ -2,8 +2,6 @@ package com.mydreamplus.smartdevice.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,11 +23,6 @@ public class RootPolicy extends BaseEntity {
      * 场景的描述
      */
     private String description;
-    /**
-     * 关联到PI上的场景策略
-     */
-    @OneToMany(mappedBy = "rootPolicy")
-    private List<Policy> policies;
 
     /**
      * Gets name.
@@ -67,21 +60,4 @@ public class RootPolicy extends BaseEntity {
         this.description = description;
     }
 
-    /**
-     * Gets policies.
-     *
-     * @return the policies
-     */
-    public List<Policy> getPolicies() {
-        return policies;
-    }
-
-    /**
-     * Sets policies.
-     *
-     * @param policies the policies
-     */
-    public void setPolicies(List<Policy> policies) {
-        this.policies = policies;
-    }
 }

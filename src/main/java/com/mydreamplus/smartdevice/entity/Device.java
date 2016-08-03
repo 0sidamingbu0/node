@@ -5,6 +5,7 @@ import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,8 +16,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "zb_device")
-public class Device extends BaseEntity{
-
+public class Device extends BaseEntity {
     /**
      * 拆分前的设备类型
      */
@@ -30,13 +30,13 @@ public class Device extends BaseEntity{
     /**
      * 设备所在的PI设备
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pi_id")
     private PI pi;
     /**
      * 设备的名称
      */
-    @Column(unique = true, name = "device_name")
+    @Column(name = "device_name")
     private String name;
     /**
      * 设备的别名,在云端设置
@@ -46,17 +46,26 @@ public class Device extends BaseEntity{
      * 设备的描述信息
      */
     private String description;
+
     /**
-     * 设备的类型
+     * 设备的MAC地址用于分组
      */
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "device_type_id")
-    private DeviceType deviceType;
+    private String macAddress;
+
     /**
-     * 设备的MAC地址
+     * 设备的生成厂家
      */
     @Column
-    private String macAddress;
+    private String factory;
+    /**
+     * 设备所在组
+     */
+    @ManyToMany
+    @JoinTable(
+            name = "device_group_on_device",
+            joinColumns = @JoinColumn(name = "group_id", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "device_id", referencedColumnName = "ID"))
+    private List<DeviceGroup> deviceGroupList;
     /**
      * 设备状态
      */
@@ -71,7 +80,38 @@ public class Device extends BaseEntity{
      * 设备的注册时间
      */
     private Date registeTime;
+    /**
+     * 设备的类型
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_type_id")
+    private DeviceType deviceType;
 
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
+    }
+
+    /**
+     * Gets mac address.
+     *
+     * @return the mac address
+     */
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    /**
+     * Sets mac address.
+     *
+     * @param macAddress the mac address
+     */
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
 
     /**
      * Gets symbol.
@@ -182,24 +222,6 @@ public class Device extends BaseEntity{
     }
 
     /**
-     * Gets mac address.
-     *
-     * @return the mac address
-     */
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    /**
-     * Sets mac address.
-     *
-     * @param macAddress the mac address
-     */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    /**
      * Gets device state.
      *
      * @return the device state
@@ -253,11 +275,39 @@ public class Device extends BaseEntity{
         this.registeTime = registeTime;
     }
 
+    /**
+     * Gets parent device type.
+     *
+     * @return the parent device type
+     */
     public String getParentDeviceType() {
         return parentDeviceType;
     }
 
+    /**
+     * Sets parent device type.
+     *
+     * @param parentDeviceType the parent device type
+     */
     public void setParentDeviceType(String parentDeviceType) {
         this.parentDeviceType = parentDeviceType;
+    }
+
+    /**
+     * Gets device group list.
+     *
+     * @return the device group list
+     */
+    public List<DeviceGroup> getDeviceGroupList() {
+        return deviceGroupList;
+    }
+
+    /**
+     * Sets device group list.
+     *
+     * @param deviceGroupList the device group list
+     */
+    public void setDeviceGroupList(List<DeviceGroup> deviceGroupList) {
+        this.deviceGroupList = deviceGroupList;
     }
 }

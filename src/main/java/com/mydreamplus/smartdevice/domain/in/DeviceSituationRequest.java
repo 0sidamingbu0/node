@@ -11,33 +11,29 @@ import java.util.List;
  * Time: 下午12:04
  * To change this template use File | Settings | File Templates.
  */
-public class DeviceSituationRequest{
-
-    /**
-     * PI MAC 地址
-     */
-    private String piMacAddr;
+public class DeviceSituationRequest extends BaseDeviceRequest{
 
     /**
      * 设备状态集合
      */
     private List<DeviceSituationDto> deviceSituationDtos;
 
+    /**
+     * Gets device situation dtos.
+     *
+     * @return the device situation dtos
+     */
     public List<DeviceSituationDto> getDeviceSituationDtos() {
         return deviceSituationDtos;
     }
 
+    /**
+     * Sets device situation dtos.
+     *
+     * @param deviceSituationDtos the device situation dtos
+     */
     public void setDeviceSituationDtos(List<DeviceSituationDto> deviceSituationDtos) {
         this.deviceSituationDtos = deviceSituationDtos;
     }
-
-    public String getPiMacAddr() {
-        return piMacAddr;
-    }
-
-    public void setPiMacAddr(String piMacAddr) {
-        this.piMacAddr = piMacAddr;
-    }
-
 
 }

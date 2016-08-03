@@ -1,16 +1,130 @@
 package com.mydreamplus.smartdevice.aop;
 
-import org.aspectj.lang.JoinPoint;
+import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
+import com.mydreamplus.smartdevice.dao.jpa.LinkQualityRepositoryImpl;
+import com.mydreamplus.smartdevice.dao.jpa.PolicyRepository;
+import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
+import com.mydreamplus.smartdevice.domain.in.*;
+import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
+import com.mydreamplus.smartdevice.service.DeviceRestService;
+import com.mydreamplus.smartdevice.util.PolicyParseUtil;
+import com.mydreamplus.smartdevice.util.SymbolUtil;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * The type Rest controller aspect.
+ */
 @Aspect
 @Component(value = "restControllerAspect")
 public class RestControllerAspect {
 
-    @Before("execution(public * com.mydreamplus.smartdevice.api.rest.*Controller.*(..))")
-    public void logBeforeRestCall(JoinPoint pjp) throws Throwable {
-        System.out.println(":::::AOP Before REST call:::::" + pjp);
+
+    private final Logger log = LoggerFactory.getLogger(RestControllerAspect.class);
+
+    @Autowired
+    private PolicyRepository policyRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
+
+    @Autowired
+    private DeviceRestService deviceRestService;
+
+
+    /**
+     * node每次请求云端,都会携带policyUpdateTime 场景的最后更新时间,云端根据这个时间来更新策略
+     *
+     * @param deviceRequest the device request
+     * @throws Throwable the throwable
+     */
+    @Before("execution(public * com.mydreamplus.smartdevice.api.rest.*Controller.*(..)) &&" + "args(deviceRequest,..)")
+    public void logBeforeRestCall(BaseDeviceRequest deviceRequest) throws Throwable {
+        if (deviceRequest != null && deviceRequest.getPolicyUpdateTime() != null) {
+//            log.info("===========策略更新========" + new Date(deviceRequest.getPolicyUpdateTime()));
+            // 根据时间戳查询变化的策略集合
+            List<PolicyMessage> list = new ArrayList<>();
+
+            this.policyRepository.findAllByUpdateTimeGreaterThan(new Date(deviceRequest.getPolicyUpdateTime())).forEach(policy -> {
+                PolicyMessage policyMessage = new PolicyMessage();
+                policyMessage.setUpdateTime(policy.getUpdateTime().getTime());
+                policyMessage.setPolicyId(policy.getID());
+                policyMessage.setPolicyConfigDto(PolicyParseUtil.josnToPolicyConfigDto(policy.getPolicyConfig()));
+                policyMessage.setDeleted(policy.getDeleted());
+                list.add(policyMessage);
+                log.info("更新策略:{}", policy.getName());
+            });
+            // 有策略更新
+            if (list.size() > 0) {
+                // 下发到node, node会更新场景, 如果下发失败, node上场景的update time不变,下次继续下发
+                log.info("检测到有场景更新,数量:{}", list.size());
+                deviceRestService.sendPolicy(deviceRequest.getPiMacAddress(), list);
+            }
+            // ======================== 更新 Link Quality、UpdateTime、Status ========================
+            int linkQuality = deviceRequest.getLinkQuality();
+            log.info("设备Link Quality: " + linkQuality);
+            // 1、注册
+            if (deviceRequest instanceof DeviceRegisterRequest) {
+                LinkQualityRepositoryImpl.setLinkQuality(((DeviceRegisterRequest) deviceRequest).getMacAddress(), linkQuality);
+                this.updateDeviceStateByMacAddress(((DeviceRegisterRequest) deviceRequest).getMacAddress());
+            }
+            // 2、上报设备状态
+            if (deviceRequest instanceof DeviceSituationRequest) {
+                if (((DeviceSituationRequest) deviceRequest).getDeviceSituationDtos() != null && ((DeviceSituationRequest) deviceRequest).getDeviceSituationDtos().size() > 0) {
+                    ((DeviceSituationRequest) deviceRequest).getDeviceSituationDtos().forEach(deviceSituationDto -> {
+                        LinkQualityRepositoryImpl.setLinkQuality(SymbolUtil.parseMacAddress(deviceSituationDto.getSymbol()), linkQuality);
+                        this.updateDeviceStateBySymbol(deviceSituationDto.getSymbol());
+                    });
+                }
+            }
+            // 3、上报事件
+            if (deviceRequest instanceof DeviceEventRequest) {
+                LinkQualityRepositoryImpl.setLinkQuality(SymbolUtil.parseMacAddress(((DeviceEventRequest) deviceRequest).getSymbol()), linkQuality);
+                this.updateDeviceStateBySymbol(SymbolUtil.parseMacAddress(((DeviceEventRequest) deviceRequest).getSymbol()));
+            }
+            // 4、Ping
+            if (deviceRequest instanceof DevicePingRequest) {
+                LinkQualityRepositoryImpl.setLinkQuality(((DevicePingRequest) deviceRequest).getMacAddress(), linkQuality);
+                this.updateDeviceStateByMacAddress(((DevicePingRequest) deviceRequest).getMacAddress());
+            }
+            // 5、上报数据
+            if (deviceRequest instanceof SensorValueRequest) {
+                LinkQualityRepositoryImpl.setLinkQuality(SymbolUtil.parseMacAddress(((SensorValueRequest) deviceRequest).getSymbol()), linkQuality);
+                this.updateDeviceStateBySymbol(((SensorValueRequest) deviceRequest).getSymbol());
+            }
+            // 6、事件上报
+            if (deviceRequest instanceof DeviceEventRequest) {
+                this.updateDeviceStateBySymbol(((DeviceEventRequest) deviceRequest).getSymbol());
+            }
+        }
+    }
+
+    /**
+     * 更新设备的更新时间和设备在线状态
+     *
+     * @param symbol
+     */
+    private void updateDeviceStateBySymbol(String symbol) {
+        log.info("更新设备的在线状态{}", symbol);
+        this.deviceRepository.updateUpdateTimeBySymbol(new Date(), DeviceStateEnum.ONLINE, symbol);
+    }
+
+    /**
+     * 更新设备的更新时间和设备在线状态
+     *
+     * @param macAddress
+     */
+    private void updateDeviceStateByMacAddress(String macAddress) {
+        log.info("更新设备的在线状态{}", macAddress);
+        this.deviceRepository.updateUpdateTimeByMacAddress(new Date(), DeviceStateEnum.ONLINE, macAddress);
     }
 }

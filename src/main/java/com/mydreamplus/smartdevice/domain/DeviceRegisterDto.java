@@ -9,17 +9,11 @@ package com.mydreamplus.smartdevice.domain;
  */
 public class DeviceRegisterDto {
 
-    /**
-     * 设备的唯一标识,由NODE解析生成(mac地址)
-     * mac + 短地址 + 资源序号
-     */
-    private String symbol;
 
     /**
      * 资源序号
      */
     private int index;
-
 
     private String deviceType;
 
@@ -29,14 +23,6 @@ public class DeviceRegisterDto {
 
     public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
     }
 
     public int getIndex() {

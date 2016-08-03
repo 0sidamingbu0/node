@@ -11,5 +11,5 @@ public enum DeviceSituationEnum {
     /**
      * 开,关, 未知
      */
-    ON,OFF,UNKNOWN
+    ON,OFF,HOLD
 }

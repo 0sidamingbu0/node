@@ -1,6 +1,6 @@
 package com.mydreamplus.smartdevice.domain.in;
 
-import java.util.Map;
+import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,27 +21,20 @@ public class DevicePolicyRequest extends BaseRequest {
      */
     private String description;
 
-    /**
-     * 关联的云端场景策略
-     */
-    private Long rootPolicy;
+    private PolicyConfigDto policyConfigDto;
 
     /**
-     * 主控设备触发事件
-     * Key:设备的symbol , value ,事件name
+     * PI mac地址
      */
-    private Map<String, String> masterDeviceMap;
+    private String piMacAddress;
 
-    /**
-     * 被控设备事件方法
-     * Key:设备的symbol , value ,方法name
-     */
-    private Map<String, String> slaveDeviceMap;
+    public String getPiMacAddress() {
+        return piMacAddress;
+    }
 
-    /**
-     * 策略之间有控制关系, key 策略控制 value  策略
-     */
-    private Map<Long, Long> policyMap;
+    public void setPiMacAddress(String piMacAddress) {
+        this.piMacAddress = piMacAddress;
+    }
 
     public String getName() {
         return name;
@@ -59,47 +52,21 @@ public class DevicePolicyRequest extends BaseRequest {
         this.description = description;
     }
 
-    public Long getRootPolicy() {
-        return rootPolicy;
+    public PolicyConfigDto getPolicyConfigDto() {
+        return policyConfigDto;
     }
 
-    public void setRootPolicy(Long rootPolicy) {
-        this.rootPolicy = rootPolicy;
-    }
-
-    public Map<Long, Long> getPolicyMap() {
-        return policyMap;
-    }
-
-    public void setPolicyMap(Map<Long, Long> policyMap) {
-        this.policyMap = policyMap;
-    }
-
-    public Map<String, String> getMasterDeviceMap() {
-        return masterDeviceMap;
-    }
-
-    public void setMasterDeviceMap(Map<String, String> masterDeviceMap) {
-        this.masterDeviceMap = masterDeviceMap;
-    }
-
-    public Map<String, String> getSlaveDeviceMap() {
-        return slaveDeviceMap;
-    }
-
-    public void setSlaveDeviceMap(Map<String, String> slaveDeviceMap) {
-        this.slaveDeviceMap = slaveDeviceMap;
+    public void setPolicyConfigDto(PolicyConfigDto policyConfigDto) {
+        this.policyConfigDto = policyConfigDto;
     }
 
     @Override
     public String toString() {
         return "DevicePolicyRequest{" +
-                "name='" + name + '\'' +
+                "piMacAddress='" + piMacAddress + '\'' +
+                ", policyConfigDto=" + policyConfigDto +
                 ", description='" + description + '\'' +
-                ", rootPolicy=" + rootPolicy +
-                ", masterDeviceMap=" + masterDeviceMap +
-                ", slaveDeviceMap=" + slaveDeviceMap +
-                ", policyMap=" + policyMap +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

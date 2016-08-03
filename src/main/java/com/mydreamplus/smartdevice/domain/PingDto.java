@@ -12,37 +12,32 @@ import java.util.Date;
  */
 public class PingDto {
 
-
-    public PingDto(int value) {
-        this.value = value;
-    }
-
-    public PingDto(int value, Date lastPingTime) {
-        this.value = value;
-        this.lastPingTime = lastPingTime;
-    }
-
     /**
-     * 当前PING的值 ,将延迟情况映射到1-100之间
      */
-    private int value;
-
+    private Long value;
     /**
-     * 上次PING的时间
+     * 上报PING的时间
      */
     private Date lastPingTime;
 
+
     /**
-     * 下次PING的时间
+     * Instantiates a new Ping dto.
+     *
+     * @param value        the value
+     * @param lastPingTime the last ping time
      */
-    private Date nextPingTime;
+    public PingDto(Long value, Date lastPingTime) {
+        this.value = value;
+        this.lastPingTime = lastPingTime;
+    }
 
     /**
      * Gets value.
      *
      * @return the value
      */
-    public int getValue() {
+    public Long getValue() {
         return value;
     }
 
@@ -51,7 +46,7 @@ public class PingDto {
      *
      * @param value the value
      */
-    public void setValue(int value) {
+    public void setValue(Long value) {
         this.value = value;
     }
 
@@ -73,21 +68,4 @@ public class PingDto {
         this.lastPingTime = lastPingTime;
     }
 
-    /**
-     * Gets next ping time.
-     *
-     * @return the next ping time
-     */
-    public Date getNextPingTime() {
-        return nextPingTime;
-    }
-
-    /**
-     * Sets next ping time.
-     *
-     * @param nextPingTime the next ping time
-     */
-    public void setNextPingTime(Date nextPingTime) {
-        this.nextPingTime = nextPingTime;
-    }
 }

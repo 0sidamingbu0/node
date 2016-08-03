@@ -1,8 +1,6 @@
 package com.mydreamplus.smartdevice.domain;
 
-import com.mydreamplus.smartdevice.entity.RootPolicy;
-
-import java.util.Map;
+import com.mydreamplus.smartdevice.entity.PI;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,9 +11,6 @@ import java.util.Map;
  */
 public class PolicyDto {
 
-    /**
-     * 策略的ID
-     */
     private Long ID;
     /**
      * 场景名称
@@ -27,37 +22,15 @@ public class PolicyDto {
      */
     private String description;
 
+    private PI pi;
     /**
-     * 关联的云端场景策略
+     * 场景配置
      */
-    private RootPolicy rootPolicy;
-
-    /**
-     * 关联了云端策略,策略下发到终端上,
-     * 终端根据该属性判断是否要提交到云端执行操作。
-     */
-    private boolean hasRootPolicy;
-
-    /**
-     * 主控设备触发事件
-     * Key:设备的symbol
-     */
-    private Map<String, String> masterDeviceMap;
-
-    /**
-     * 被控设备事件方法
-     */
-    private Map<String, String> slaveDeviceMap;
-
-    /**
-     * 策略之间有控制关系, key 策略控制 value  策略
-     */
-    private Map<Long, Long> policyMap;
-
+    private PolicyConfigDto policyConfigDto;
     /**
      * 策略的更新时间,时间戳,在PI上根据该字段来判断是否更新策略
      */
-    private Long timeStamp;
+    private Long updateTime;
 
     /**
      * Gets id.
@@ -78,7 +51,31 @@ public class PolicyDto {
     }
 
     /**
-     * Gets name.
+     * 云端场景策略
+     *//*
+    private RootPolicy rootPolicy;
+
+    *//**
+     * 关联了云端策略,策略下发到终端上,
+     * 终端根据该属性判断是否要提交到云端执行操作。
+     *//*
+    private boolean hasRootPolicy;*/
+
+    /**
+     * 主控设备触发事件
+     * Key:设备的symbol
+     */
+    /*private Map<String, String> masterDeviceMap;
+
+    *//**
+     * 被控设备事件方法
+     *//*
+    private Map<String, String> slaveDeviceMap;
+
+    */
+
+    /**
+     * 策略之间有控制关系, key 策略控制 value  策略
      *
      * @return the name
      */
@@ -114,125 +111,56 @@ public class PolicyDto {
     }
 
     /**
-     * Gets root policy.
+     * Gets pi.
      *
-     * @return the root policy
+     * @return the pi
      */
-    public RootPolicy getRootPolicy() {
-        return rootPolicy;
+    public PI getPi() {
+        return pi;
     }
 
     /**
-     * Sets root policy.
+     * Sets pi.
      *
-     * @param rootPolicy the root policy
+     * @param pi the pi
      */
-    public void setRootPolicy(RootPolicy rootPolicy) {
-        this.rootPolicy = rootPolicy;
+    public void setPi(PI pi) {
+        this.pi = pi;
     }
 
     /**
-     * Is has root policy boolean.
+     * Gets policy config dto.
      *
-     * @return the boolean
+     * @return the policy config dto
      */
-    public boolean isHasRootPolicy() {
-        return hasRootPolicy;
+    public PolicyConfigDto getPolicyConfigDto() {
+        return policyConfigDto;
     }
 
     /**
-     * Sets has root policy.
+     * Sets policy config dto.
      *
-     * @param hasRootPolicy the has root policy
+     * @param policyConfigDto the policy config dto
      */
-    public void setHasRootPolicy(boolean hasRootPolicy) {
-        this.hasRootPolicy = hasRootPolicy;
+    public void setPolicyConfigDto(PolicyConfigDto policyConfigDto) {
+        this.policyConfigDto = policyConfigDto;
     }
 
     /**
-     * Gets time stamp.
+     * Gets update time.
      *
-     * @return the time stamp
+     * @return the update time
      */
-    public Long getTimeStamp() {
-        return timeStamp;
+    public Long getUpdateTime() {
+        return updateTime;
     }
 
     /**
-     * Sets time stamp.
+     * Sets update time.
      *
-     * @param timeStamp the time stamp
+     * @param updateTime the update time
      */
-    public void setTimeStamp(Long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    /**
-     * Gets master device map.
-     *
-     * @return the master device map
-     */
-    public Map<String, String> getMasterDeviceMap() {
-        return masterDeviceMap;
-    }
-
-    /**
-     * Sets master device map.
-     *
-     * @param masterDeviceMap the master device map
-     */
-    public void setMasterDeviceMap(Map<String, String> masterDeviceMap) {
-        this.masterDeviceMap = masterDeviceMap;
-    }
-
-    /**
-     * Gets slave device map.
-     *
-     * @return the slave device map
-     */
-    public Map<String, String> getSlaveDeviceMap() {
-        return slaveDeviceMap;
-    }
-
-    /**
-     * Sets slave device map.
-     *
-     * @param slaveDeviceMap the slave device map
-     */
-    public void setSlaveDeviceMap(Map<String, String> slaveDeviceMap) {
-        this.slaveDeviceMap = slaveDeviceMap;
-    }
-
-    /**
-     * Gets policy map.
-     *
-     * @return the policy map
-     */
-    public Map<Long, Long> getPolicyMap() {
-        return policyMap;
-    }
-
-    /**
-     * Sets policy map.
-     *
-     * @param policyMap the policy map
-     */
-    public void setPolicyMap(Map<Long, Long> policyMap) {
-        this.policyMap = policyMap;
-    }
-
-    @Override
-    public String toString() {
-        return "PolicyDto{" +
-                "ID=" + ID +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", rootPolicy=" + rootPolicy +
-                ", hasRootPolicy=" + hasRootPolicy +
-                ", masterDeviceMap=" + masterDeviceMap +
-                ", slaveDeviceMap=" + slaveDeviceMap +
-                ", policyMap=" + policyMap +
-                ", timeStamp=" + timeStamp +
-                '}';
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
     }
 }

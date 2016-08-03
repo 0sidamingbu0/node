@@ -1,6 +1,12 @@
 package com.mydreamplus.smartdevice.domain;
 
+
+import com.mydreamplus.smartdevice.entity.DeviceGroup;
+import com.mydreamplus.smartdevice.util.SymbolUtil;
+import org.springframework.util.StringUtils;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,6 +17,63 @@ import java.util.Date;
  */
 public class DeviceDto {
 
+
+    /**
+     * 拆分前的设备类型
+     */
+    private String parentDeviceType;
+    /**
+     * 设备的唯一标识,由NODE解析生成(mac地址)
+     */
+    private String symbol;
+    /**
+     * 设备所在的PI设备 PI的mac地址
+     */
+    private String PIID;
+    /**
+     * 设备的名称
+     */
+    private String name;
+    /**
+     * 设备的别名,在云端设置
+     */
+    private String aliases;
+    /**
+     * 设备的描述信息
+     */
+    private String description;
+    /**
+     * 设备的类型
+     */
+    private String deviceType;
+
+    /**
+     * 厂家
+     */
+    private String factory;
+    /**
+     * 设备状态
+     */
+    private DeviceStateEnum deviceState;
+    /**
+     * 设备的状况, 开启/关闭
+     */
+    private DeviceSituationEnum deviceSituation;
+    /**
+     * 设备的注册时间
+     */
+    private Date registeTime;
+
+    /**
+     * 设备分组
+     */
+    private List<DeviceGroup> deviceGroupList;
+
+    /**
+     * 设备网络情况
+     */
+    private int linkQuality;
+
     /**
      * Instantiates a new Device dto.
      */
@@ -20,66 +83,45 @@ public class DeviceDto {
     /**
      * Instantiates a new Device dto.
      *
-     * @param macAddress the mac address
+     * @param symbol the mac address
      */
-    public DeviceDto(String macAddress) {
-        this.macAddress = macAddress;
+    public DeviceDto(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public int getLinkQuality() {
+        return linkQuality;
+    }
+
+    public void setLinkQuality(int linkQuality) {
+        this.linkQuality = linkQuality;
     }
 
     /**
-     * 拆分前的设备类型
+     * Gets device group list.
+     *
+     * @return the device group list
      */
-    private String parentDeviceType;
+    public List<DeviceGroup> getDeviceGroupList() {
+        return deviceGroupList;
+    }
 
     /**
-     * 设备的唯一标识,由NODE解析生成(mac地址)
+     * Sets device group list.
+     *
+     * @param deviceGroupList the device group list
      */
-    private String symbol;
+    public void setDeviceGroupList(List<DeviceGroup> deviceGroupList) {
+        this.deviceGroupList = deviceGroupList;
+    }
 
-    /**
-     * 设备所在的PI设备 PI的mac地址
-     */
-    private String PIID;
+    public String getFactory() {
+        return factory;
+    }
 
-    /**
-     * 设备的名称
-     */
-    private String name;
-
-    /**
-     * 设备的别名,在云端设置
-     */
-    private String aliases;
-
-    /**
-     * 设备的描述信息
-     */
-    private String description;
-
-    /**
-     * 设备的类型
-     */
-    private String deviceType;
-
-    /**
-     * 设备的MAC地址
-     */
-    private String macAddress;
-
-    /**
-     * 设备状态
-     */
-    private DeviceStateEnum deviceState;
-
-    /**
-     * 设备的状况, 开启/关闭
-     */
-    private DeviceSituationEnum deviceSituation;
-
-    /**
-     * 设备的注册时间
-     */
-    private Date registeTime;
+    public void setFactory(String factory) {
+        this.factory = factory;
+    }
 
     /**
      * Gets symbol.
@@ -190,24 +232,6 @@ public class DeviceDto {
     }
 
     /**
-     * Gets mac address.
-     *
-     * @return the mac address
-     */
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    /**
-     * Sets mac address.
-     *
-     * @param macAddress the mac address
-     */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    /**
      * Gets device state.
      *
      * @return the device state
@@ -252,6 +276,14 @@ public class DeviceDto {
         return registeTime;
     }
 
+    /**
+     * Sets registe time.
+     *
+     * @param registeTime the registe time
+     */
+    public void setRegisteTime(Date registeTime) {
+        this.registeTime = registeTime;
+    }
 
     /**
      * Gets parent device type.
@@ -272,12 +304,25 @@ public class DeviceDto {
     }
 
     /**
-     * Sets registe time.
+     * Gets mac address.
      *
-     * @param registeTime the registe time
+     * @return the mac address
      */
-    public void setRegisteTime(Date registeTime) {
-        this.registeTime = registeTime;
+    public String getMacAddress() {
+        if (StringUtils.isEmpty(this.symbol)) {
+            return "";
+        } else {
+            return SymbolUtil.parseMacAddress(this.symbol);
+        }
+    }
+
+    /**
+     * Gets index.
+     *
+     * @return the index
+     */
+    public int getIndex() {
+        return SymbolUtil.parseIndex(this.symbol);
     }
 
     @Override
@@ -289,7 +334,6 @@ public class DeviceDto {
                 ", aliases='" + aliases + '\'' +
                 ", description='" + description + '\'' +
                 ", deviceType='" + deviceType + '\'' +
-                ", macAddress='" + macAddress + '\'' +
                 ", deviceState=" + deviceState +
                 ", deviceSituation=" + deviceSituation +
                 ", registeTime=" + registeTime +

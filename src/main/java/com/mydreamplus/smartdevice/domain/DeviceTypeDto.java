@@ -44,6 +44,9 @@ public class DeviceTypeDto {
      */
     private List<Long> deviceFunctions;
 
+    /**
+     * 父亲设备类型ID
+     */
     private Long parentDeviceType;
 
 

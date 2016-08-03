@@ -9,7 +9,7 @@ package com.mydreamplus.smartdevice.domain;
  */
 public enum DeviceStateEnum {
     /**
-     * 在线、离线、重置、删除
+     * 在线、离线、重置、删除、未注册
      */
-    ONLINE, OFFLINE, RESET, DELETED
+    ONLINE, OFFLINE, RESET, DELETED, UNREGISTERED
 }

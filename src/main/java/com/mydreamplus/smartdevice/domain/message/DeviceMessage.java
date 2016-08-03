@@ -11,56 +11,56 @@ import java.util.Map;
  */
 public class DeviceMessage extends BaseDeviceMessage {
 
-    /**
-     * 设备的短地址
-     */
-    private int shortAddress;
-
-    private String symbol;
+    private String macAddress;
 
     private Map<String, Object> data;
 
+    /**
+     * 服务器时间
+     */
+    private long serverTime;
+
+    public long getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(long serverTime) {
+        this.serverTime = serverTime;
+    }
+
+    /**
+     * Gets data.
+     *
+     * @return the data
+     */
     public Map<String, Object> getData() {
         return data;
     }
 
+    /**
+     * Sets data.
+     *
+     * @param data the data
+     */
     public void setData(Map<String, Object> data) {
         this.data = data;
     }
 
     /**
-     * Gets short address.
+     * Gets mac address.
      *
-     * @return the short address
+     * @return the mac address
      */
-    public int getShortAddress() {
-        return shortAddress;
+    public String getMacAddress() {
+        return macAddress;
     }
 
     /**
-     * Sets short address.
+     * Sets mac address.
      *
-     * @param shortAddress the short address
+     * @param macAddress the mac address
      */
-    public void setShortAddress(int shortAddress) {
-        this.shortAddress = shortAddress;
-    }
-
-    /**
-     * Gets symbol.
-     *
-     * @return the symbol
-     */
-    public String getSymbol() {
-        return symbol;
-    }
-
-    /**
-     * Sets symbol.
-     *
-     * @param symbol the symbol
-     */
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 }

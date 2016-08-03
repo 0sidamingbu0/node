@@ -8,4 +8,25 @@ package com.mydreamplus.smartdevice.domain;
  * To change this template use File | Settings | File Templates.
  */
 public class PageDto {
+
+    private int page;
+
+    private int size;
+
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
 }

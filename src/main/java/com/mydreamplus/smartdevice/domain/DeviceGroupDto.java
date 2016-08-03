@@ -14,6 +14,19 @@ public class DeviceGroupDto {
     private String description;
 
     /**
+     * 设备的mac地址
+     */
+    private String macAddress;
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    /**
      * Gets name.
      *
      * @return the name

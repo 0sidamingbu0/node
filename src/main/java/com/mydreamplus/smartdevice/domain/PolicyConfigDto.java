@@ -1,5 +1,8 @@
 package com.mydreamplus.smartdevice.domain;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: liji
@@ -9,47 +12,57 @@ package com.mydreamplus.smartdevice.domain;
  */
 public class PolicyConfigDto {
 
-    public PolicyConfigDto(String masterDevice, String masterEvent, String slaveDevice, String slaveFunction) {
-        this.master = new Master(masterDevice, masterEvent);
-        this.slave = new Slave(slaveDevice, slaveFunction);
+
+    /**
+     * 主控设备触发事件
+     * Key:设备的symbol , value ,事件name
+     */
+    private Map<String, String> masterDeviceMap;
+
+    /**
+     * 条件和执行的操作集合
+     * 满足某些条件以后干某些事情
+     */
+    private List<ConditionAndSlaveDto> conditionAndSlaveDtos;
+
+
+
+    public List<ConditionAndSlaveDto> getConditionAndSlaveDtos() {
+        return conditionAndSlaveDtos;
     }
 
-    private Master master;
-    private Slave slave;
-
-    public Master getMaster() {
-        return master;
+    public void setConditionAndSlaveDtos(List<ConditionAndSlaveDto> conditionAndSlaveDtos) {
+        this.conditionAndSlaveDtos = conditionAndSlaveDtos;
     }
 
-    public void setMaster(Master master) {
-        this.master = master;
+    //    /**
+//     * 策略之间有控制关系, key 策略控制 value  策略
+//     */
+//    private Map<Long, Long> policyMap;
+
+    public Map<String, String> getMasterDeviceMap() {
+        return masterDeviceMap;
     }
 
-    public Slave getSlave() {
-        return slave;
+    public void setMasterDeviceMap(Map<String, String> masterDeviceMap) {
+        this.masterDeviceMap = masterDeviceMap;
     }
 
-    public void setSlave(Slave slave) {
-        this.slave = slave;
-    }
 
-    class Master{
-        public Master(String deviceSymbol, String eventName) {
-            this.deviceSymbol = deviceSymbol;
-            this.eventName = eventName;
-        }
+//    public Map<Long, Long> getPolicyMap() {
+//        return policyMap;
+//    }
+//
+//    public void setPolicyMap(Map<Long, Long> policyMap) {
+//        this.policyMap = policyMap;
+//    }
 
-        String deviceSymbol;
-        String eventName;
-    }
 
-    class Slave{
-        public Slave(String deviceSymbol, String functionName) {
-            this.deviceSymbol = deviceSymbol;
-            this.functionName = functionName;
-        }
-
-        String deviceSymbol;
-        String functionName;
+    @Override
+    public String toString() {
+        return "PolicyConfigDto{" +
+                "conditionAndSlaveDtos=" + conditionAndSlaveDtos +
+                ", masterDeviceMap=" + masterDeviceMap +
+                '}';
     }
 }

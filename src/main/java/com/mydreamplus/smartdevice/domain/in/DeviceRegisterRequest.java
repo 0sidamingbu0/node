@@ -11,17 +11,12 @@ import java.util.List;
  * Time: 下午8:01
  * To change this template use File | Settings | File Templates.
  */
-public class DeviceRegisterRequest extends BaseRequest {
+public class DeviceRegisterRequest extends BaseDeviceRequest {
 
     /**
      * 拆分前的设备类型
      */
     private String parentDeviceType;
-
-    /**
-     * 设备所在的PI设备, PI的MAC地址
-     */
-    private String PIID;
 
     /**
      * 设备的MAC地址
@@ -38,42 +33,74 @@ public class DeviceRegisterRequest extends BaseRequest {
      */
     private List<DeviceRegisterDto> deviceRegisters;
 
+    /**
+     * Gets parent device type.
+     *
+     * @return the parent device type
+     */
     public String getParentDeviceType() {
         return parentDeviceType;
     }
 
+    /**
+     * Sets parent device type.
+     *
+     * @param parentDeviceType the parent device type
+     */
     public void setParentDeviceType(String parentDeviceType) {
         this.parentDeviceType = parentDeviceType;
     }
 
-    public String getPIID() {
-        return PIID;
-    }
-
-    public void setPIID(String PIID) {
-        this.PIID = PIID;
-    }
-
+    /**
+     * Gets mac address.
+     *
+     * @return the mac address
+     */
     public String getMacAddress() {
         return macAddress;
     }
 
+    /**
+     * Sets mac address.
+     *
+     * @param macAddress the mac address
+     */
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
     }
 
+    /**
+     * Gets short address.
+     *
+     * @return the short address
+     */
     public int getShortAddress() {
         return shortAddress;
     }
 
+    /**
+     * Sets short address.
+     *
+     * @param shortAddress the short address
+     */
     public void setShortAddress(int shortAddress) {
         this.shortAddress = shortAddress;
     }
 
+    /**
+     * Gets device registers.
+     *
+     * @return the device registers
+     */
     public List<DeviceRegisterDto> getDeviceRegisters() {
         return deviceRegisters;
     }
 
+    /**
+     * Sets device registers.
+     *
+     * @param deviceRegisters the device registers
+     */
     public void setDeviceRegisters(List<DeviceRegisterDto> deviceRegisters) {
         this.deviceRegisters = deviceRegisters;
     }

@@ -4,7 +4,6 @@ import com.mydreamplus.smartdevice.domain.DeviceFunctionTypeEnum;
 import com.mydreamplus.smartdevice.domain.DeviceSourceEnum;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,7 +14,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-public class DeviceType extends BaseEntity{
+public class DeviceType extends BaseEntity {
 
     /**
      * 设备类型名称
@@ -41,6 +40,7 @@ public class DeviceType extends BaseEntity{
      */
     @Enumerated(EnumType.STRING)
     private DeviceFunctionTypeEnum deviceFunctionType;
+
     /**
      * 设备事件
      */
@@ -53,6 +53,31 @@ public class DeviceType extends BaseEntity{
      */
     @ManyToMany(mappedBy = "deviceTypes", cascade = CascadeType.ALL)
     private List<DeviceFunction> deviceFunctions;
+
+
+    /**
+     * 父设备类型
+     */
+    @ManyToOne
+    private ParentDeviceType parentDeviceType;
+
+    /**
+     * Gets parent device type.
+     *
+     * @return the parent device type
+     */
+    public ParentDeviceType getParentDeviceType() {
+        return parentDeviceType;
+    }
+
+    /**
+     * Sets parent device type.
+     *
+     * @param parentDeviceType the parent device type
+     */
+    public void setParentDeviceType(ParentDeviceType parentDeviceType) {
+        this.parentDeviceType = parentDeviceType;
+    }
 
     /**
      * Gets description.

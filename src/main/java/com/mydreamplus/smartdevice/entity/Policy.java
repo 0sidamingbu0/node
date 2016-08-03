@@ -1,8 +1,6 @@
 package com.mydreamplus.smartdevice.entity;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,64 +16,127 @@ public class Policy extends BaseEntity {
     /**
      * 场景名称
      */
-    @Column(name = "policy_name", unique = true)
+    @Column(name = "policy_name")
     private String name;
     /**
      * 场景的描述
      */
     @Column(name = "policy_description")
     private String description;
+
     /**
-     * 关联的云端场景策略
+     * 默认的场景策略
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "root_policy_id")
-    private RootPolicy rootPolicy;
+    @Column
+    private boolean defaultPolicy;
+
     /**
-     * 关联了云端策略,策略下发到终端上,
-     * 终端根据该属性判断是否要提交到云端执行操作。
+     * 主控设备的触发事件
+     * symbol + eventName
      */
-    private boolean hasRootPolicy;
+    @Column
+    private String masterEvent;
+
+    @Column
+    private Boolean deleted = false;
     /**
-     * 主控设备触发事件
-     * Key:设备的symbol ,value:设备上的event
+     * 策略的配置 存储为JSON数据格式
      */
-    @ElementCollection
-    @MapKeyColumn(name = "device")
-    @Column(name = "event")
-    @CollectionTable(name = "master_device_map", joinColumns = @JoinColumn(name = "policy_id"))
-    private Map<String, String> masterDeviceMap;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column
+    private String policyConfig;
     /**
-     * 被控设备事件方法
-     * Key:设备的symbol ,value:设备上的function
-     */
-    @ElementCollection
-    @MapKeyColumn(name = "device")
-    @Column(name = "function")
-    @CollectionTable(name = "slave_device_map", joinColumns = @JoinColumn(name = "policy_id"))
-    private Map<String, String> slaveDeviceMap;
-    /**
-     * 关联的PI
-     */
-    @ManyToMany(mappedBy = "policies")
-    private List<PI> pis;
+     * Sets pis.
+     *
+     * @param pis the pis
+     *//*
+    public void setPis(List<PI> pis) {
+        this.pis = pis;
+    }*/
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "pi_id")
+    private PI pi;
+
+
+    public String getMasterEvent() {
+        return masterEvent;
+    }
+
+    public void setMasterEvent(String masterEvent) {
+        this.masterEvent = masterEvent;
+    }
+
+    public boolean isDefaultPolicy() {
+        return defaultPolicy;
+    }
 
     /**
      * Gets pis.
      *
      * @return the pis
-     */
+     *//*
     public List<PI> getPis() {
         return pis;
     }
 
+    */
+    public void setDefaultPolicy(boolean defaultPolicy) {
+        this.defaultPolicy = defaultPolicy;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+
     /**
-     * Sets pis.
-     *
-     * @param pis the pis
+     * 关联的云端场景策略
      */
-    public void setPis(List<PI> pis) {
-        this.pis = pis;
+    /*@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "root_policy_id")
+    private RootPolicy rootPolicy;
+    *//**
+     * 关联了云端策略,策略下发到终端上,
+     * 终端根据该属性判断是否要提交到云端执行操作。
+     *//*
+    private boolean hasRootPolicy;
+    *//**
+     * 主控设备触发事件
+     * Key:设备的symbol ,value:设备上的event
+     *//*
+    @ElementCollection
+    @MapKeyColumn(name = "device")
+    @Column(name = "event")
+    @CollectionTable(name = "master_device_map", joinColumns = @JoinColumn(name = "policy_id"))
+    private Map<String, String> masterDeviceMap;
+    *//**
+     * 被控设备事件方法
+     * Key:设备的symbol ,value:设备上的function
+     *//*
+    @ElementCollection
+    @MapKeyColumn(name = "device")
+    @Column(name = "function")
+    @CollectionTable(name = "slave_device_map", joinColumns = @JoinColumn(name = "policy_id"))
+    private Map<String, String> slaveDeviceMap;*/
+
+    /**
+     * 关联的PI
+     */
+    /*@ManyToMany(mappedBy = "policies")
+    private List<PI> pis;
+
+    */
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public PI getPi() {
+        return pi;
+    }
+
+    public void setPi(PI pi) {
+        this.pi = pi;
     }
 
     /**
@@ -114,75 +175,11 @@ public class Policy extends BaseEntity {
         this.description = description;
     }
 
-    /**
-     * Gets root policy.
-     *
-     * @return the root policy
-     */
-    public RootPolicy getRootPolicy() {
-        return rootPolicy;
+    public String getPolicyConfig() {
+        return policyConfig;
     }
 
-    /**
-     * Sets root policy.
-     *
-     * @param rootPolicy the root policy
-     */
-    public void setRootPolicy(RootPolicy rootPolicy) {
-        this.rootPolicy = rootPolicy;
-    }
-
-    /**
-     * Is has root policy boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isHasRootPolicy() {
-        return hasRootPolicy;
-    }
-
-    /**
-     * Sets has root policy.
-     *
-     * @param hasRootPolicy the has root policy
-     */
-    public void setHasRootPolicy(boolean hasRootPolicy) {
-        this.hasRootPolicy = hasRootPolicy;
-    }
-
-    /**
-     * Gets master device map.
-     *
-     * @return the master device map
-     */
-    public Map<String, String> getMasterDeviceMap() {
-        return masterDeviceMap;
-    }
-
-    /**
-     * Sets master device map.
-     *
-     * @param masterDeviceMap the master device map
-     */
-    public void setMasterDeviceMap(Map<String, String> masterDeviceMap) {
-        this.masterDeviceMap = masterDeviceMap;
-    }
-
-    /**
-     * Gets slave device map.
-     *
-     * @return the slave device map
-     */
-    public Map<String, String> getSlaveDeviceMap() {
-        return slaveDeviceMap;
-    }
-
-    /**
-     * Sets slave device map.
-     *
-     * @param slaveDeviceMap the slave device map
-     */
-    public void setSlaveDeviceMap(Map<String, String> slaveDeviceMap) {
-        this.slaveDeviceMap = slaveDeviceMap;
+    public void setPolicyConfig(String policyConfig) {
+        this.policyConfig = policyConfig;
     }
 }

@@ -1,14 +1,14 @@
 package com.mydreamplus.smartdevice.service;
 
-import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
-import com.mydreamplus.smartdevice.dao.jpa.DeviceTypeRepository;
-import com.mydreamplus.smartdevice.dao.jpa.PIRespository;
+import com.mydreamplus.smartdevice.dao.jpa.*;
 import com.mydreamplus.smartdevice.domain.DeviceDto;
 import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.domain.PIDeviceDto;
+import com.mydreamplus.smartdevice.domain.PingDto;
 import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.DeviceType;
 import com.mydreamplus.smartdevice.entity.PI;
+import com.mydreamplus.smartdevice.entity.SensorData;
 import com.mydreamplus.smartdevice.exception.DeviceNotFoundException;
 import com.mydreamplus.smartdevice.exception.DeviceTypeNotFoundException;
 import com.mydreamplus.smartdevice.exception.PINotFoundException;
@@ -17,8 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,13 +42,15 @@ public class DeviceService {
     private DeviceTypeRepository deviceTypeRepository;
     @Autowired
     private DeviceRestService deviceRestService;
+    @Autowired
+    private SensorDataRepository sensorDataRepository;
 
     /**
      * Register.
      *
      * @param deviceDto the device dto
      */
-    public void registerDevice(DeviceDto deviceDto, String piMacAddr) {
+    public void registerDevice(DeviceDto deviceDto) {
         Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
         // 设备第一次注册
         if (device == null) {
@@ -57,36 +61,49 @@ public class DeviceService {
                 throw new DeviceTypeNotFoundException(String.format("没有找到该设备类型:%s, 注册失败!", deviceDto.getDeviceType()));
             }
             device.setDeviceType(deviceType);
-            PI pi = piRespository.findByMacAddress(piMacAddr);
+            PI pi = piRespository.findByMacAddress(deviceDto.getPIID());
             if (pi == null) {
                 throw new PINotFoundException("没有绑定PI,注册失败!");
             }
             pi.getZbDeviceList().add(device);
+            device.setName(deviceType.getName());
+            device.setAliases(deviceType.getAliases());
             device.setPi(pi);
+            device.setMacAddress(deviceDto.getMacAddress());
             device.setCreateTime(new Date());
+            device.setUpdateTime(new Date());
+            device.setDeviceState(DeviceStateEnum.UNREGISTERED);
+            device.setFactory(deviceType.getDeviceSource().toString());
+        } else {
+            device.setUpdateTime(new Date());
+            // 已经注册过,更新设备上线状态
+            device.setDeviceState(DeviceStateEnum.ONLINE);
         }
         device.setRegisteTime(new Date());
-        device.setDeviceState(DeviceStateEnum.ONLINE);
         log.info(String.format("智能设备:%s | :%s,注册成功!", deviceDto.getDeviceType(), deviceDto.getSymbol()));
         deviceRepository.save(device);
     }
 
     /**
      * Register pi.
+     * 保存PI信息
      *
      * @param piDeviceDto the pi
      */
-    public void registerPI(PIDeviceDto piDeviceDto) {
-        PI pi = piRespository.findByMacAddress(piDeviceDto.getMacAddress());
+    public void registerPi(PIDeviceDto piDeviceDto) {
+        PI pi = piRespository.findByMacAddress(piDeviceDto.getPiMacAddress());
         // PI第一次注册
         if (pi == null) {
             pi = new PI();
-            pi.setMacAddress(piDeviceDto.getMacAddress());
+            pi.setMacAddress(piDeviceDto.getPiMacAddress());
             pi.setCreateTime(new Date());
         }
+        // 更新PI注册时间
         pi.setRegisterTime(new Date());
-        log.info(String.format("MAC地址: %s PI注册成功!", pi.getMacAddress()));
+        pi.setUpdateTime(new Date());
+        log.info(String.format("MAC地址: %s, PI注册成功!", pi.getMacAddress()));
         piRespository.save(pi);
+        this.deviceRestService.registerPiFeedback(piDeviceDto.getPiMacAddress());
     }
 
 
@@ -95,24 +112,103 @@ public class DeviceService {
      *
      * @param deviceDto the device dto
      */
-    public void updateDeviceSituation(DeviceDto deviceDto) {
+    public void updateDeviceSituationAndSetOnline(DeviceDto deviceDto) {
         Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
         if (device == null) {
-            throw new DeviceNotFoundException(String.format("没有找到设备,symbol:%s ", deviceDto.getSymbol()));
+            throw new DeviceNotFoundException(String.format("更新设备状态失败,没有找到设备,symbol:%s ", deviceDto.getSymbol()));
         }
         device.setDeviceSituation(deviceDto.getDeviceSituation());
+        device.setDeviceState(DeviceStateEnum.ONLINE);
+        device.setUpdateTime(new Date());
         deviceRepository.save(device);
     }
 
     /**
      * Reset.
      *
-     * @param deviceDto the device dto
+     * @param macAddress the device dto
      */
-    public void reset(DeviceDto deviceDto) {
-        Device device = deviceRepository.findBySymbol(deviceDto.getSymbol());
-        device.setDeviceState(DeviceStateEnum.RESET);
-        deviceRepository.save(device);
+    public void reset(String macAddress) {
+        List<Device> devices = deviceRepository.findAllByMacAddress(macAddress);
+        devices.forEach(device -> {
+            device.setDeviceState(DeviceStateEnum.UNREGISTERED);
+            device.setUpdateTime(new Date());
+            deviceRepository.save(device);
+        });
+    }
+
+
+    /**
+     * Remove device.
+     *
+     * @param piMacAddress     the pi mac address
+     * @param deviceMacAddress the device mac address
+     */
+    public void removeDevice(String piMacAddress, String deviceMacAddress) {
+        deviceRestService.removeDevice(piMacAddress, deviceMacAddress);
+    }
+
+    /**
+     * 更新设备删除状态
+     *
+     * @param deviceMacAddress the device mac address
+     */
+    public void callbackRemoveDevice(String deviceMacAddress) {
+        deviceRepository.findAllByMacAddress(deviceMacAddress).forEach(device -> {
+            device.setDeviceState(DeviceStateEnum.UNREGISTERED);
+            device.setUpdateTime(new Date());
+            deviceRepository.save(device);
+        });
+    }
+
+
+    /**
+     * 允许设备入网
+     *
+     * @param piMacAddress     the pi mac address
+     * @param deviceMacAddress the device mac address
+     */
+    public void allowDeviceJoinIn(String piMacAddress, String deviceMacAddress) {
+        List<Device> devices = this.deviceRepository.findAllByMacAddress(deviceMacAddress);
+        devices.forEach(device -> {
+            device.setDeviceState(DeviceStateEnum.ONLINE);
+            device.setRegisteTime(new Date());
+            device.setUpdateTime(new Date());
+            this.deviceRepository.save(device);
+        });
+        deviceRestService.registerFeedback(piMacAddress, deviceMacAddress);
+    }
+
+    /**
+     * Permit join in.
+     *
+     * @param piMacAddress the pi mac address
+     * @param minute       the minute
+     */
+    public void permitJoinIn(String piMacAddress, int minute) {
+        deviceRestService.permitByMinute(piMacAddress, minute);
+    }
+
+    /**
+     * Save ping.
+     *
+     * @param macAddress the mac address
+     * @param pingDto    the ping dto
+     */
+    public void savePing(String macAddress, PingDto pingDto) {
+        PingRepositoryImpl.setPing(macAddress, pingDto);
+    }
+
+
+    /**
+     * Save sensor data.
+     *
+     * @param sensorData the sensor data
+     */
+    @Transactional
+    public void saveSensorData(SensorData sensorData) {
+        sensorData.setUpdateTime(new Date());
+        this.sensorDataRepository.save(sensorData);
     }
 
 }

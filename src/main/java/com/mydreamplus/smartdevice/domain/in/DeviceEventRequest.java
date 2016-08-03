@@ -12,7 +12,7 @@ public class DeviceEventRequest extends BaseDeviceRequest {
     /**
      * 资源序号
      */
-    private String indaddressex;
+    private String symbol;
 
     /**
      * 事件名称
@@ -20,21 +20,34 @@ public class DeviceEventRequest extends BaseDeviceRequest {
     private String eventName;
 
     /**
-     * Gets indaddressex.
-     *
-     * @return the indaddressex
+     * 事件发生时间
      */
-    public String getIndaddressex() {
-        return indaddressex;
+    private long eventTime;
+
+    public long getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(long eventTime) {
+        this.eventTime = eventTime;
     }
 
     /**
-     * Sets indaddressex.
+     * Gets symbol.
      *
-     * @param indaddressex the indaddressex
+     * @return the symbol
      */
-    public void setIndaddressex(String indaddressex) {
-        this.indaddressex = indaddressex;
+    public String getSymbol() {
+        return symbol;
+    }
+
+    /**
+     * Sets symbol.
+     *
+     * @param symbol the symbol
+     */
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     /**

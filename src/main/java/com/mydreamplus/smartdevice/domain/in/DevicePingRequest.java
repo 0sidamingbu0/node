@@ -1,7 +1,5 @@
 package com.mydreamplus.smartdevice.domain.in;
 
-import java.util.Date;
-
 /**
  * Created with IntelliJ IDEA.
  * User: liji
@@ -14,19 +12,42 @@ public class DevicePingRequest extends BaseDeviceRequest {
     /**
      * 设备的PING值
      */
-    private int ping;
+    private Long ping;
 
+    private String macAddress;
     /**
+     * x
      * ping的时间
      */
-    private Date pingTime;
+    private Long pingTime;
+
+    /**
+     * 服务器Ping时间
+     */
+    private Long serverTimeStamp;
+
+    public Long getServerTimeStamp() {
+        return serverTimeStamp;
+    }
+
+    public void setServerTimeStamp(Long serverTimeStamp) {
+        this.serverTimeStamp = serverTimeStamp;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
 
     /**
      * Gets ping.
      *
      * @return the ping
      */
-    public int getPing() {
+    public Long getPing() {
         return ping;
     }
 
@@ -35,7 +56,7 @@ public class DevicePingRequest extends BaseDeviceRequest {
      *
      * @param ping the ping
      */
-    public void setPing(int ping) {
+    public void setPing(Long ping) {
         this.ping = ping;
     }
 
@@ -44,7 +65,7 @@ public class DevicePingRequest extends BaseDeviceRequest {
      *
      * @return the ping time
      */
-    public Date getPingTime() {
+    public Long getPingTime() {
         return pingTime;
     }
 
@@ -53,7 +74,7 @@ public class DevicePingRequest extends BaseDeviceRequest {
      *
      * @param pingTime the ping time
      */
-    public void setPingTime(Date pingTime) {
+    public void setPingTime(Long pingTime) {
         this.pingTime = pingTime;
     }
 }

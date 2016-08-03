@@ -22,4 +22,14 @@ public class Constant {
      */
     public static final String PARENT_DEVICE_TYPE_N_SWITCHLIGHTPANEL = "N_SwitchLightPanel";
 
+    public static final String PARENT_DEVICE_TYPE_N_SWITCHPANEL = "PowerPanel";
+
+    public static final boolean AUTO_JOIN_IN = true;
+
+
+    /**
+     * 事件触发超时时间
+     */
+    public static final long EVENT_TIME_OUT = 1000 * 3;
+
 }

@@ -1,12 +1,17 @@
 package com.mydreamplus.smartdevice.dao.jpa;
 
+import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.entity.Device;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,33 +22,73 @@ import java.util.List;
  */
 public class DeviceRepositoryImpl {
 
+
+    private final Logger log = LoggerFactory.getLogger(DeviceRepositoryImpl.class);
+
     @PersistenceContext
     private EntityManager em;
 
 
-    public List<Device> search(Device device){
+    /**
+     * Search page.
+     *
+     * @param deviceState the device state
+     * @param pageable    the pageable
+     * @return the page
+     */
+    public Page<Device> search(DeviceStateEnum deviceState, Pageable pageable) {
+
         String dataSql = "select t from Device t where 1 = 1";
         String countSql = "select count(t) from Device t where 1 = 1";
-        if(null != device && !StringUtils.isEmpty(device.getAliases())) {
-            dataSql += " and t.aliases = ?1";
-            countSql += " and t.aliases = ?1";
+        if (null != deviceState) {
+            dataSql += " and t.deviceState = ?1";
+            countSql += " and t.deviceState = ?1";
         }
-        if(null != device && !StringUtils.isEmpty(device.getDeviceState())) {
-            dataSql += " and t.deviceState = ?2";
-            countSql += " and t.deviceState = ?2";
-        }
-        Query dataQuery = em.createQuery(dataSql);
+        dataSql += " order by updateTime desc";
+        Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
-        if(null != device && !StringUtils.isEmpty(device.getAliases())) {
-            dataQuery.setParameter(1, device.getAliases());
-            countQuery.setParameter(1, device.getAliases());
+
+        if (null != deviceState) {
+            dataQuery.setParameter(1, deviceState);
+            countQuery.setParameter(1, deviceState);
         }
-        if(null != device && !StringUtils.isEmpty(device.getDeviceState())) {
-            dataQuery.setParameter(2, device.getDeviceState());
-            countQuery.setParameter(2, device.getDeviceState());
+        return new PageImpl<>(dataQuery.getResultList(), pageable, (long)countQuery.getSingleResult());
+    }
+
+
+    public Page<Device> search(Device device, Pageable pageable) {
+
+        String dataSql = "select t from Device t where 1 = 1";
+        String countSql = "select count(t) from Device t where 1 = 1";
+        if(device != null && !StringUtils.isEmpty(device.getName())){
+            dataSql += " and t.name = ?1";
+            countSql += " and t.name = ?1";
         }
-        long totalSize = (long) countQuery.getSingleResult();
-        List<Device> data = dataQuery.getResultList();
-        return data;
+        if(device != null && !StringUtils.isEmpty(device.getAliases())){
+            dataSql += " and t.aliases = ?2";
+            countSql += " and t.aliases = ?2";
+        }
+        if(device != null && !StringUtils.isEmpty(device.getDeviceState())){
+            dataSql += " and t.deviceState = ?3";
+            countSql += " and t.deviceState = ?3";
+        }
+        dataSql += " order by updateTime desc";
+        Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
+        Query countQuery = em.createQuery(countSql);
+
+        if(device != null && !StringUtils.isEmpty(device.getName())){
+            dataQuery.setParameter(1, device.getName());
+            countQuery.setParameter(1, device.getName());
+        }
+        if(device != null && !StringUtils.isEmpty(device.getAliases())){
+            dataQuery.setParameter(2, device.getAliases());
+            countQuery.setParameter(2, device.getAliases());
+        }
+        if(device != null && !StringUtils.isEmpty(device.getDeviceState())){
+            dataQuery.setParameter(3, device.getDeviceState());
+            countQuery.setParameter(3, device.getDeviceState());
+        }
+        log.info("总数:" + countQuery.getSingleResult());
+        return new PageImpl<>(dataQuery.getResultList(), pageable, (long)countQuery.getSingleResult());
     }
 }

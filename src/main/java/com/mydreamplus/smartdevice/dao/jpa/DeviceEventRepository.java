@@ -2,6 +2,7 @@ package com.mydreamplus.smartdevice.dao.jpa;
 
 import com.mydreamplus.smartdevice.entity.DeviceEvent;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,5 +12,5 @@ import org.springframework.data.repository.CrudRepository;
  * To change this template use File | Settings | File Templates.
  * 设备事件存储
  */
-public interface DeviceEventRepository extends CrudRepository<DeviceEvent, Long> {
+public interface DeviceEventRepository extends PagingAndSortingRepository<DeviceEvent, Long> {
 }

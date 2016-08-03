@@ -38,7 +38,7 @@ public class DeviceEventAspect {
     @Before("execution(public * com.mydreamplus.smartdevice.service.DeviceService.*(..)) &&" + "args(deviceDto,..)")
     public void fillCreateInformation(DeviceDto deviceDto) throws Throwable {
 
-        log.info(":::::AOP Before deviceService call:::::" + deviceDto);
+//        log.info(":::::AOP Before deviceService call:::::" + deviceDto);
         if (deviceDto != null) {
             EventLogDto eventLogDto = new EventLogDto();
             eventLogDto.setCreateAt(new Date());
