@@ -10,20 +10,20 @@ package com.mydreamplus.smartdevice.config;
  */
 public class Constant {
 
-    /**
-     * PING周期, 1分钟
-     */
-    public static final long PING_INTERVAL = 1000 * 1 * 60;
-
-    public static final String DEFAULT_CREATE_USER = "system";
 
     /**
      * n路灯开关面板
      */
     public static final String PARENT_DEVICE_TYPE_N_SWITCHLIGHTPANEL = "N_SwitchLightPanel";
 
+    /**
+     * The constant PARENT_DEVICE_TYPE_N_SWITCHPANEL.
+     */
     public static final String PARENT_DEVICE_TYPE_N_SWITCHPANEL = "PowerPanel";
 
+    /**
+     * The constant AUTO_JOIN_IN.
+     */
     public static final boolean AUTO_JOIN_IN = true;
 
 

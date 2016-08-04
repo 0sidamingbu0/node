@@ -26,8 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,8 +41,16 @@ import java.util.List;
 @Api(value = "设备管理API", description = "设备管理API,提供设备管理接口,web页面调用")
 public class DeviceManagerController extends AbstractRestHandler {
 
-    private final Logger log = LoggerFactory.getLogger(DeviceManagerController.class);
+    /**
+     * 设备入网时间缓存
+     */
+    private static final Map<String, Date> PERMIT_TIME_CACHE = new HashMap<>(1000);
+    /**
+     * PING命令次数
+     */
+    private static final int PING_TIMES = 10;
 
+    private final Logger log = LoggerFactory.getLogger(DeviceManagerController.class);
     @Autowired
     private DeviceManager deviceManager;
 
@@ -500,6 +507,8 @@ public class DeviceManagerController extends AbstractRestHandler {
             BeanUtils.copyProperties(device, deviceInfoDto, "deviceType");
             deviceInfoDto.setDeviceType(device.getDeviceType().getAliases());
             deviceInfoDto.setSensorDatas(deviceManager.findSensorDatasBySymbol(device.getSymbol()));
+            deviceInfoDto.setPIID(device.getPi().getMacAddress());
+            deviceInfoDto.setLinkQuality(LinkQualityRepositoryImpl.getLinkQuality(device.getMacAddress()));
             response.setData(deviceInfoDto);
         }
         return response;
@@ -522,6 +531,11 @@ public class DeviceManagerController extends AbstractRestHandler {
         if (minute > 60) {
             throw new DataInvalidException("设备入网时间不能超过1个小时");
         }
+        // 倒计时还未结束
+        if (PERMIT_TIME_CACHE.get(piMacAddress) != null && PERMIT_TIME_CACHE.get(piMacAddress).getTime() > System.currentTimeMillis()) {
+            throw new DataInvalidException("倒计时还未结束,结束时间:" + PERMIT_TIME_CACHE.get(piMacAddress));
+        }
+        PERMIT_TIME_CACHE.put(piMacAddress, new Date(System.currentTimeMillis() + 1000 * 60 * minute));
         this.deviceService.permitJoinIn(piMacAddress, minute);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
@@ -548,6 +562,9 @@ public class DeviceManagerController extends AbstractRestHandler {
             piDto.setDescription(pi.getDescription());
             piDto.setMacAddress(pi.getMacAddress());
             piDto.setRegisterTime(pi.getRegisterTime());
+            piDto.setCreateTime(pi.getCreateTime());
+            piDto.setIpAddress(pi.getIpAddress());
+            piDto.setPermitEndTime(PERMIT_TIME_CACHE.get(pi.getMacAddress()));
             list.add(piDto);
         });
         pageResponse.setData(list);
@@ -589,6 +606,30 @@ public class DeviceManagerController extends AbstractRestHandler {
     public BaseResponse removeDevice(@RequestBody DeviceMacAddrRequest request) {
         log.info(String.format(":::::删除设备 %s!", request.getMacAddress()));
         this.deviceService.removeDevice(request.getPiMacAddress(), request.getMacAddress());
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+    /**
+     * Ping device base response.
+     *
+     * @param symbol the symbol
+     * @return the base response
+     */
+    @RequestMapping(value = "/ping/{symbol}",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "PING设备,获取网络延迟")
+    public BaseResponse pingDevice(@PathVariable String symbol) throws InterruptedException {
+        log.info(":::::PING设备{}!", symbol);
+        Device device = deviceManager.getDevice(symbol);
+        if (device == null) {
+            throw new DataInvalidException("没有找到设备!" + symbol);
+        }
+        for (int i = 0; i < PING_TIMES; i++) {
+            Thread.sleep(500);
+            this.restService.getPing(device.getPi().getMacAddress(), device.getMacAddress());
+        }
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 

@@ -41,21 +41,29 @@ public class DeviceRepositoryImpl {
         String dataSql = "select t from Device t where 1 = 1";
         String countSql = "select count(t) from Device t where 1 = 1";
         if (null != deviceState) {
-            dataSql += " and t.deviceState = ?1";
-            countSql += " and t.deviceState = ?1";
+            if(deviceState == DeviceStateEnum.REGISTERED){
+                dataSql += " and t.deviceState != 'UNREGISTERED'";
+                countSql += " and t.deviceState != 'UNREGISTERED'";
+            }else{
+                dataSql += " and t.deviceState = ?3";
+                countSql += " and t.deviceState = ?3";
+            }
         }
         dataSql += " order by updateTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
         if (null != deviceState) {
-            dataQuery.setParameter(1, deviceState);
-            countQuery.setParameter(1, deviceState);
+            if(deviceState != DeviceStateEnum.REGISTERED){
+                countQuery.setParameter(3, deviceState);
+                dataQuery.setParameter(3, deviceState);
+            }
         }
         return new PageImpl<>(dataQuery.getResultList(), pageable, (long)countQuery.getSingleResult());
     }
 
 
+    @Deprecated
     public Page<Device> search(Device device, Pageable pageable) {
 
         String dataSql = "select t from Device t where 1 = 1";
@@ -69,9 +77,15 @@ public class DeviceRepositoryImpl {
             countSql += " and t.aliases = ?2";
         }
         if(device != null && !StringUtils.isEmpty(device.getDeviceState())){
-            dataSql += " and t.deviceState = ?3";
-            countSql += " and t.deviceState = ?3";
+            if(device.getDeviceState() == DeviceStateEnum.REGISTERED){
+                dataSql += " and t.deviceState != 'UNREGISTERED'";
+                countSql += " and t.deviceState != 'UNREGISTERED'";
+            }else{
+                dataSql += " and t.deviceState = ?3";
+                countSql += " and t.deviceState = ?3";
+            }
         }
+
         dataSql += " order by updateTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
@@ -85,8 +99,12 @@ public class DeviceRepositoryImpl {
             countQuery.setParameter(2, device.getAliases());
         }
         if(device != null && !StringUtils.isEmpty(device.getDeviceState())){
-            dataQuery.setParameter(3, device.getDeviceState());
-            countQuery.setParameter(3, device.getDeviceState());
+            if(device.getDeviceState() == DeviceStateEnum.REGISTERED){
+
+            }else{
+                countQuery.setParameter(3, device.getDeviceState());
+                dataQuery.setParameter(3, device.getDeviceState());
+            }
         }
         log.info("总数:" + countQuery.getSingleResult());
         return new PageImpl<>(dataQuery.getResultList(), pageable, (long)countQuery.getSingleResult());

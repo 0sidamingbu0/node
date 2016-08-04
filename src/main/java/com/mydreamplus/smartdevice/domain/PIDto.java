@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class PIDto {
 
+    private Date createTime;
     private String name;
     /**
      * PI的mac地址
@@ -21,11 +22,44 @@ public class PIDto {
      * PI的描述信息
      */
     private String description;
-
     /**
      * 最近一次注册时间
      */
     private Date registerTime;
+
+    /**
+     * 允许入网的截止时间
+     */
+    private Date permitEndTime;
+
+    /**
+     * IP
+     */
+    private String ipAddress;
+
+    public Date getPermitEndTime() {
+        return permitEndTime;
+    }
+
+    public void setPermitEndTime(Date permitEndTime) {
+        this.permitEndTime = permitEndTime;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public String getName() {
         return name;

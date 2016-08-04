@@ -22,17 +22,17 @@ public class SpringConfig {
     /**
      * 线程池参数配
      */
-    private final int corePoolSize = 10;
-    private final int maxPoolSize = 200;
-    private final int queueCapacity = 10;
+    private final int CORE_POOL_SIZE = 10;
+    private final int MAX_POOL_SIZE = 200;
+    private final int QUEUE_CAPACITY = 10;
 
 
+    private Executor initExecutor(String namePrefix) {
 
-    private Executor initExecutor(String namePrefix){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setQueueCapacity(queueCapacity);
+        executor.setCorePoolSize(CORE_POOL_SIZE);
+        executor.setMaxPoolSize(MAX_POOL_SIZE);
+        executor.setQueueCapacity(QUEUE_CAPACITY);
         // rejection-policy：当pool已经达到max size的时候，如何处理新任务
         // CALLER_RUNS：不在新线程中执行任务，而是有调用者所在的线程来执行
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
@@ -41,13 +41,23 @@ public class SpringConfig {
         return executor;
     }
 
+    /**
+     * Log executor executor.
+     *
+     * @return the executor
+     */
     @Bean
-    public Executor logExecutor(){
+    public Executor logExecutor() {
         return initExecutor("LOG-");
     }
 
+    /**
+     * Message executor executor.
+     *
+     * @return the executor
+     */
     @Bean
-    public Executor messageExecutor(){
+    public Executor messageExecutor() {
         return initExecutor("MESSAGE-");
     }
 

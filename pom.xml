@@ -7,7 +7,9 @@
     <artifactId>spring-boot-rest-example</artifactId>
     <version>0.3.0</version>
     <packaging>war</packaging>
-    <description>Example project demonstrating REST APIs implemented using Spring Boot, in-memory database, embedded Tomcat, Swagger, JsonPath, Hamcrest and MockMVC</description>
+    <description>Example project demonstrating REST APIs implemented using Spring Boot, in-memory database, embedded
+        Tomcat, Swagger, JsonPath, Hamcrest and MockMVC
+    </description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -20,7 +22,6 @@
     </properties>
 
     <dependencies>
-
 
 
         <dependency>
@@ -85,7 +86,6 @@
         </dependency>
 
 
-
         <!-- integration with Swagger API doc generation http://goo.gl/J5FQDM -->
 
         <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
@@ -108,14 +108,14 @@
         </dependency>
 
 
-<!--
+        <!--
 
-        <dependency>
-            <groupId>com.mangofactory</groupId>
-            <artifactId>swagger-springmvc</artifactId>
-            <version>0.8.5</version>
-        </dependency>
--->
+                <dependency>
+                    <groupId>com.mangofactory</groupId>
+                    <artifactId>swagger-springmvc</artifactId>
+                    <version>0.8.5</version>
+                </dependency>
+        -->
 
         <!--<dependency>
             <groupId>org.hsqldb</groupId>
@@ -133,6 +133,16 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
 

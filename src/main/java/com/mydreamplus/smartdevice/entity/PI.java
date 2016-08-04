@@ -1,6 +1,9 @@
 package com.mydreamplus.smartdevice.entity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +46,18 @@ public class PI extends BaseEntity {
      */
     private Date registerTime;
 
+    /**
+     * PI的ip地址
+     */
+    private String ipAddress;
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 
     /**
      * Gets register time.

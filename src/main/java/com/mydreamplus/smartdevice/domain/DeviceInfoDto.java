@@ -38,6 +38,7 @@ public class DeviceInfoDto {
      * 设备的别名,在云端设置
      */
     private String aliases;
+
     /**
      * 设备的描述信息
      */
@@ -46,6 +47,10 @@ public class DeviceInfoDto {
      * 设备的类型
      */
     private String deviceType;
+
+    private String factory;
+
+    private int linkQuality;
     /**
      * 设备状态
      */
@@ -58,7 +63,6 @@ public class DeviceInfoDto {
      * 设备的注册时间
      */
     private Date registeTime;
-
     /**
      * 传感器数据
      */
@@ -67,13 +71,11 @@ public class DeviceInfoDto {
      * 设备分组
      */
     private List<DeviceGroup> deviceGroupList;
-
     /**
      * Instantiates a new Device dto.
      */
     public DeviceInfoDto() {
     }
-
     /**
      * Instantiates a new Device dto.
      *
@@ -81,6 +83,22 @@ public class DeviceInfoDto {
      */
     public DeviceInfoDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public int getLinkQuality() {
+        return linkQuality;
+    }
+
+    public void setLinkQuality(int linkQuality) {
+        this.linkQuality = linkQuality;
+    }
+
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
     }
 
     public List<SensorData> getSensorDatas() {

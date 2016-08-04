@@ -11,5 +11,5 @@ public enum DeviceStateEnum {
     /**
      * 在线、离线、重置、删除、未注册
      */
-    ONLINE, OFFLINE, RESET, DELETED, UNREGISTERED
+    ONLINE, OFFLINE, RESET, DELETED, UNREGISTERED, REGISTERED
 }

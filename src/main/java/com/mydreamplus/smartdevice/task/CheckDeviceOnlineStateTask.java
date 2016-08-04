@@ -29,6 +29,7 @@ public class CheckDeviceOnlineStateTask {
      */
     @Scheduled(fixedRate = ONE_HOUR, initialDelay = 1000)
     public void run() {
+        log.info("更新设备在线状态,每小时执行");
         // 一小时前的时间
         Date date = new Date(System.currentTimeMillis() - ONE_HOUR);
         this.deviceRepository.updateOfflineState(DeviceStateEnum.OFFLINE, date);

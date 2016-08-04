@@ -9,21 +9,18 @@ import com.mydreamplus.smartdevice.domain.PingDto;
 import com.mydreamplus.smartdevice.domain.in.*;
 import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
-import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.SensorData;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
-import com.mydreamplus.smartdevice.exception.TimeOutException;
-import com.mydreamplus.smartdevice.service.DeviceManager;
 import com.mydreamplus.smartdevice.service.DeviceRestService;
 import com.mydreamplus.smartdevice.service.DeviceService;
 import com.mydreamplus.smartdevice.service.PolicyService;
+import com.mydreamplus.smartdevice.service.WebSocketService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +54,8 @@ public class DeviceController extends AbstractRestHandler {
     @Autowired
     private DeviceRestService deviceRestService;
 
+    @Autowired
+    private WebSocketService webSocketService;
 
     /**
      * Register device base response.
@@ -127,6 +126,7 @@ public class DeviceController extends AbstractRestHandler {
         log.info(String.format(":::::PI注册, mac:%s", request.getPiMacAddress()));
         PIDeviceDto piDeviceDto = new PIDeviceDto();
         piDeviceDto.setPiMacAddress(request.getPiMacAddress());
+        piDeviceDto.setIpAddress(request.getPiIpAddress());
         this.deviceService.registerPi(piDeviceDto);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
@@ -175,10 +175,10 @@ public class DeviceController extends AbstractRestHandler {
         log.info(":::::设备触发事件:{} , symbol:{}, {}, 耗时:{} 毫秒", request.getEventName(), request.getSymbol(),
                 new Date(request.getEventTime()), System.currentTimeMillis() - request.getEventTime());
         // 请求的事件超时,不执行场景
-        if(System.currentTimeMillis() - request.getEventTime() >= Constant.EVENT_TIME_OUT){
+        if (System.currentTimeMillis() - request.getEventTime() >= Constant.EVENT_TIME_OUT) {
 //            throw new TimeOutException("设备触发事件超时,不执行场景!");
             log.info("设备触发事件超时,不执行场景!");
-        }else{
+        } else {
             if (request.getSymbol().equals("00:15:8d:00:00:fc:87:f8-1")) {
                 if (request.getEventName().equals("PressDown")) {
                     deviceRestService.sendCommandToDevice(request.getPiMacAddress(), "00:12:4b:00:0a:b9:52:52-3", "On");
@@ -215,10 +215,12 @@ public class DeviceController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "上报设备PING值")
     public BaseResponse ping(@RequestBody DevicePingRequest request) {
-        log.info("========设备网络情况======== {}", request.getPing());
-//        long serverPing = System.currentTimeMillis() - request.getServerTimeStamp();
-//        log.info("=======设备到云端网络情况======{}", serverPing);
-        deviceService.savePing(request.getMacAddress(), new PingDto(request.getPing(), new Date(request.getPing())));
+        log.info("========ZIGBEE设备与PI的网络延迟======== {}", request.getPing());
+        long serverPing = System.currentTimeMillis() - request.getServerTimeStamp();
+        log.info("=======云端与设备之间的网络延迟======{}", serverPing);
+        PingDto pingDto = new PingDto(request.getPing(), serverPing);
+        deviceService.savePing(request.getMacAddress(), pingDto);
+        this.webSocketService.sendPingMessage(pingDto);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 

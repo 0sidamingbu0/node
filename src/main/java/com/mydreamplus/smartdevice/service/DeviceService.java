@@ -98,6 +98,7 @@ public class DeviceService {
             pi.setMacAddress(piDeviceDto.getPiMacAddress());
             pi.setCreateTime(new Date());
         }
+        pi.setIpAddress(piDeviceDto.getIpAddress());
         // 更新PI注册时间
         pi.setRegisterTime(new Date());
         pi.setUpdateTime(new Date());

@@ -1,7 +1,5 @@
 package com.mydreamplus.smartdevice.domain;
 
-import java.util.Date;
-
 /**
  * Created with IntelliJ IDEA.
  * User: liji
@@ -13,59 +11,32 @@ import java.util.Date;
 public class PingDto {
 
     /**
+     * ZIGBEE设备与PI之间的PING
      */
-    private Long value;
+    private Long zbDevicePiPing;
     /**
-     * 上报PING的时间
+     * 云端与ZIGBEE设备之间的PING
      */
-    private Date lastPingTime;
+    private Long serverZbDevicePing;
 
-
-    /**
-     * Instantiates a new Ping dto.
-     *
-     * @param value        the value
-     * @param lastPingTime the last ping time
-     */
-    public PingDto(Long value, Date lastPingTime) {
-        this.value = value;
-        this.lastPingTime = lastPingTime;
+    public PingDto(Long zbDevicePiPing, Long serverZbDevicePing) {
+        this.zbDevicePiPing = zbDevicePiPing;
+        this.serverZbDevicePing = serverZbDevicePing;
     }
 
-    /**
-     * Gets value.
-     *
-     * @return the value
-     */
-    public Long getValue() {
-        return value;
+    public Long getZbDevicePiPing() {
+        return zbDevicePiPing;
     }
 
-    /**
-     * Sets value.
-     *
-     * @param value the value
-     */
-    public void setValue(Long value) {
-        this.value = value;
+    public void setZbDevicePiPing(Long zbDevicePiPing) {
+        this.zbDevicePiPing = zbDevicePiPing;
     }
 
-    /**
-     * Gets last ping time.
-     *
-     * @return the last ping time
-     */
-    public Date getLastPingTime() {
-        return lastPingTime;
+    public Long getServerZbDevicePing() {
+        return serverZbDevicePing;
     }
 
-    /**
-     * Sets last ping time.
-     *
-     * @param lastPingTime the last ping time
-     */
-    public void setLastPingTime(Date lastPingTime) {
-        this.lastPingTime = lastPingTime;
+    public void setServerZbDevicePing(Long serverZbDevicePing) {
+        this.serverZbDevicePing = serverZbDevicePing;
     }
-
 }

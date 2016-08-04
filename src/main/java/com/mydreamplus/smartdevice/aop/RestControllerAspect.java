@@ -7,6 +7,7 @@ import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.domain.in.*;
 import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
 import com.mydreamplus.smartdevice.service.DeviceRestService;
+import com.mydreamplus.smartdevice.service.WebSocketService;
 import com.mydreamplus.smartdevice.util.PolicyParseUtil;
 import com.mydreamplus.smartdevice.util.SymbolUtil;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +39,9 @@ public class RestControllerAspect {
 
     @Autowired
     private DeviceRestService deviceRestService;
+
+    @Autowired
+    private WebSocketService webSocketService;
 
 
     /**
@@ -72,8 +75,11 @@ public class RestControllerAspect {
             // ======================== 更新 Link Quality、UpdateTime、Status ========================
             int linkQuality = deviceRequest.getLinkQuality();
             log.info("设备Link Quality: " + linkQuality);
+            Date date = new Date();
             // 1、注册
             if (deviceRequest instanceof DeviceRegisterRequest) {
+                DeviceRegisterRequest deviceRegisterRequest = (DeviceRegisterRequest) deviceRequest;
+                webSocketService.sendMessage("时间:" + date + ",设备注册:" + deviceRegisterRequest.getMacAddress() + ",网关地址:" + deviceRegisterRequest.getPiMacAddress() + ",设备类型:" + deviceRegisterRequest.getParentDeviceType() + ", 信号强度:" + linkQuality);
                 LinkQualityRepositoryImpl.setLinkQuality(((DeviceRegisterRequest) deviceRequest).getMacAddress(), linkQuality);
                 this.updateDeviceStateByMacAddress(((DeviceRegisterRequest) deviceRequest).getMacAddress());
             }
@@ -81,6 +87,7 @@ public class RestControllerAspect {
             if (deviceRequest instanceof DeviceSituationRequest) {
                 if (((DeviceSituationRequest) deviceRequest).getDeviceSituationDtos() != null && ((DeviceSituationRequest) deviceRequest).getDeviceSituationDtos().size() > 0) {
                     ((DeviceSituationRequest) deviceRequest).getDeviceSituationDtos().forEach(deviceSituationDto -> {
+                        webSocketService.sendMessage("时间:" + date + ",设备上报状态:" + deviceSituationDto.getSymbol() + ",状态:" + deviceSituationDto.getValue() + ",信号强度:" + linkQuality);
                         LinkQualityRepositoryImpl.setLinkQuality(SymbolUtil.parseMacAddress(deviceSituationDto.getSymbol()), linkQuality);
                         this.updateDeviceStateBySymbol(deviceSituationDto.getSymbol());
                     });
@@ -88,22 +95,24 @@ public class RestControllerAspect {
             }
             // 3、上报事件
             if (deviceRequest instanceof DeviceEventRequest) {
+                DeviceEventRequest deviceEventRequest = (DeviceEventRequest) deviceRequest;
+                webSocketService.sendMessage("时间:" + date + ",设备事件:" + deviceEventRequest.getSymbol() + ",事件名:" + deviceEventRequest.getEventName() + ",耗时:" + String.valueOf(System.currentTimeMillis() - deviceEventRequest.getEventTime()) + ",信号强度:" + linkQuality);
                 LinkQualityRepositoryImpl.setLinkQuality(SymbolUtil.parseMacAddress(((DeviceEventRequest) deviceRequest).getSymbol()), linkQuality);
-                this.updateDeviceStateBySymbol(SymbolUtil.parseMacAddress(((DeviceEventRequest) deviceRequest).getSymbol()));
+                this.updateDeviceStateBySymbol(deviceEventRequest.getSymbol());
             }
             // 4、Ping
             if (deviceRequest instanceof DevicePingRequest) {
+                DevicePingRequest devicePingRequest = (DevicePingRequest) deviceRequest;
+                webSocketService.sendMessage("时间:" + date + ",PING MAC地址:" + devicePingRequest.getMacAddress() + ",PING值:" + devicePingRequest.getPing() + ",信号强度:" + linkQuality);
                 LinkQualityRepositoryImpl.setLinkQuality(((DevicePingRequest) deviceRequest).getMacAddress(), linkQuality);
                 this.updateDeviceStateByMacAddress(((DevicePingRequest) deviceRequest).getMacAddress());
             }
             // 5、上报数据
             if (deviceRequest instanceof SensorValueRequest) {
+                SensorValueRequest sensorValueRequest = (SensorValueRequest) deviceRequest;
+                webSocketService.sendMessage("时间:" + date + ",设备上报数据:" + sensorValueRequest.getSymbol() + ",数据:" + sensorValueRequest.getValue() + ",信号强度:" + linkQuality);
                 LinkQualityRepositoryImpl.setLinkQuality(SymbolUtil.parseMacAddress(((SensorValueRequest) deviceRequest).getSymbol()), linkQuality);
                 this.updateDeviceStateBySymbol(((SensorValueRequest) deviceRequest).getSymbol());
-            }
-            // 6、事件上报
-            if (deviceRequest instanceof DeviceEventRequest) {
-                this.updateDeviceStateBySymbol(((DeviceEventRequest) deviceRequest).getSymbol());
             }
         }
     }
@@ -114,8 +123,7 @@ public class RestControllerAspect {
      * @param symbol
      */
     private void updateDeviceStateBySymbol(String symbol) {
-        log.info("更新设备的在线状态{}", symbol);
-        this.deviceRepository.updateUpdateTimeBySymbol(new Date(), DeviceStateEnum.ONLINE, symbol);
+        this.updateDeviceStateByMacAddress(SymbolUtil.parseMacAddress(symbol));
     }
 
     /**
