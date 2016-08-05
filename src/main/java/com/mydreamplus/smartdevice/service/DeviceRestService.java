@@ -1,6 +1,7 @@
 package com.mydreamplus.smartdevice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.domain.MessageTypeEnum;
 import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 import com.mydreamplus.smartdevice.domain.message.DeviceMessage;
@@ -35,7 +36,9 @@ public class DeviceRestService {
      * @param message
      */
     private static void send(DeviceMessage message) {
-        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
+//        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
+        String url = Constant.WEBSOCKET_SERVICE_URI;
+        log.info("Send message to url: {}", url);
         int timeout = 5000;
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
                 new HttpComponentsClientHttpRequestFactory();

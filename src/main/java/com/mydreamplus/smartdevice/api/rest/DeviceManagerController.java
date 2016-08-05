@@ -50,6 +50,11 @@ public class DeviceManagerController extends AbstractRestHandler {
      */
     private static final int PING_TIMES = 10;
 
+    /**
+     * ping间隔时间
+     */
+    private static final long PING_INTERVAL = 1000;
+
     private final Logger log = LoggerFactory.getLogger(DeviceManagerController.class);
     @Autowired
     private DeviceManager deviceManager;
@@ -627,7 +632,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             throw new DataInvalidException("没有找到设备!" + symbol);
         }
         for (int i = 0; i < PING_TIMES; i++) {
-            Thread.sleep(500);
+            Thread.sleep(PING_INTERVAL);
             this.restService.getPing(device.getPi().getMacAddress(), device.getMacAddress());
         }
         return new BaseResponse(RESPONSE_SUCCESS);

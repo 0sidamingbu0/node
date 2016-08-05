@@ -32,4 +32,8 @@ public class Constant {
      */
     public static final long EVENT_TIME_OUT = 1000 * 3;
 
+//    public static final String WEBSOCKET_SERVICE_API = "/api/websocket/sendMessageToClient";
+
+    public static String WEBSOCKET_SERVICE_URI = "";
+
 }

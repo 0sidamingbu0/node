@@ -155,6 +155,8 @@ public class DeviceController extends AbstractRestHandler {
             } else {
                 deviceDto.setDeviceSituation(DeviceSituationEnum.ON);
             }
+            // 更新设备状态,开关
+            this.deviceService.updateDeviceSituationAndSetOnline(deviceDto);
         });
         return new BaseResponse(RESPONSE_SUCCESS);
     }
@@ -219,6 +221,9 @@ public class DeviceController extends AbstractRestHandler {
         long serverPing = System.currentTimeMillis() - request.getServerTimeStamp();
         log.info("=======云端与设备之间的网络延迟======{}", serverPing);
         PingDto pingDto = new PingDto(request.getPing(), serverPing);
+        pingDto.setLinkQuality(request.getLinkQuality());
+        pingDto.setDate(new Date());
+        pingDto.setMacAddress(request.getMacAddress());
         deviceService.savePing(request.getMacAddress(), pingDto);
         this.webSocketService.sendPingMessage(pingDto);
         return new BaseResponse(RESPONSE_SUCCESS);

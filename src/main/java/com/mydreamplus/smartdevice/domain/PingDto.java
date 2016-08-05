@@ -1,5 +1,7 @@
 package com.mydreamplus.smartdevice.domain;
 
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA.
  * User: liji
@@ -19,9 +21,43 @@ public class PingDto {
      */
     private Long serverZbDevicePing;
 
+    private int linkQuality;
+
+    /**
+     * 设备MAC地址
+     */
+    private String macAddress;
+
+    private Date date;
+
+
     public PingDto(Long zbDevicePiPing, Long serverZbDevicePing) {
         this.zbDevicePiPing = zbDevicePiPing;
         this.serverZbDevicePing = serverZbDevicePing;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public int getLinkQuality() {
+        return linkQuality;
+    }
+
+    public void setLinkQuality(int linkQuality) {
+        this.linkQuality = linkQuality;
     }
 
     public Long getZbDevicePiPing() {

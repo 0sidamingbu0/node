@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -354,9 +353,10 @@ public class DeviceManager {
     /**
      * Remove policy.
      * 假删除,更新策略删除状态
+     *
      * @param ID the id
      */
-    public void removePolicy(Long ID){
+    public void removePolicy(Long ID) {
         Policy policy = this.policyRepository.findOne(ID);
         policy.setDeleted(true);
         policy.setUpdateTime(new Date());

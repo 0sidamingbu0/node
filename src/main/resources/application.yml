@@ -2,6 +2,14 @@
 ### This fils is in Yaml format but you can also do this using the traditional
 ### Java properties file.
 
+
+
+#etcd
+etcd:
+  url: http://localhost:4001
+#   url: http://etcd.aws.mxj.mx
+  websocketService: /qa/services/websocket
+#  websocketService: /qa/services/websocketlocal
 #spring.jmx:
 #   enabled: false
 
@@ -22,7 +30,7 @@ server:
 
 #management endpoints on a separate port
 management:
-  port: 8898
+  port: 8998
 #  security:
 #    enabled: false # management port is internal only. no need to secure it.
 

@@ -20,8 +20,10 @@
             stompClient.connect({}, function(frame) {
                 setConnected(true);
                 console.log('Connected... ' + frame);
-                stompClient.subscribe('/topic/greetings', function(greeting){
-                    showGreeting(JSON.parse(greeting.body).content);
+                stompClient.subscribe('/topic/ping', function(greeting){
+//                    "{"zbDevicePiPing":100,"serverZbDevicePing":1332,"linkQuality":169,"macAddress":"00:12:4b:00:09:2d:89:9b","date":1470364634009}"
+                    var json = JSON.parse(greeting.body);
+                    showGreeting("时间:"+new Date(json.date)+ "设备与网关延迟:"+json.zbDevicePiPing + ",服务器与设备的延迟:" + json.serverZbDevicePing + ",信号强度:" + json.linkQuality + ",MAC:" + json.macAddress);
                 });
             });
         }
