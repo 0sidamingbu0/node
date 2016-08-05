@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.khoubyari</groupId>
-    <artifactId>spring-boot-rest-example</artifactId>
-    <version>0.3.0</version>
-    <packaging>war</packaging>
+    <artifactId>smart-device-manager-server</artifactId>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
     <description>Example project demonstrating REST APIs implemented using Spring Boot, in-memory database, embedded
         Tomcat, Swagger, JsonPath, Hamcrest and MockMVC
     </description>
