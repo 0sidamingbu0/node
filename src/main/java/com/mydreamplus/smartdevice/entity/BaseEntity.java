@@ -16,10 +16,8 @@ public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
-
     @Column(insertable = true, updatable = false)
     private Date createTime;
-
     @Column(insertable = false, updatable = true)
     private Date updateTime;
 

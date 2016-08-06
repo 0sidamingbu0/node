@@ -638,5 +638,17 @@ public class DeviceManagerController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+    @RequestMapping(value = "/updateDeviceInfo",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "修改设备信息")
+    public BaseResponse updateDeviceInfo(@RequestBody DeviceInfo deviceInfo) {
+        if (deviceInfo == null || StringUtils.isEmpty(deviceInfo.getSymbol())) {
+            throw new DataInvalidException("设备标识信息为空");
+        }
+        this.deviceManager.updateDeviceInfo(deviceInfo);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
 
 }

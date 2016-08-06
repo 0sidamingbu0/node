@@ -18,6 +18,8 @@ import java.util.List;
 @Table(name = "pi_device")
 public class PI extends BaseEntity {
 
+
+
     /**
      * PI的名称
      */

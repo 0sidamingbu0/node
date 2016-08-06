@@ -146,6 +146,11 @@ public class DeviceService {
      * @param deviceMacAddress the device mac address
      */
     public void removeDevice(String piMacAddress, String deviceMacAddress) {
+        deviceRepository.findAllByMacAddress(deviceMacAddress).forEach(device -> {
+            device.setDeviceState(DeviceStateEnum.UNREGISTERED);
+            device.setUpdateTime(new Date());
+            deviceRepository.save(device);
+        });
         deviceRestService.removeDevice(piMacAddress, deviceMacAddress);
     }
 

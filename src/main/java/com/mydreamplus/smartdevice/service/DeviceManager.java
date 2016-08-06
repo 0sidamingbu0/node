@@ -3,6 +3,7 @@ package com.mydreamplus.smartdevice.service;
 import com.mydreamplus.smartdevice.dao.jpa.*;
 import com.mydreamplus.smartdevice.domain.*;
 import com.mydreamplus.smartdevice.entity.*;
+import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.util.JsonUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -361,6 +362,21 @@ public class DeviceManager {
         policy.setDeleted(true);
         policy.setUpdateTime(new Date());
         this.policyRepository.save(policy);
+    }
+
+    /**
+     * Update device info.
+     *
+     * @param deviceInfo the device info
+     */
+    public void updateDeviceInfo(DeviceInfo deviceInfo) {
+        Device device = this.deviceRepository.findBySymbol(deviceInfo.getSymbol());
+        if(device == null){
+            throw new DataInvalidException("没有找到设备!");
+        }
+        device.setAliases(deviceInfo.getAliases());
+        device.setDescription(deviceInfo.getDescription());
+        this.deviceRepository.save(device);
     }
 }
 

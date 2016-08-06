@@ -1,5 +1,6 @@
 package com.mydreamplus.smartdevice.dao.jpa;
 
+import com.mydreamplus.smartdevice.entity.PI;
 import com.mydreamplus.smartdevice.entity.Policy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,5 +51,5 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
      * @param updateTime the update time
      * @return the list
      */
-    List<Policy> findAllByUpdateTimeGreaterThan(Date updateTime);
+    List<Policy> findAllByPiAndUpdateTimeGreaterThan(PI pi, Date updateTime);
 }

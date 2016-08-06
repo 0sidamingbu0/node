@@ -2,10 +2,12 @@ package com.mydreamplus.smartdevice;
 
 import com.mydreamplus.smartdevice.config.Constant;
 import mousio.etcd4j.EtcdClient;
+import mousio.etcd4j.promises.EtcdResponsePromise;
 import mousio.etcd4j.requests.EtcdKeyGetRequest;
 import mousio.etcd4j.responses.EtcdAuthenticationException;
 import mousio.etcd4j.responses.EtcdException;
 import mousio.etcd4j.responses.EtcdKeysResponse;
+import mousio.etcd4j.responses.EtcdResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -59,6 +61,7 @@ public class Application extends SpringBootServletInitializer {
         }
         Constant.WEBSOCKET_SERVICE_URI = webSocketServiceUrl;
         log.info("WebSocket service: {}", webSocketServiceUrl);
+
     }
 
     @Override

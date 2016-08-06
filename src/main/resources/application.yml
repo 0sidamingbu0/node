@@ -9,9 +9,9 @@ websocket:
 
 #etcd
 etcd:
-#  url: http://localhost:4001
+  url: http://localhost:4001
 #   url: http://etcd.aws.mxj.mx
-  url: http://etcd.aws.mxj.mx:80
+#  url: http://etcd.aws.mxj.mx:80
   websocketService: /discover/dev/websocket
 #  websocketService: /qa/services/websocket
 #  websocketService: /qa/services/websocketlocal
