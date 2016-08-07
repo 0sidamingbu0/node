@@ -188,7 +188,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             DeviceDto d = new DeviceDto();
             BeanUtils.copyProperties(device, d, "deviceGroupList");
             d.setPIID(device.getPi().getMacAddress());
-            d.setDeviceType(d.getAliases());
+            d.setDeviceType(device.getDeviceType().getAliases());
             d.setLinkQuality(LinkQualityRepositoryImpl.getLinkQuality(d.getMacAddress()));
             deviceDtos.add(d);
         });

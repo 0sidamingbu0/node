@@ -67,7 +67,7 @@ public class DeviceService {
             }
             pi.getZbDeviceList().add(device);
             device.setName(deviceType.getName());
-            device.setAliases(deviceType.getAliases());
+            device.setAliases(deviceType.getAliases() + device.getSymbol());
             device.setPi(pi);
             device.setMacAddress(deviceDto.getMacAddress());
             device.setCreateTime(new Date());
