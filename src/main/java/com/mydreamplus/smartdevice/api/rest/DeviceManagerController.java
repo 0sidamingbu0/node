@@ -185,11 +185,13 @@ public class DeviceManagerController extends AbstractRestHandler {
         Page<Device> pageDevice = this.deviceManager.findAllDevicesByPredicate(deviceDto,
                 new PageRequest(request.getPageDto().getPage() - 1, request.getPageDto().getSize()));
         pageDevice.forEach(device -> {
+            PI pi = device.getPi();
             DeviceDto d = new DeviceDto();
             BeanUtils.copyProperties(device, d, "deviceGroupList");
-            d.setPIID(device.getPi().getMacAddress());
+            d.setPIID(pi.getMacAddress());
             d.setDeviceType(device.getDeviceType().getAliases());
             d.setLinkQuality(LinkQualityRepositoryImpl.getLinkQuality(d.getMacAddress()));
+            d.setPiName(pi.getName());
             deviceDtos.add(d);
         });
         PageResponse response = new PageResponse();

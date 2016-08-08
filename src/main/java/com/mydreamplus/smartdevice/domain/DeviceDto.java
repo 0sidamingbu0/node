@@ -30,6 +30,8 @@ public class DeviceDto {
      * 设备所在的PI设备 PI的mac地址
      */
     private String PIID;
+
+    private String piName;
     /**
      * 设备的名称
      */
@@ -87,6 +89,14 @@ public class DeviceDto {
      */
     public DeviceDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public String getPiName() {
+        return piName;
+    }
+
+    public void setPiName(String piName) {
+        this.piName = piName;
     }
 
     public int getLinkQuality() {

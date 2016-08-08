@@ -151,6 +151,7 @@ public class DeviceService {
 //            device.setUpdateTime(new Date());
 //            deviceRepository.save(device);
 //        });
+        log.info("----真实删除设备----");
         this.deviceRepository.deleteByMacAddress(deviceMacAddress);
         deviceRestService.removeDevice(piMacAddress, deviceMacAddress);
     }
