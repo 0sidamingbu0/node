@@ -42,7 +42,7 @@ public class PolicyRepositoryImpl {
             dataQuery.setParameter(1, deviceState);
             countQuery.setParameter(1, deviceState);
         }*/
-        return new PageImpl<>(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
+        return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }
 
 }

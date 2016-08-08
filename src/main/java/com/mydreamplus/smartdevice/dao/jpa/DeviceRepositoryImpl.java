@@ -41,10 +41,10 @@ public class DeviceRepositoryImpl {
         String dataSql = "select t from Device t where 1 = 1";
         String countSql = "select count(t) from Device t where 1 = 1";
         if (null != deviceState) {
-            if(deviceState == DeviceStateEnum.REGISTERED){
+            if (deviceState == DeviceStateEnum.REGISTERED) {
                 dataSql += " and t.deviceState != 'UNREGISTERED'";
                 countSql += " and t.deviceState != 'UNREGISTERED'";
-            }else{
+            } else {
                 dataSql += " and t.deviceState = ?3";
                 countSql += " and t.deviceState = ?3";
             }
@@ -54,12 +54,12 @@ public class DeviceRepositoryImpl {
         Query countQuery = em.createQuery(countSql);
 
         if (null != deviceState) {
-            if(deviceState != DeviceStateEnum.REGISTERED){
+            if (deviceState != DeviceStateEnum.REGISTERED) {
                 countQuery.setParameter(3, deviceState);
                 dataQuery.setParameter(3, deviceState);
             }
         }
-        return new PageImpl<>(dataQuery.getResultList(), pageable, (long)countQuery.getSingleResult());
+        return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }
 
 
@@ -68,19 +68,19 @@ public class DeviceRepositoryImpl {
 
         String dataSql = "select t from Device t where 1 = 1";
         String countSql = "select count(t) from Device t where 1 = 1";
-        if(device != null && !StringUtils.isEmpty(device.getName())){
+        if (device != null && !StringUtils.isEmpty(device.getName())) {
             dataSql += " and t.name = ?1";
             countSql += " and t.name = ?1";
         }
-        if(device != null && !StringUtils.isEmpty(device.getAliases())){
+        if (device != null && !StringUtils.isEmpty(device.getAliases())) {
             dataSql += " and t.aliases = ?2";
             countSql += " and t.aliases = ?2";
         }
-        if(device != null && !StringUtils.isEmpty(device.getDeviceState())){
-            if(device.getDeviceState() == DeviceStateEnum.REGISTERED){
+        if (device != null && !StringUtils.isEmpty(device.getDeviceState())) {
+            if (device.getDeviceState() == DeviceStateEnum.REGISTERED) {
                 dataSql += " and t.deviceState != 'UNREGISTERED'";
                 countSql += " and t.deviceState != 'UNREGISTERED'";
-            }else{
+            } else {
                 dataSql += " and t.deviceState = ?3";
                 countSql += " and t.deviceState = ?3";
             }
@@ -90,23 +90,23 @@ public class DeviceRepositoryImpl {
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
-        if(device != null && !StringUtils.isEmpty(device.getName())){
+        if (device != null && !StringUtils.isEmpty(device.getName())) {
             dataQuery.setParameter(1, device.getName());
             countQuery.setParameter(1, device.getName());
         }
-        if(device != null && !StringUtils.isEmpty(device.getAliases())){
+        if (device != null && !StringUtils.isEmpty(device.getAliases())) {
             dataQuery.setParameter(2, device.getAliases());
             countQuery.setParameter(2, device.getAliases());
         }
-        if(device != null && !StringUtils.isEmpty(device.getDeviceState())){
-            if(device.getDeviceState() == DeviceStateEnum.REGISTERED){
+        if (device != null && !StringUtils.isEmpty(device.getDeviceState())) {
+            if (device.getDeviceState() == DeviceStateEnum.REGISTERED) {
 
-            }else{
+            } else {
                 countQuery.setParameter(3, device.getDeviceState());
                 dataQuery.setParameter(3, device.getDeviceState());
             }
         }
         log.info("总数:" + countQuery.getSingleResult());
-        return new PageImpl<>(dataQuery.getResultList(), pageable, (long)countQuery.getSingleResult());
+        return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }
 }

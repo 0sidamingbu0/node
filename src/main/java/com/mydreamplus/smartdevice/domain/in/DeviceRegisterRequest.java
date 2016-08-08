@@ -24,11 +24,6 @@ public class DeviceRegisterRequest extends BaseDeviceRequest {
     private String macAddress;
 
     /**
-     * 短地址
-     */
-    private int shortAddress;
-
-    /**
      * 注册设备信息
      */
     private List<DeviceRegisterDto> deviceRegisters;
@@ -67,24 +62,6 @@ public class DeviceRegisterRequest extends BaseDeviceRequest {
      */
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
-    }
-
-    /**
-     * Gets short address.
-     *
-     * @return the short address
-     */
-    public int getShortAddress() {
-        return shortAddress;
-    }
-
-    /**
-     * Sets short address.
-     *
-     * @param shortAddress the short address
-     */
-    public void setShortAddress(int shortAddress) {
-        this.shortAddress = shortAddress;
     }
 
     /**

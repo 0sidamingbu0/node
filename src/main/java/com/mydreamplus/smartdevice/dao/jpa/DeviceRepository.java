@@ -49,6 +49,15 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      */
     List<Device> findAllByMacAddress(String macAddress);
 
+    /**
+     * Delete by mac address.
+     *
+     * @param macAddress the mac address
+     */
+    @Modifying
+    @Transactional
+    void deleteByMacAddress(String macAddress);
+
 
     /**
      * Find all by spec iterable.

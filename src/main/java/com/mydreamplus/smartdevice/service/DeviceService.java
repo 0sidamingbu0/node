@@ -66,7 +66,7 @@ public class DeviceService {
                 throw new PINotFoundException("没有绑定PI,注册失败!");
             }
             pi.getZbDeviceList().add(device);
-            device.setName(deviceType.getName());
+            device.setName(deviceType.getAliases());
             device.setAliases(deviceType.getAliases() + device.getSymbol());
             device.setPi(pi);
             device.setMacAddress(deviceDto.getMacAddress());
@@ -146,11 +146,12 @@ public class DeviceService {
      * @param deviceMacAddress the device mac address
      */
     public void removeDevice(String piMacAddress, String deviceMacAddress) {
-        deviceRepository.findAllByMacAddress(deviceMacAddress).forEach(device -> {
-            device.setDeviceState(DeviceStateEnum.UNREGISTERED);
-            device.setUpdateTime(new Date());
-            deviceRepository.save(device);
-        });
+//        deviceRepository.findAllByMacAddress(deviceMacAddress).forEach(device -> {
+//            device.setDeviceState(DeviceStateEnum.UNREGISTERED);
+//            device.setUpdateTime(new Date());
+//            deviceRepository.save(device);
+//        });
+        this.deviceRepository.deleteByMacAddress(deviceMacAddress);
         deviceRestService.removeDevice(piMacAddress, deviceMacAddress);
     }
 
