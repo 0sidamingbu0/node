@@ -99,6 +99,7 @@ public class DeviceController extends AbstractRestHandler {
         });
         // 默认允许设备自动加入网路
         if (Constant.AUTO_JOIN_IN) {
+            log.info("默认允许设备自动加入网络");
             this.deviceService.allowDeviceJoinIn(deviceRegisterRequest.getPiMacAddress(), deviceRegisterRequest.getMacAddress());
         }
         // 默认策略下发

@@ -566,6 +566,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         page.forEach(pi -> {
             PIDto piDto = new PIDto();
             piDto.setName(pi.getName());
+            piDto.setID(pi.getID());
             piDto.setDescription(pi.getDescription());
             piDto.setMacAddress(pi.getMacAddress());
             piDto.setRegisterTime(pi.getRegisterTime());
@@ -600,6 +601,22 @@ public class DeviceManagerController extends AbstractRestHandler {
     }
 
     /**
+     * Remove pi base response.
+     *
+     * @param ID the id
+     * @return the base response
+     */
+    @RequestMapping(value = "/pi/remove/{ID}",
+            method = RequestMethod.POST,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "删除场景策略")
+    public BaseResponse removePi(@PathVariable Long ID) {
+        this.deviceManager.removePi(ID);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+    /**
      * 删除设备
      *
      * @param request the request
@@ -621,6 +638,7 @@ public class DeviceManagerController extends AbstractRestHandler {
      *
      * @param symbol the symbol
      * @return the base response
+     * @throws InterruptedException the interrupted exception
      */
     @RequestMapping(value = "/ping/{symbol}",
             method = RequestMethod.GET,
@@ -640,6 +658,12 @@ public class DeviceManagerController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+    /**
+     * Update device info base response.
+     *
+     * @param deviceInfo the device info
+     * @return the base response
+     */
     @RequestMapping(value = "/updateDeviceInfo",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

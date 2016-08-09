@@ -365,18 +365,43 @@ public class DeviceManager {
     }
 
     /**
+     * Remove pi.
+     *
+     * @param ID the id
+     */
+    public void removePi(Long ID){
+        this.piRespository.delete(ID);
+    }
+
+    /**
      * Update device info.
      *
      * @param deviceInfo the device info
      */
     public void updateDeviceInfo(DeviceInfo deviceInfo) {
         Device device = this.deviceRepository.findBySymbol(deviceInfo.getSymbol());
-        if(device == null){
+        if (device == null) {
             throw new DataInvalidException("没有找到设备!");
         }
         device.setAliases(deviceInfo.getAliases());
         device.setDescription(deviceInfo.getDescription());
         this.deviceRepository.save(device);
     }
+
+    /**
+     * Find devices by type list.
+     *
+     * @param deviceType the device type
+     * @return the list
+     */
+    public List<Device> findAllDevicesByType(DeviceType deviceType) {
+        return this.deviceRepository.findByDeviceType(deviceType);
+    }
+
+
+    public DeviceType findDeviceTypeByName(String typeName){
+        return this.deviceTypeRepository.findByName(typeName);
+    }
+
 }
 

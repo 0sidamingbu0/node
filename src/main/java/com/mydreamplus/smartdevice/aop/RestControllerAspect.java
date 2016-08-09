@@ -61,23 +61,22 @@ public class RestControllerAspect {
             // 根据时间戳查询变化的策略集合
             List<PolicyMessage> list = new ArrayList<>();
             PI pi = piRespository.findByMacAddress(deviceRequest.getPiMacAddress());
-            if(pi == null){
-                throw new DataInvalidException("没有找到PI:" + pi.getMacAddress());
-            }
-            this.policyRepository.findAllByPiAndUpdateTimeGreaterThan(pi, new Date(deviceRequest.getPolicyUpdateTime())).forEach(policy -> {
-                PolicyMessage policyMessage = new PolicyMessage();
-                policyMessage.setUpdateTime(policy.getUpdateTime().getTime());
-                policyMessage.setPolicyId(policy.getID());
-                policyMessage.setPolicyConfigDto(PolicyParseUtil.josnToPolicyConfigDto(policy.getPolicyConfig()));
-                policyMessage.setDeleted(policy.getDeleted());
-                list.add(policyMessage);
-                log.info("更新策略:{}", policy.getName());
-            });
-            // 有策略更新
-            if (list.size() > 0) {
-                // 下发到node, node会更新场景, 如果下发失败, node上场景的update time不变,下次继续下发
-                log.info("更新策略数量:{}, {}", list.size(), new Date(deviceRequest.getPolicyUpdateTime()));
-                deviceRestService.sendPolicy(deviceRequest.getPiMacAddress(), list);
+            if(pi != null){
+                this.policyRepository.findAllByPiAndUpdateTimeGreaterThan(pi, new Date(deviceRequest.getPolicyUpdateTime())).forEach(policy -> {
+                    PolicyMessage policyMessage = new PolicyMessage();
+                    policyMessage.setUpdateTime(policy.getUpdateTime().getTime());
+                    policyMessage.setPolicyId(policy.getID());
+                    policyMessage.setPolicyConfigDto(PolicyParseUtil.josnToPolicyConfigDto(policy.getPolicyConfig()));
+                    policyMessage.setDeleted(policy.getDeleted());
+                    list.add(policyMessage);
+                    log.info("更新策略:{}", policy.getName());
+                });
+                // 有策略更新
+                if (list.size() > 0) {
+                    // 下发到node, node会更新场景, 如果下发失败, node上场景的update time不变,下次继续下发
+                    log.info("更新策略数量:{}, {}", list.size(), new Date(deviceRequest.getPolicyUpdateTime()));
+                    deviceRestService.sendPolicy(deviceRequest.getPiMacAddress(), list);
+                }
             }
         }
         // ======================== 更新 Link Quality、UpdateTime、Status ========================

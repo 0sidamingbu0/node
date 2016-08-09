@@ -3,6 +3,7 @@ package com.mydreamplus.smartdevice.dao.jpa;
 import com.mydreamplus.smartdevice.domain.DeviceFunctionTypeEnum;
 import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.entity.Device;
+import com.mydreamplus.smartdevice.entity.DeviceType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -177,4 +178,6 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
     @Transactional
     @Query("update Device u set u.deviceState =?1 where u.updateTime < ?2")
     void updateOfflineState(DeviceStateEnum deviceState, Date updateTime);
+
+    List<Device> findByDeviceType(DeviceType deviceType);
 }

@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class PIDto {
 
+    private Long ID;
     private Date createTime;
     private String name;
     /**
@@ -26,16 +27,22 @@ public class PIDto {
      * 最近一次注册时间
      */
     private Date registerTime;
-
     /**
      * 允许入网的截止时间
      */
     private Date permitEndTime;
-
     /**
      * IP
      */
     private String ipAddress;
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
 
     public Date getPermitEndTime() {
         return permitEndTime;
