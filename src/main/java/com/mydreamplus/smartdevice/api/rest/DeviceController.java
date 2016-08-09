@@ -9,12 +9,10 @@ import com.mydreamplus.smartdevice.domain.PingDto;
 import com.mydreamplus.smartdevice.domain.in.*;
 import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
+import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.SensorData;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
-import com.mydreamplus.smartdevice.service.DeviceRestService;
-import com.mydreamplus.smartdevice.service.DeviceService;
-import com.mydreamplus.smartdevice.service.PolicyService;
-import com.mydreamplus.smartdevice.service.WebSocketService;
+import com.mydreamplus.smartdevice.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -56,6 +54,9 @@ public class DeviceController extends AbstractRestHandler {
 
     @Autowired
     private WebSocketService webSocketService;
+
+    @Autowired
+    private DeviceManager deviceManager;
 
     /**
      * Register device base response.

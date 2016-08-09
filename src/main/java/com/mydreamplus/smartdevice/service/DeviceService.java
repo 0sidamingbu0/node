@@ -44,6 +44,8 @@ public class DeviceService {
     private DeviceRestService deviceRestService;
     @Autowired
     private SensorDataRepository sensorDataRepository;
+    @Autowired
+    private WebSocketService webSocketService;
 
     /**
      * Register.
@@ -77,7 +79,7 @@ public class DeviceService {
         } else {
             device.setUpdateTime(new Date());
             // 已经注册过,更新设备上线状态
-            device.setDeviceState(DeviceStateEnum.ONLINE);
+//            device.setDeviceState(DeviceStateEnum.ONLINE);
         }
         device.setRegisteTime(new Date());
         log.info(String.format("智能设备:%s | :%s,注册成功!", deviceDto.getDeviceType(), deviceDto.getSymbol()));
@@ -118,10 +120,13 @@ public class DeviceService {
         if (device == null) {
             throw new DeviceNotFoundException(String.format("更新设备状态失败,没有找到设备,symbol:%s ", deviceDto.getSymbol()));
         }
-        device.setDeviceSituation(deviceDto.getDeviceSituation());
-        device.setDeviceState(DeviceStateEnum.ONLINE);
-        device.setUpdateTime(new Date());
-        deviceRepository.save(device);
+        // 设备未注册,状态为未注册
+        if(device.getDeviceState() != DeviceStateEnum.UNREGISTERED){
+            device.setDeviceSituation(deviceDto.getDeviceSituation());
+            device.setDeviceState(DeviceStateEnum.ONLINE);
+            device.setUpdateTime(new Date());
+            deviceRepository.save(device);
+        }
     }
 
     /**
@@ -134,6 +139,7 @@ public class DeviceService {
         devices.forEach(device -> {
             device.setDeviceState(DeviceStateEnum.UNREGISTERED);
             device.setUpdateTime(new Date());
+            webSocketService.sendMessage("时间:" + new Date() + ",设备重置:" + device.getMacAddress() + ",网关地址:" + device.getPi().getMacAddress() + ",设备类型:" + device.getName());
             deviceRepository.save(device);
         });
     }

@@ -180,4 +180,5 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
     void updateOfflineState(DeviceStateEnum deviceState, Date updateTime);
 
     List<Device> findByDeviceType(DeviceType deviceType);
+
 }

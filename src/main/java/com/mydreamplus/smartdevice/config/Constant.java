@@ -24,7 +24,7 @@ public class Constant {
     /**
      * The constant AUTO_JOIN_IN.
      */
-    public static final boolean AUTO_JOIN_IN = false;
+    public static final boolean AUTO_JOIN_IN = true;
 
 
     /**

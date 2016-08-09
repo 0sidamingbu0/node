@@ -44,13 +44,14 @@ public class DeviceAPIController extends AbstractRestHandler {
     @ApiOperation(value = "查询门信息", notes = "全部")
     public BaseResponse findDoors() {
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
-        baseResponse.setMessage("门的mac地址");
+        baseResponse.setDetails("门的mac地址");
         DeviceType deviceType = deviceManager.findDeviceTypeByName(DOOR_TYPE_NAME);
         Map<String, List<String>> map = new HashMap<>();
         List<String> list = new ArrayList<>();
         deviceManager.findAllDevicesByType(deviceType).forEach(device -> {
-//            map.put("mac", device.getMacAddress());
+            list.add(device.getMacAddress());
         });
+        map.put("doors", list);
         baseResponse.setData(map);
         return baseResponse;
     }

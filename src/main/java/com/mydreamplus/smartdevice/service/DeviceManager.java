@@ -403,5 +403,9 @@ public class DeviceManager {
         return this.deviceTypeRepository.findByName(typeName);
     }
 
+    public List<Device> findDevicesByMacAddress(String macAddress){
+        return this.deviceRepository.findAllByMacAddress(macAddress);
+    }
+
 }
 

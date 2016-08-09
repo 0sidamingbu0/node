@@ -15,6 +15,81 @@ public class BaseCondition {
      */
     private String conditionType;
 
+    /**
+     * 条件类型ID,前端用
+     */
+    private String conditionTypeId;
+
+    /**
+     * 开关类型的设备标识,标识那个设备的状态
+     */
+    private String symbol;
+
+    /**
+     * 设备状态、是开还是关 On , Off
+     */
+    private String status;
+
+    /**
+     * 传感器的值
+     */
+    private double value;
+
+    private String uri = "";
+    /**
+     * 条件持续事件
+     * 单位:毫秒
+     */
+    private long continuedTime;
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public long getContinuedTime() {
+        return continuedTime;
+    }
+
+    public void setContinuedTime(long continuedTime) {
+        this.continuedTime = continuedTime;
+    }
+
+    public String getConditionTypeId() {
+        return conditionTypeId;
+    }
+
+    public void setConditionTypeId(String conditionTypeId) {
+        this.conditionTypeId = conditionTypeId;
+    }
+
     public String getConditionType() {
         return conditionType;
     }
