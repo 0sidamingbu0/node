@@ -30,6 +30,7 @@ public class DeviceRestService {
 
     private final static String SUCCESS = "Success";
     private final static String FAILURE = "Failure";
+    private static final int TIME_OUT = 5000;
     private final static Logger log = LoggerFactory.getLogger(DeviceRestService.class);
 
     /**
@@ -38,9 +39,8 @@ public class DeviceRestService {
     private static void send(DeviceMessage message) {
 //        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
         String url = Constant.WEBSOCKET_SERVICE_URI + Constant.WEBSOCKET_SERVICE_API;
-//        String url = Constant.WEBSOCKET_SERVICE_URI;
         log.info("Send message to url: {}", url);
-        int timeout = 5000;
+        int timeout = TIME_OUT;
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
                 new HttpComponentsClientHttpRequestFactory();
         clientHttpRequestFactory.setConnectTimeout(timeout);
@@ -59,7 +59,7 @@ public class DeviceRestService {
                     HttpMethod.POST, entityCredentials, WebSocketMessageResponse.class);
             if (responseEntity != null) {
                 WebSocketMessageResponse response = responseEntity.getBody();
-//                log.info(response.getSuccess() + response.getErrorMessage());
+                log.info(response.getSuccess() + response.getErrorMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -24,7 +24,6 @@ spring.datasource:
     username: root
     password: root
 
-
 server:
   port: 8899
 
@@ -55,3 +54,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  datasource:
+    test-on-borrow: true
+    validation-query: select 1

@@ -41,6 +41,12 @@ public class DeviceType extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DeviceFunctionTypeEnum deviceFunctionType;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column
+    private String additionalAttributes;
+
+
     /**
      * 设备事件
      */
@@ -53,13 +59,19 @@ public class DeviceType extends BaseEntity {
      */
     @ManyToMany(mappedBy = "deviceTypes", cascade = CascadeType.ALL)
     private List<DeviceFunction> deviceFunctions;
-
-
     /**
      * 父设备类型
      */
     @ManyToOne
     private ParentDeviceType parentDeviceType;
+
+    public String getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(String additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
+    }
 
     /**
      * Gets parent device type.

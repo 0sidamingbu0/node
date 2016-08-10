@@ -21,6 +21,8 @@ public class Constant {
      */
     public static final String PARENT_DEVICE_TYPE_N_SWITCHPANEL = "PowerPanel";
 
+    public static final String DEVICE_TYPE_DOOR = "Door";
+
     /**
      * The constant AUTO_JOIN_IN.
      */
@@ -33,7 +35,11 @@ public class Constant {
     public static final long EVENT_TIME_OUT = 1000 * 3;
 
     public static final String WEBSOCKET_SERVICE_API = "/api/websocket/sendMessageToClient";
-
+    /**
+     * 门设备的事件
+     */
+    public static final String DEVICE_EVENT_REPORT_PASSWORD = "ReportCardId";
+    public static final String DEVICE_EVENT_REPORT_CARD = "ReportPassword";
     public static String WEBSOCKET_SERVICE_URI = "";
 
 }

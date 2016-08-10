@@ -1,5 +1,6 @@
 package com.mydreamplus.smartdevice.api.rest;
 
+import com.mydreamplus.smartdevice.config.Command;
 import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.dao.jpa.SensorRepositoryImpl;
 import com.mydreamplus.smartdevice.domain.DeviceDto;
@@ -9,10 +10,10 @@ import com.mydreamplus.smartdevice.domain.PingDto;
 import com.mydreamplus.smartdevice.domain.in.*;
 import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
-import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.SensorData;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.service.*;
+import com.mydreamplus.smartdevice.util.SymbolUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class DeviceController extends AbstractRestHandler {
     private WebSocketService webSocketService;
 
     @Autowired
-    private DeviceManager deviceManager;
+    private ExternalAPIService externalAPIService;
 
     /**
      * Register device base response.
@@ -178,31 +179,21 @@ public class DeviceController extends AbstractRestHandler {
         //记录日志
         log.info(":::::设备触发事件:{} , symbol:{}, {}, 耗时:{} 毫秒", request.getEventName(), request.getSymbol(),
                 new Date(request.getEventTime()), System.currentTimeMillis() - request.getEventTime());
+
+        // 刷卡开门
+        if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD)) {
+            this.cardEventAction(request);
+        }
+        // 扫码开门
+        if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
+            this.passwordEventAction(request);
+        }
+
         // 请求的事件超时,不执行场景
         if (System.currentTimeMillis() - request.getEventTime() >= Constant.EVENT_TIME_OUT) {
-//            throw new TimeOutException("设备触发事件超时,不执行场景!");
             log.info("设备触发事件超时,不执行场景!");
         } else {
-            if (request.getSymbol().equals("00:15:8d:00:00:fc:87:f8-1")) {
-                if (request.getEventName().equals("PressDown")) {
-                    deviceRestService.sendCommandToDevice(request.getPiMacAddress(), "00:12:4b:00:0a:b9:52:52-3", "On");
-                }
-                if (request.getEventName().equals("PressUp")) {
-                    deviceRestService.sendCommandToDevice(request.getPiMacAddress(), "00:12:4b:00:0a:b9:52:52-3", "Off");
-                }
-                if (request.getEventName().equals("DoubleClick")) {
-                    deviceRestService.sendCommandToDevice(request.getPiMacAddress(), "00:12:4b:00:0a:b9:52:52-3", "Reverse");
-                    deviceRestService.sendCommandToDevice(request.getPiMacAddress(), "00:12:4b:00:0a:b9:52:52-4", "Reverse");
-                }
-            }
-            if (request.getSymbol().equals("00:15:8d:00:01:06:c5:2f-1")) {
-                if (request.getEventName().equals("PressDown")) {
-                    deviceRestService.sendCommandToDevice(request.getPiMacAddress(), "00:12:4b:00:0a:b9:52:52-3", "On");
-                }
-                if (request.getEventName().equals("PressUp")) {
-                    deviceRestService.sendCommandToDevice(request.getPiMacAddress(), "00:12:4b:00:0a:b9:52:52-3", "Off");
-                }
-            }
+            // 执行云端场景策略
         }
         return new BaseResponse(RESPONSE_SUCCESS);
     }
@@ -282,6 +273,34 @@ public class DeviceController extends AbstractRestHandler {
         this.deviceService.callbackRemoveDevice(request.getMacAddress());
         return new BaseResponse(RESPONSE_SUCCESS);
     }
+
+
+    /**
+     * 处理刷卡事件
+     *
+     * @param event
+     */
+    private void cardEventAction(DeviceEventRequest event) {
+        if (externalAPIService.checkPermissionDoorCard(event.getData(), event.getPiMacAddress())) {
+            this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
+        }else{
+            this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.OFF);
+        }
+    }
+
+    /**
+     * 处理密码事件
+     *
+     * @param event
+     */
+    private void passwordEventAction(DeviceEventRequest event) {
+        if (externalAPIService.checkPermissionDoorPassword(event.getData(), event.getPiMacAddress())) {
+            this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
+        }else{
+            this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.OFF);
+        }
+    }
+
 
 
 }

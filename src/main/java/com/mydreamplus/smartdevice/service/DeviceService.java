@@ -1,5 +1,6 @@
 package com.mydreamplus.smartdevice.service;
 
+import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.dao.jpa.*;
 import com.mydreamplus.smartdevice.domain.DeviceDto;
 import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
@@ -62,6 +63,7 @@ public class DeviceService {
             if (deviceType == null) {
                 throw new DeviceTypeNotFoundException(String.format("没有找到该设备类型:%s, 注册失败!", deviceDto.getDeviceType()));
             }
+            device.setAdditionalAttributes(deviceType.getAdditionalAttributes());
             device.setDeviceType(deviceType);
             PI pi = piRespository.findByMacAddress(deviceDto.getPIID());
             if (pi == null) {
@@ -81,6 +83,7 @@ public class DeviceService {
             // 已经注册过,更新设备上线状态
 //            device.setDeviceState(DeviceStateEnum.ONLINE);
         }
+        device.setRegistered(false);
         device.setRegisteTime(new Date());
         log.info(String.format("智能设备:%s | :%s,注册成功!", deviceDto.getDeviceType(), deviceDto.getSymbol()));
         deviceRepository.save(device);
@@ -137,11 +140,9 @@ public class DeviceService {
     public void reset(String macAddress) {
         List<Device> devices = deviceRepository.findAllByMacAddress(macAddress);
         devices.forEach(device -> {
-            device.setDeviceState(DeviceStateEnum.UNREGISTERED);
-            device.setUpdateTime(new Date());
             webSocketService.sendMessage("时间:" + new Date() + ",设备重置:" + device.getMacAddress() + ",网关地址:" + device.getPi().getMacAddress() + ",设备类型:" + device.getName());
-            deviceRepository.save(device);
         });
+        deviceRepository.deleteByMacAddress(macAddress);
     }
 
 
@@ -188,6 +189,7 @@ public class DeviceService {
             device.setDeviceState(DeviceStateEnum.ONLINE);
             device.setRegisteTime(new Date());
             device.setUpdateTime(new Date());
+            device.setRegistered(true);
             this.deviceRepository.save(device);
         });
         deviceRestService.registerFeedback(piMacAddress, deviceMacAddress);

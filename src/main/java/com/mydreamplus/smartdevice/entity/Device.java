@@ -57,6 +57,11 @@ public class Device extends BaseEntity {
      */
     @Column
     private String factory;
+
+    /**
+     * 已经注册
+     */
+    private boolean isRegistered = false;
     /**
      * 设备所在组
      */
@@ -86,6 +91,29 @@ public class Device extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_type_id")
     private DeviceType deviceType;
+    /**
+     * 附加的属性
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column
+    private String additionalAttributes;
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
+    }
+
+    public String getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(String additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
+    }
 
     public String getFactory() {
         return factory;
