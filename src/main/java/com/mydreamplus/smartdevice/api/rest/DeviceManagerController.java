@@ -1,5 +1,6 @@
 package com.mydreamplus.smartdevice.api.rest;
 
+import com.mydreamplus.smartdevice.config.DeviceConfig;
 import com.mydreamplus.smartdevice.dao.jpa.LinkQualityRepositoryImpl;
 import com.mydreamplus.smartdevice.domain.*;
 import com.mydreamplus.smartdevice.domain.in.*;
@@ -34,7 +35,7 @@ import java.util.*;
  * Date: 16/7/11
  * Time: 下午4:45
  * To change this template use File | Settings | File Templates.
- * 设备管理API,提供给web页面管理设备
+ * 设 管理API,提供给web页面管理设
  */
 @RestController
 @RequestMapping(value = "/device/manager")
@@ -585,7 +586,7 @@ public class DeviceManagerController extends AbstractRestHandler {
 
 
     /**
-     * 删除场景
+     * 删除 景
      *
      * @param ID the id
      * @return the base response
@@ -617,7 +618,7 @@ public class DeviceManagerController extends AbstractRestHandler {
     }
 
     /**
-     * 删除设备
+     * 删除设
      *
      * @param request the request
      * @return the base response
@@ -677,4 +678,25 @@ public class DeviceManagerController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+
+    /**
+     * Keep auto join base response.
+     *
+     * @param can the can
+     * @return the base response
+     */
+    @RequestMapping(value = "/autoJoin/{can}",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "注册设备")
+    @Transactional
+    public BaseResponse keepAutoJoin(@PathVariable String can) {
+        if (can.equals("true")) {
+            DeviceConfig.setAutoJoinIn(true);
+        } else {
+            DeviceConfig.setAutoJoinIn(false);
+        }
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
 }

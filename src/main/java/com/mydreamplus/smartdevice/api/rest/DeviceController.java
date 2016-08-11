@@ -2,6 +2,7 @@ package com.mydreamplus.smartdevice.api.rest;
 
 import com.mydreamplus.smartdevice.config.Command;
 import com.mydreamplus.smartdevice.config.Constant;
+import com.mydreamplus.smartdevice.config.DeviceConfig;
 import com.mydreamplus.smartdevice.dao.jpa.SensorRepositoryImpl;
 import com.mydreamplus.smartdevice.domain.DeviceDto;
 import com.mydreamplus.smartdevice.domain.DeviceSituationEnum;
@@ -13,7 +14,6 @@ import com.mydreamplus.smartdevice.domain.out.BaseResponse;
 import com.mydreamplus.smartdevice.entity.SensorData;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.service.*;
-import com.mydreamplus.smartdevice.util.SymbolUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -100,7 +100,7 @@ public class DeviceController extends AbstractRestHandler {
             this.deviceService.registerDevice(deviceDto);
         });
         // 默认允许设备自动加入网路
-        if (Constant.AUTO_JOIN_IN) {
+        if (DeviceConfig.isAutoJoinIn()) {
             log.info("默认允许设备自动加入网络");
             this.deviceService.allowDeviceJoinIn(deviceRegisterRequest.getPiMacAddress(), deviceRegisterRequest.getMacAddress());
         }
@@ -110,6 +110,7 @@ public class DeviceController extends AbstractRestHandler {
         }
         return new BaseResponse(RESPONSE_SUCCESS);
     }
+
 
     /**
      * Register pi base response.
@@ -137,7 +138,7 @@ public class DeviceController extends AbstractRestHandler {
 
     /**
      * Status base response.
-     * 设备每个小时会主动上报状态,作为心跳
+     * 设 每个 时会主动上报状态,作为心跳
      *
      * @param request the request
      * @return the base response
@@ -276,14 +277,14 @@ public class DeviceController extends AbstractRestHandler {
 
 
     /**
-     * 处理刷卡事件
+     *  理刷卡事件
      *
      * @param event
      */
     private void cardEventAction(DeviceEventRequest event) {
         if (externalAPIService.checkPermissionDoorCard(event.getData(), event.getPiMacAddress())) {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
-        }else{
+        } else {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.OFF);
         }
     }
@@ -296,11 +297,10 @@ public class DeviceController extends AbstractRestHandler {
     private void passwordEventAction(DeviceEventRequest event) {
         if (externalAPIService.checkPermissionDoorPassword(event.getData(), event.getPiMacAddress())) {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
-        }else{
+        } else {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.OFF);
         }
     }
-
 
 
 }

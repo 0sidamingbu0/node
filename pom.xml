@@ -159,11 +159,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectodd.stilts/stilts-stomp-client -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.projectodd.stilts</groupId>
             <artifactId>stilts-stomp-client</artifactId>
             <version>0.1.1</version>
-        </dependency>
+        </dependency>-->
 
 
 

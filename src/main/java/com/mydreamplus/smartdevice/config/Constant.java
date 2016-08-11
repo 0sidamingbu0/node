@@ -24,12 +24,6 @@ public class Constant {
     public static final String DEVICE_TYPE_DOOR = "Door";
 
     /**
-     * The constant AUTO_JOIN_IN.
-     */
-    public static final boolean AUTO_JOIN_IN = false;
-
-
-    /**
      * 事件触发超时时间
      */
     public static final long EVENT_TIME_OUT = 1000 * 3;
