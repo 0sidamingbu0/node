@@ -9,20 +9,28 @@ package com.mydreamplus.smartdevice.domain;
  */
 public class DeviceFunctionDto {
 
+
+    private Long ID;
     /**
-     * 设备被控方法名
+     * 设 被控方法名
      */
     private String name;
-
     /**
-     * 设备方法的描述
+     * 设 方法的描述
      */
     private String description;
-
     /**
-     * 对该设备方法的别称
+     *  该设 方法的别称
      */
     private String alias;
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
 
     /**
      * Gets name.

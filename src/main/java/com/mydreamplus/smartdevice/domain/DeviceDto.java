@@ -76,6 +76,8 @@ public class DeviceDto {
      */
     private int linkQuality;
 
+    private boolean isRegistered;
+
     /**
      * Instantiates a new Device dto.
      */
@@ -89,6 +91,14 @@ public class DeviceDto {
      */
     public DeviceDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
     }
 
     public String getPiName() {

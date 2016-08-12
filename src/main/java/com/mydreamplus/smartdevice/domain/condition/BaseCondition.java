@@ -35,12 +35,25 @@ public class BaseCondition {
      */
     private double value;
 
+    /**
+     * 0 : 等于;  1:  于;  -1:  于
+     */
+    private int logic;
+
     private String uri = "";
     /**
      * 条件持续事件
      * 单位:毫秒
      */
     private long continuedTime;
+
+    public int getLogic() {
+        return logic;
+    }
+
+    public void setLogic(int logic) {
+        this.logic = logic;
+    }
 
     public double getValue() {
         return value;

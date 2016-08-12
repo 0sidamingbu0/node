@@ -70,7 +70,7 @@ public class DeviceService {
                 throw new PINotFoundException("没有绑定PI,注册失败!");
             }
             pi.getZbDeviceList().add(device);
-            device.setName(deviceType.getAliases());
+            device.setName(deviceType.getName());
             device.setAliases(deviceType.getAliases() + device.getSymbol());
             device.setPi(pi);
             device.setMacAddress(deviceDto.getMacAddress());

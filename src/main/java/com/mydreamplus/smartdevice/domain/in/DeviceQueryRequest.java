@@ -10,7 +10,7 @@ import com.mydreamplus.smartdevice.domain.PageDto;
  * Date: 16/7/13
  * Time: 下午12:20
  * To change this template use File | Settings | File Templates.
- * 设备查询vo
+ * 设 查询vo
  */
 public class DeviceQueryRequest extends BaseRequest {
 
@@ -20,29 +20,42 @@ public class DeviceQueryRequest extends BaseRequest {
     private PageDto pageDto;
 
     /**
-     * 设备的mac地址
+     * 设 的mac
      */
     private String macAddress;
 
     /**
-     * 设备运行状况
+     * 设 运行状况
      */
     private DeviceSituationEnum situation;
 
     /**
-     * 设备的状态
+     * 设 的状态
      */
     private DeviceStateEnum state;
 
     /**
-     * 设备别名
+     * 设 别名
      */
     private String aliases;
 
     /**
-     * 设备类型
+     * 设 类
      */
     private String deviceType;
+
+    /**
+     * 是否注册
+     */
+    private boolean isRegistered;
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
+    }
 
     /**
      * Gets page dto.

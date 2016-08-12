@@ -20,7 +20,7 @@ public class SensorValueCondition extends BaseCondition {
     private double value;
 
     /**
-     * 条件持续事件
+     * 条件持续时间
      * 单位:毫秒
      */
     private long continuedTime;

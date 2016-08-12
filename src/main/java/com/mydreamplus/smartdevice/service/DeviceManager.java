@@ -25,7 +25,7 @@ import java.util.List;
  * Date: 16/7/11
  * Time: 下午4:50
  * To change this template use File | Settings | File Templates.
- * 设备管理服务层,面向设备管理的接口,提供网页的API调用
+ * 设 管理服务 ,面向设 管理的接口,提供网页的API调用
  */
 @Service
 public class DeviceManager {
@@ -142,10 +142,12 @@ public class DeviceManager {
     /**
      * Find all device types list.
      *
+     * @param pageDto the page dto
      * @return the list
      */
-    public Iterable<DeviceType> findALLDeviceTypes() {
-        return deviceTypeRepository.findAll();
+    public Page<DeviceType> findALLDeviceTypes(PageDto pageDto) {
+        PageRequest pageRequest = new PageRequest(pageDto.getPage() - 1, pageDto.getSize());
+        return deviceTypeRepository.findAll(pageRequest);
     }
 
     /**
@@ -166,9 +168,9 @@ public class DeviceManager {
      * @return the list
      */
     public Page<Device> findAllDevicesByPredicate(DeviceDto deviceDto, Pageable pageable) {
-       /* Device device = new Device();
-        BeanUtils.copyProperties(deviceDto, device);*/
-        return this.deviceRepository.search(deviceDto.getDeviceState(), pageable);
+        Device device = new Device();
+        BeanUtils.copyProperties(deviceDto, device);
+        return this.deviceRepository.search(device, pageable);
     }
 
 
@@ -216,7 +218,7 @@ public class DeviceManager {
     }
 
     /**
-     * 查询所有的场景策略
+     * 查询所有的 景策略
      *
      * @param pageDto the page dto
      * @return list list
@@ -243,7 +245,7 @@ public class DeviceManager {
 
     /**
      * Find all devices by name for controlled list.
-     * 查询所有被控设备, 同一个PI上面
+     * 查询所有被控设 , 同一个PI上面
      *
      * @param aliases      the aliases
      * @param piMacAddress the pi mac address
@@ -255,7 +257,7 @@ public class DeviceManager {
 
     /**
      * Find all devices by pi mac address for becontrolled list.
-     * 查询 PI上所有被控设备
+     * 查询 PI上所有被控设
      *
      * @param piMacAddress the pi mac address
      * @return the list
@@ -266,9 +268,9 @@ public class DeviceManager {
 
     /**
      * Find all devices by mac address and function type list.
-     * 查询 PI上所有设备
+     * 查询 PI上所有设
      *
-     * @param functionType the function type   设备的职能类型 : Switch / Sensor/ Controlled
+     * @param functionType the function type   设 的职能类  : Switch / Sensor/ Controlled
      * @param piMacAddress the pi mac address
      * @return the list
      */
@@ -369,7 +371,7 @@ public class DeviceManager {
      *
      * @param ID the id
      */
-    public void removePi(Long ID){
+    public void removePi(Long ID) {
         this.piRespository.delete(ID);
     }
 
@@ -389,6 +391,23 @@ public class DeviceManager {
     }
 
     /**
+     * Update pi info.
+     *
+     * @param piDto the pi dto
+     */
+    public void updatePiInfo(PIDto piDto) {
+        PI pi = this.piRespository.findOne(piDto.getID());
+        if (pi == null) {
+            throw new DataInvalidException("没有找到PI");
+        }
+        pi.setUpdateTime(new Date());
+        pi.setName(piDto.getName());
+        pi.setDescription(piDto.getDescription());
+        this.piRespository.save(pi);
+    }
+
+
+    /**
      * Find devices by type list.
      *
      * @param deviceType the device type
@@ -399,11 +418,23 @@ public class DeviceManager {
     }
 
 
-    public DeviceType findDeviceTypeByName(String typeName){
+    /**
+     * Find device type by name device type.
+     *
+     * @param typeName the type name
+     * @return the device type
+     */
+    public DeviceType findDeviceTypeByName(String typeName) {
         return this.deviceTypeRepository.findByName(typeName);
     }
 
-    public List<Device> findDevicesByMacAddress(String macAddress){
+    /**
+     * Find devices by mac address list.
+     *
+     * @param macAddress the mac address
+     * @return the list
+     */
+    public List<Device> findDevicesByMacAddress(String macAddress) {
         return this.deviceRepository.findAllByMacAddress(macAddress);
     }
 

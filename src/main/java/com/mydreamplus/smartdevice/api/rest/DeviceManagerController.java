@@ -129,7 +129,6 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "创建设备类型")
     public BaseResponse createDeviceType(@RequestBody DeviceTypeDto deviceTypeDto) {
-
         this.deviceManager.saveDeviceType(deviceTypeDto);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
@@ -145,9 +144,9 @@ public class DeviceManagerController extends AbstractRestHandler {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "查询设备类型", notes = "全部")
-    public BaseResponse findAllDeviceTypes() {
-        BaseResponse response = new BaseResponse();
-        Iterable<DeviceType> deviceTypes = deviceManager.findALLDeviceTypes();
+    public PageResponse findAllDeviceTypes(@RequestBody PageDto pageDto) {
+        PageResponse response = new PageResponse();
+        Page<DeviceType> deviceTypes = deviceManager.findALLDeviceTypes(pageDto);
         List<DeviceTypeDto> deviceTypeDtos = new ArrayList<>();
         deviceTypes.forEach(deviceType -> {
             log.info(deviceType.getName());
@@ -161,7 +160,10 @@ public class DeviceManagerController extends AbstractRestHandler {
             dto.setDeviceFunctions(functionList);
             deviceTypeDtos.add(dto);
         });
-        response.setMessage(RESPONSE_SUCCESS);
+        response.setTotalPages(deviceTypes.getTotalPages());
+        response.setCurrentPage(pageDto.getPage());
+        response.setTotalElements(deviceTypes.getNumberOfElements());
+        response.setPerPage(pageDto.getSize());
         response.setData(deviceTypeDtos);
         return response;
     }
@@ -183,6 +185,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         DeviceDto deviceDto = new DeviceDto();
         deviceDto.setName(request.getDeviceType());
         deviceDto.setDeviceState(request.getState());
+        deviceDto.setRegistered(request.isRegistered());
         Page<Device> pageDevice = this.deviceManager.findAllDevicesByPredicate(deviceDto,
                 new PageRequest(request.getPageDto().getPage() - 1, request.getPageDto().getSize()));
         pageDevice.forEach(device -> {
@@ -677,6 +680,28 @@ public class DeviceManagerController extends AbstractRestHandler {
         this.deviceManager.updateDeviceInfo(deviceInfo);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
+
+
+    /**
+     * 更新PI的 名称 和 描述
+     * @param piDto
+     * @return
+     */
+    @RequestMapping(value = "/updatePiInfo",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "修改PI信息")
+    public BaseResponse updateDeviceInfo(@RequestBody PIDto piDto) {
+        if (piDto == null || piDto.getID() == 0) {
+            throw new DataInvalidException("没有PI ID");
+        }
+        this.deviceManager.updatePiInfo(piDto);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+
+
 
 
     /**

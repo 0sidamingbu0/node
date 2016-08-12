@@ -63,7 +63,6 @@ public class DeviceRepositoryImpl {
     }
 
 
-    @Deprecated
     public Page<Device> search(Device device, Pageable pageable) {
 
         String dataSql = "select t from Device t where 1 = 1";
@@ -106,6 +105,51 @@ public class DeviceRepositoryImpl {
                 dataQuery.setParameter(3, device.getDeviceState());
             }
         }
+        log.info("总数:" + countQuery.getSingleResult());
+        return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
+    }
+
+
+    public Page<Device> search(boolean isRegistered, String deviceTypeName, DeviceStateEnum deviceStateEnum, Pageable pageable) {
+
+        String dataSql = "select t from Device t where 1 = 1";
+        String countSql = "select count(t) from Device t where 1 = 1";
+        if (deviceTypeName != null && !StringUtils.isEmpty(deviceTypeName)) {
+            dataSql += " and t.name = ?1";
+            countSql += " and t.name = ?1";
+        }
+        if (deviceStateEnum != null) {
+            dataSql += " and t.deviceState = ?2";
+            countSql += " and t.deviceState = ?2";
+        }
+        if (isRegistered) {
+            dataSql += " and t.isRegistered = true";
+            countSql += " and t.isRegistered = true";
+        } else {
+            dataSql += " and t.isRegistered = false";
+            countSql += " and t.isRegistered = false";
+        }
+
+        dataSql += " order by updateTime desc";
+        Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
+        Query countQuery = em.createQuery(countSql);
+
+        /*if (device != null && !StringUtils.isEmpty(device.getName())) {
+            dataQuery.setParameter(1, device.getName());
+            countQuery.setParameter(1, device.getName());
+        }
+        if (device != null && !StringUtils.isEmpty(device.getAliases())) {
+            dataQuery.setParameter(2, device.getAliases());
+            countQuery.setParameter(2, device.getAliases());
+        }
+        if (device != null && !StringUtils.isEmpty(device.getDeviceState())) {
+            if (device.getDeviceState() == DeviceStateEnum.REGISTERED) {
+
+            } else {
+                countQuery.setParameter(3, device.getDeviceState());
+                dataQuery.setParameter(3, device.getDeviceState());
+            }
+        }*/
         log.info("总数:" + countQuery.getSingleResult());
         return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }

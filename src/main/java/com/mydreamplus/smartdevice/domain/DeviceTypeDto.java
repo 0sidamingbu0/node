@@ -10,45 +10,52 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class DeviceTypeDto {
+
     /**
-     * 设备类型名称
+     * ID
+     */
+    private Long ID;
+    /**
+     * 设 类 名称
      */
     private String name;
     /**
-     * 设备类型的描述
+     * 设 类 的描述
      */
     private String description;
-
     /**
-     * 设备的别名,例如SensorBody_MI
-     * 类型 + 设备的来源
+     * 设 的别名,例 SensorBody_MI
+     * 类  + 设 的来源
      */
     private String aliases;
-
     /**
-     * 设备制造的来源
+     * 设 制造的来源
      */
     private DeviceSourceEnum deviceSource;
-
     /**
-     * 设备的职能分类
+     * 设 的职能分类
      */
     private DeviceFunctionTypeEnum deviceFunctionType;
-
     /**
-     * 设备的事件列表
+     * 设 的事件列表
      */
     private List<Long> deviceEvents;
     /**
-     * 设备的方法列表
+     * 设 的方法列表
      */
     private List<Long> deviceFunctions;
-
     /**
-     * 父亲设备类型ID
+     * 父亲设 类 ID
      */
     private Long parentDeviceType;
 
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
 
     /**
      * Gets device functions.
