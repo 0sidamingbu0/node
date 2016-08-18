@@ -38,8 +38,8 @@ public class DeviceRestService {
      * @param message
      */
     private static void send(DeviceMessage message) {
-        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
-//        String url = Constant.WEBSOCKET_SERVICE_URI + Constant.WEBSOCKET_SERVICE_API;
+//        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
+        String url = Constant.WEBSOCKET_SERVICE_URI + Constant.WEBSOCKET_SERVICE_API;
         log.info("Send message to url: {}", url);
         int timeout = TIME_OUT;
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
