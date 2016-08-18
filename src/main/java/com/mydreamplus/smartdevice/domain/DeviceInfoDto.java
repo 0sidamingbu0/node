@@ -18,57 +18,60 @@ import java.util.List;
  */
 public class DeviceInfoDto {
 
+    private Long ID;
     /**
-     * 拆分前的设备类型
+     * 拆分前的设 类
      */
     private String parentDeviceType;
     /**
-     * 设备的唯一标识,由NODE解析生成(mac地址)
+     * 设 的唯一标识,由NODE解析生成(mac  )
      */
     private String symbol;
     /**
-     * 设备所在的PI设备 PI的mac地址
+     * 设 所 的PI设  PI的mac
      */
     private String PIID;
     /**
-     * 设备的名称
+     * 设 的名称
      */
     private String name;
     /**
-     * 设备的别名,在云端设置
+     * 设 的别名, 云端设置
      */
     private String aliases;
-
     /**
-     * 设备的描述信息
+     * 设 的描述信息
      */
     private String description;
     /**
-     * 设备的类型
+     * 设 的类
      */
     private String deviceType;
-
     private String factory;
-
     private int linkQuality;
+
     /**
-     * 设备状态
+     * 设 的配置信息
+     */
+    private String additionalAttributes;
+    /**
+     * 设 状态
      */
     private DeviceStateEnum deviceState;
     /**
-     * 设备的状况, 开启/关闭
+     * 设 的状况, 开启/关闭
      */
     private DeviceSituationEnum deviceSituation;
     /**
-     * 设备的注册时间
+     * 设 的注册时间
      */
     private Date registeTime;
     /**
-     * 传感器数据
+     * 传感 数据
      */
     private List<SensorData> sensorDatas;
     /**
-     * 设备分组
+     * 设 分组
      */
     private List<DeviceGroup> deviceGroupList;
     /**
@@ -83,6 +86,22 @@ public class DeviceInfoDto {
      */
     public DeviceInfoDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public String getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(String additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public int getLinkQuality() {

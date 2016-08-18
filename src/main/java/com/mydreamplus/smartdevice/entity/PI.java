@@ -1,9 +1,6 @@
 package com.mydreamplus.smartdevice.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -19,22 +16,23 @@ import java.util.List;
 public class PI extends BaseEntity {
 
 
-
     /**
      * PI的名称
      */
     @Column(unique = true, name = "pi_name")
     private String name;
     /**
-     * PI的mac地址
+     * PI的mac
      */
     private String macAddress;
     /**
      * PI的描述信息
      */
     private String description;
+
+
     /**
-     * 连接到这个PI上的ZIGBEE设备
+     * 连接到这个PI上的ZIGBEE设
      */
     @OneToMany(mappedBy = "pi")
     private List<Device> zbDeviceList;
@@ -48,10 +46,20 @@ public class PI extends BaseEntity {
      */
     private Date registerTime;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private DeviceGroup deviceGroup;
     /**
-     * PI的ip地址
+     * PI的ip
      */
     private String ipAddress;
+
+    public DeviceGroup getDeviceGroup() {
+        return deviceGroup;
+    }
+
+    public void setDeviceGroup(DeviceGroup deviceGroup) {
+        this.deviceGroup = deviceGroup;
+    }
 
     public String getIpAddress() {
         return ipAddress;

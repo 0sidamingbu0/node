@@ -2,6 +2,8 @@ package com.mydreamplus.smartdevice.service;
 
 import com.mydreamplus.smartdevice.dao.jpa.*;
 import com.mydreamplus.smartdevice.domain.*;
+import com.mydreamplus.smartdevice.domain.in.AndroidTVConfigRequest;
+import com.mydreamplus.smartdevice.domain.in.DeviceQueryRequest;
 import com.mydreamplus.smartdevice.entity.*;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.util.JsonUtil;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +37,7 @@ public class DeviceManager {
     private DeviceEventRepository deviceEventRepository;
 
     @Autowired
-    private DeviceFunctionFRepository deviceFunctionFRepository;
+    private DeviceFunctionRepository deviceFunctionRepository;
 
     @Autowired
     private DeviceTypeRepository deviceTypeRepository;
@@ -57,6 +60,12 @@ public class DeviceManager {
     @Autowired
     private SensorDataRepository sensorDataRepository;
 
+    @Autowired
+    private DeviceRestService deviceRestService;
+
+    @Autowired
+    private DeviceGroupRepository deviceGroupRepository;
+
 
     /**
      * FinFind device event by id device event.
@@ -75,7 +84,7 @@ public class DeviceManager {
      * @return the device function
      */
     public DeviceFunction findDeviceFunctionByID(Long ID) {
-        return deviceFunctionFRepository.findOne(ID);
+        return deviceFunctionRepository.findOne(ID);
     }
 
     /**
@@ -86,7 +95,7 @@ public class DeviceManager {
      */
     public DeviceEvent saveDeviceEvent(DeviceEvent deviceEvent) {
         // 修改
-        if (deviceEvent.getID() != 0) {
+        if (deviceEvent != null && deviceEvent.getID() != 0) {
             DeviceEvent deviceEvent1 = deviceEventRepository.findOne(deviceEvent.getID());
             BeanUtils.copyProperties(deviceEvent, deviceEvent1);
             return deviceEventRepository.save(deviceEvent1);
@@ -102,7 +111,12 @@ public class DeviceManager {
      * @return the device function
      */
     public DeviceFunction saveDeviceFunction(DeviceFunction function) {
-        return deviceFunctionFRepository.save(function);
+        if (function != null && function.getID() != 0) {
+            DeviceFunction function1 = this.deviceFunctionRepository.findOne(function.getID());
+            BeanUtils.copyProperties(function, function1);
+            this.deviceFunctionRepository.save(function1);
+        }
+        return deviceFunctionRepository.save(function);
     }
 
 
@@ -113,28 +127,34 @@ public class DeviceManager {
      * @return the device type
      */
     public DeviceType saveDeviceType(DeviceTypeDto deviceTypeDto) {
-        DeviceType deviceType = new DeviceType();
+        DeviceType deviceType = null;
+        if (deviceTypeDto != null && deviceTypeDto.getID() != 0) {
+            deviceType = this.deviceTypeRepository.findOne(deviceTypeDto.getID());
+        }
+        if (deviceType == null) {
+            deviceType = new DeviceType();
+        }
         BeanUtils.copyProperties(deviceTypeDto, deviceType, "deviceEvents", "deviceFunctions");
         List<DeviceEvent> deviceEventList = new ArrayList<>();
+        DeviceType finalDeviceType = deviceType;
         deviceTypeDto.getDeviceEvents().stream().forEach(aLong -> {
             DeviceEvent event = this.findDeviceEventByID(aLong);
             if (event != null) {
                 deviceEventList.add(event);
-                event.getDeviceTypes().add(deviceType);
+                event.getDeviceTypes().add(finalDeviceType);
             }
         });
         List<DeviceFunction> deviceFunctionList = new ArrayList<>();
+        DeviceType finalDeviceType1 = deviceType;
         deviceTypeDto.getDeviceFunctions().stream().forEach(aLong -> {
             DeviceFunction function = this.findDeviceFunctionByID(aLong);
             if (function != null) {
                 deviceFunctionList.add(function);
-                function.getDeviceTypes().add(deviceType);
+                function.getDeviceTypes().add(finalDeviceType1);
             }
         });
         deviceType.setDeviceFunctions(deviceFunctionList);
         deviceType.setDeviceEvents(deviceEventList);
-//        ParentDeviceType parentDeviceType = new ParentDeviceType();
-//        parentDeviceType.setID(deviceTypeDto.getParentDeviceType());
         return deviceTypeRepository.save(deviceType);
     }
 
@@ -153,24 +173,51 @@ public class DeviceManager {
     /**
      * Find all device functions iterable.
      *
+     * @param pageDot the page dot
      * @return the iterable
      */
-    public Iterable<DeviceFunction> findALLDeviceFunctions() {
-        return deviceFunctionFRepository.findAll();
+    public Page<DeviceFunction> findALLDeviceFunctions(PageDto pageDot) {
+        PageRequest pageRequest = new PageRequest(pageDot.getPage() - 1, pageDot.getSize());
+        return this.deviceFunctionRepository.findAll(pageRequest);
     }
 
 
     /**
-     * Find all devices by predicate list.
+     * Find all device functions iterable.
      *
-     * @param deviceDto the device dto
-     * @param pageable  the page dto
-     * @return the list
+     * @param pageDot the page dot
+     * @return the iterable
      */
-    public Page<Device> findAllDevicesByPredicate(DeviceDto deviceDto, Pageable pageable) {
-        Device device = new Device();
-        BeanUtils.copyProperties(deviceDto, device);
-        return this.deviceRepository.search(device, pageable);
+    public Page<DeviceEvent> findALLDeviceEvents(PageDto pageDot) {
+        PageRequest pageRequest = new PageRequest(pageDot.getPage() - 1, pageDot.getSize());
+        return this.deviceEventRepository.findAll(pageRequest);
+    }
+
+    /**
+     * Find all groups page.
+     *
+     * @param pageDto the page dto
+     * @return the page
+     */
+    public Page<DeviceGroup> findAllGroups(PageDto pageDto) {
+        PageRequest pageRequest = new PageRequest(pageDto.getPage() - 1, pageDto.getSize());
+        return this.deviceGroupRepository.findAll(pageRequest);
+    }
+
+
+    /**
+     * Find all devices page.
+     *
+     * @param request  the request
+     * @param pageable the pageable
+     * @return the page
+     */
+    public Page<Device> findAllDevices(DeviceQueryRequest request, Pageable pageable) {
+        if(!StringUtils.isEmpty(request.getState())){
+            return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), DeviceStateEnum.valueOf(request.getState()), pageable);
+        }else{
+            return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), null, pageable);
+        }
     }
 
 
@@ -195,6 +242,17 @@ public class DeviceManager {
     }
 
     /**
+     * Find policy by master event policy.
+     *
+     * @param symbol the symbol
+     * @param event  the event
+     * @return the policy  {00:15:8d:00:00:f2:44:9e-1=PressDown}
+     */
+    public Policy findPolicyByMasterEvent(String symbol, String event) {
+        return policyRepository.findByMasterEvent("{" + symbol + "=" + event + "}");
+    }
+
+    /**
      * Save parent device type.
      *
      * @param parentDeviceTypeDto the parent device type dto
@@ -212,7 +270,12 @@ public class DeviceManager {
      * @return the device group
      */
     public DeviceGroup saveGroup(DeviceGroupDto groupDto) {
-        DeviceGroup deviceGroup = new DeviceGroup();
+        DeviceGroup deviceGroup;
+        if (groupDto.getID() != null) {
+            deviceGroup = this.deviceGroupRepository.findOne(groupDto.getID());
+        } else {
+            deviceGroup = new DeviceGroup();
+        }
         BeanUtils.copyProperties(groupDto, deviceGroup);
         return this.groupRepository.save(deviceGroup);
     }
@@ -240,6 +303,22 @@ public class DeviceManager {
         } else {
             return this.deviceRepository.findAllMasterByAliasesContainingAndFunctionType(aliases, DeviceFunctionTypeEnum.SWITCH, DeviceFunctionTypeEnum.SENSOR);
         }
+    }
+
+
+    /**
+     * Find all master device by pi list.
+     *
+     * @param piMacAddress the pi mac address
+     * @return the list
+     */
+    public List<Device> findAllMasterDeviceByPiMacAddress(String piMacAddress) {
+        PI pi = this.piRespository.findByMacAddress(piMacAddress);
+        if (pi == null) {
+            throw new DataInvalidException("没有找到PI");
+        }
+        return this.deviceRepository.findAllMasterByFunctionTypeAndPI(DeviceFunctionTypeEnum.SWITCH, DeviceFunctionTypeEnum.SENSOR, pi);
+
     }
 
 
@@ -355,15 +434,34 @@ public class DeviceManager {
 
     /**
      * Remove policy.
-     * 假删除,更新策略删除状态
      *
      * @param ID the id
      */
     public void removePolicy(Long ID) {
-        Policy policy = this.policyRepository.findOne(ID);
+        /*Policy policy = this.policyRepository.findOne(ID);
         policy.setDeleted(true);
         policy.setUpdateTime(new Date());
-        this.policyRepository.save(policy);
+        this.policyRepository.save(policy);*/
+        this.policyRepository.delete(ID);
+    }
+
+    /**
+     * Remove device function.
+     *
+     * @param ID the id
+     */
+    public void removeDeviceFunction(Long ID) {
+        this.deviceFunctionRepository.delete(ID);
+    }
+
+
+    /**
+     * Remove device event.
+     *
+     * @param ID the id
+     */
+    public void removeDeviceEvent(Long ID) {
+        this.deviceEventRepository.delete(ID);
     }
 
     /**
@@ -399,6 +497,14 @@ public class DeviceManager {
         PI pi = this.piRespository.findOne(piDto.getID());
         if (pi == null) {
             throw new DataInvalidException("没有找到PI");
+        }
+        if(piDto.getGroupId() != null){
+            DeviceGroup deviceGroup = this.deviceGroupRepository.findOne(piDto.getGroupId());
+            if (deviceGroup != null) {
+                pi.setDeviceGroup(deviceGroup);
+                deviceGroup.getPis().add(pi);
+                this.deviceGroupRepository.save(deviceGroup);
+            }
         }
         pi.setUpdateTime(new Date());
         pi.setName(piDto.getName());
@@ -438,5 +544,38 @@ public class DeviceManager {
         return this.deviceRepository.findAllByMacAddress(macAddress);
     }
 
+
+    /**
+     * 更新Android TV配置信息
+     *
+     * @param request the request
+     */
+    public void updateAndroidConfig(AndroidTVConfigRequest request) {
+        Device device = this.deviceRepository.findOne(request.getDeviceId());
+        if (device == null) {
+            throw new DataInvalidException("没有找到设备");
+        }
+        AndroidTVConfigDto dto = new AndroidTVConfigDto();
+        dto.setCustomerUrl(request.getCustomerUrl());
+        dto.setDefaultUrl(request.getDefaultUrl());
+        device.setAdditionalAttributes(JsonUtil.toJsonString(dto));
+        this.deviceRepository.save(device);
+        this.deviceRestService.sendConfigProperty(device);
+    }
+
+    /**
+     * Find pi by group list.
+     *
+     * @param groupId the group id
+     * @return the list
+     */
+    public List<PI> findPiByGroup(Long groupId) {
+        DeviceGroup group = this.groupRepository.findOne(groupId);
+        if (group != null) {
+            return group.getPis();
+        } else {
+            return null;
+        }
+    }
 }
 

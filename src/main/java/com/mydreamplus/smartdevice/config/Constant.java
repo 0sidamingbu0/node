@@ -36,4 +36,6 @@ public class Constant {
     public static final String DEVICE_EVENT_REPORT_CARD = "ReportPassword";
     public static String WEBSOCKET_SERVICE_URI = "";
 
+    public static final String DEFAULT_GROUP_NAME = "DEFAULT_GROUP";
+
 }

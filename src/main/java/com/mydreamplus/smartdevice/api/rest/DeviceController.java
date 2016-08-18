@@ -59,6 +59,23 @@ public class DeviceController extends AbstractRestHandler {
     @Autowired
     private ExternalAPIService externalAPIService;
 
+
+
+    @RequestMapping(value = "/common/register",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "通用设备注册")
+    @Transactional
+    public BaseResponse registerCommonDevice(@RequestBody CommonDeviceRequest commonDeviceRequest) {
+        this.deviceService.registerCommonDevice(commonDeviceRequest);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+
+
+
+
     /**
      * Register device base response.
      *
@@ -131,6 +148,7 @@ public class DeviceController extends AbstractRestHandler {
         PIDeviceDto piDeviceDto = new PIDeviceDto();
         piDeviceDto.setPiMacAddress(request.getPiMacAddress());
         piDeviceDto.setIpAddress(request.getPiIpAddress());
+        piDeviceDto.setHostName(request.getHostName());
         this.deviceService.registerPi(piDeviceDto);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
@@ -295,6 +313,7 @@ public class DeviceController extends AbstractRestHandler {
      * @param event
      */
     private void passwordEventAction(DeviceEventRequest event) {
+        // 密码开门
         if (externalAPIService.checkPermissionDoorPassword(event.getData(), event.getPiMacAddress())) {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
         } else {

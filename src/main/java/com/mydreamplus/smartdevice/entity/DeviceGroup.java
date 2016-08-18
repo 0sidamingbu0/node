@@ -14,26 +14,40 @@ import java.util.List;
 public class DeviceGroup extends BaseEntity {
 
     /**
-     * 区域名字
+     * 区 名
      */
     @Column(name = "group_name")
     private String name;
     /**
-     * 区域描述
+     * 区 描述
      */
     private String description;
 
 
     /**
-     * 区域的设备
+     * PI的分组
      */
-    @ManyToMany
-    @JoinTable(
-            name = "device_group_on_device",
-            joinColumns = @JoinColumn(name = "device_id", referencedColumnName = "ID"),
-            inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "ID"))
-    private List<Device> devices;
+    @OneToMany(mappedBy = "deviceGroup")
+    private List<PI> pis;
 
+
+    /**
+     * Gets pis.
+     *
+     * @return the pis
+     */
+    public List<PI> getPis() {
+        return pis;
+    }
+
+    /**
+     * Sets pis.
+     *
+     * @param pis the pis
+     */
+    public void setPis(List<PI> pis) {
+        this.pis = pis;
+    }
 
     /**
      * Gets name.
@@ -71,21 +85,4 @@ public class DeviceGroup extends BaseEntity {
         this.description = description;
     }
 
-    /**
-     * Gets devices.
-     *
-     * @return the devices
-     */
-    public List<Device> getDevices() {
-        return devices;
-    }
-
-    /**
-     * Sets devices.
-     *
-     * @param devices the devices
-     */
-    public void setDevices(List<Device> devices) {
-        this.devices = devices;
-    }
 }

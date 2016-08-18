@@ -8,7 +8,21 @@ package com.mydreamplus.smartdevice.domain.in;
  * To change this template use File | Settings | File Templates.
  */
 public class PIRegisterRequest extends BaseDeviceRequest {
+
     private String piIpAddress;
+
+    /**
+     * 主机名
+     */
+    private String hostName;
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
 
     public String getPiIpAddress() {
         return piIpAddress;

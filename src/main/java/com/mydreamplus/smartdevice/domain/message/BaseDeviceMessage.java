@@ -2,6 +2,8 @@ package com.mydreamplus.smartdevice.domain.message;
 
 import com.mydreamplus.smartdevice.domain.MessageTypeEnum;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: liji
@@ -12,7 +14,7 @@ import com.mydreamplus.smartdevice.domain.MessageTypeEnum;
 public class BaseDeviceMessage {
 
     /**
-     * PI的MAC地址
+     * PI的MAC    Android MacAddress
      */
     private String piAddress;
 
@@ -26,10 +28,20 @@ public class BaseDeviceMessage {
      */
     private String message;
 
+
+    private Map<String, Object> data;
     /**
-     * 消息类型
+     * 消息类
      */
     private MessageTypeEnum messageType;
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
 
     public String getPiAddress() {
         return piAddress;

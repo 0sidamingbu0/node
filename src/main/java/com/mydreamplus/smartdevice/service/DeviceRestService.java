@@ -7,6 +7,7 @@ import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 import com.mydreamplus.smartdevice.domain.message.DeviceMessage;
 import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
 import com.mydreamplus.smartdevice.domain.message.WebSocketMessageResponse;
+import com.mydreamplus.smartdevice.entity.Device;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,8 @@ public class DeviceRestService {
      * @param message
      */
     private static void send(DeviceMessage message) {
-//        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
-        String url = Constant.WEBSOCKET_SERVICE_URI + Constant.WEBSOCKET_SERVICE_API;
+        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
+//        String url = Constant.WEBSOCKET_SERVICE_URI + Constant.WEBSOCKET_SERVICE_API;
         log.info("Send message to url: {}", url);
         int timeout = TIME_OUT;
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
@@ -66,11 +67,30 @@ public class DeviceRestService {
         }
     }
 
+
     /**
-     * 设备注册成功反馈
+     * 配置Android TV
+     *
+     * @param device the device
+     */
+    @Async(value = "messageExecutor")
+    public void sendConfigProperty(Device device) {
+        DeviceMessage deviceMessage = new DeviceMessage();
+        deviceMessage.setAction("/config");
+        deviceMessage.setMessage(SUCCESS);
+        deviceMessage.setMessageType(MessageTypeEnum.CONFIG);
+        deviceMessage.setPiAddress(device.getMacAddress());
+        deviceMessage.setConfig(device.getAdditionalAttributes());
+        send(deviceMessage);
+        log.info(":::::::::配置 Android TV!");
+    }
+
+
+    /**
+     * 设 注册成功反馈
      *
      * @param piMacAddress the pi mac address
-     * @param macAddress   设备的mac地址
+     * @param macAddress   设的mac
      */
     @Async(value = "messageExecutor")
     public void registerFeedback(String piMacAddress, String macAddress) {
@@ -80,6 +100,18 @@ public class DeviceRestService {
         deviceMessage.setMessageType(MessageTypeEnum.FEEDBACK);
         deviceMessage.setPiAddress(piMacAddress);
         deviceMessage.setMacAddress(macAddress);
+        send(deviceMessage);
+        log.info(":::::::::注册设备反馈!");
+    }
+
+
+    @Async(value = "messageExecutor")
+    public void registerFeedback(String macAddress) {
+        DeviceMessage deviceMessage = new DeviceMessage();
+        deviceMessage.setAction("/register");
+        deviceMessage.setMessage(SUCCESS);
+        deviceMessage.setMessageType(MessageTypeEnum.FEEDBACK);
+        deviceMessage.setPiAddress(macAddress);
         send(deviceMessage);
         log.info(":::::::::注册设备反馈!");
     }
@@ -103,7 +135,7 @@ public class DeviceRestService {
 
 
     /**
-     * 删除设备
+     * 删除设
      *
      * @param piMacAddress the pi mac address
      * @param macAddress   the mac address
@@ -137,7 +169,7 @@ public class DeviceRestService {
     }
 
     /**
-     * 允许设备加入网络 60s
+     * 允许设 加入网络 60s
      *
      * @param piMacAddress the pi mac address
      * @param minute       the minute
@@ -155,7 +187,7 @@ public class DeviceRestService {
     }
 
     /**
-     * 获取设备状态信息
+     * 获取设 状态信息
      *
      * @param piMacAddress the pi mac address
      * @param macAddress   the mac address
@@ -217,7 +249,7 @@ public class DeviceRestService {
 
 
     /**
-     * 让传感器上报数据
+     * 让传感 上报数据
      *
      * @param piMacAddress the pi mac address
      * @param symbol       the pi mac address
@@ -237,7 +269,7 @@ public class DeviceRestService {
     }
 
     /**
-     * 下发场景策略
+     * 下发 景策略
      *
      * @param piMacAddress      the pi mac address
      * @param policyMessageList the policy message list

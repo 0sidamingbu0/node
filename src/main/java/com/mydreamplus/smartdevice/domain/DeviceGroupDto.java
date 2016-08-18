@@ -9,21 +9,16 @@ package com.mydreamplus.smartdevice.domain;
  */
 public class DeviceGroupDto {
 
+    private Long ID;
     private String name;
-
     private String description;
 
-    /**
-     * 设备的mac地址
-     */
-    private String macAddress;
-
-    public String getMacAddress() {
-        return macAddress;
+    public Long getID() {
+        return ID;
     }
 
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     /**

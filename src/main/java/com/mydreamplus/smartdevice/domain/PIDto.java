@@ -13,10 +13,18 @@ import java.util.Date;
 public class PIDto {
 
     private Long ID;
+
+    /**
+     * PI分组,逻辑上场地划分
+     */
+    private Long groupId;
+
     private Date createTime;
     private String name;
+    private String groupName;
+
     /**
-     * PI的mac地址
+     * PI的mac
      */
     private String macAddress;
     /**
@@ -35,6 +43,22 @@ public class PIDto {
      * IP
      */
     private String ipAddress;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     public Long getID() {
         return ID;

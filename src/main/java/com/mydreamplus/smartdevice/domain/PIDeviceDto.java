@@ -17,6 +17,16 @@ public class PIDeviceDto extends BaseDeviceRequest {
 
     private String ipAddress;
 
+    private String hostName;
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
     public String getIpAddress() {
         return ipAddress;
     }

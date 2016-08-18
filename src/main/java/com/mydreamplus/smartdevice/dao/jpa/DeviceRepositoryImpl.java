@@ -134,22 +134,14 @@ public class DeviceRepositoryImpl {
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
-        /*if (device != null && !StringUtils.isEmpty(device.getName())) {
-            dataQuery.setParameter(1, device.getName());
-            countQuery.setParameter(1, device.getName());
+        if (deviceTypeName != null && !StringUtils.isEmpty(deviceTypeName)) {
+            dataQuery.setParameter(1, deviceTypeName);
+            countQuery.setParameter(1, deviceTypeName);
         }
-        if (device != null && !StringUtils.isEmpty(device.getAliases())) {
-            dataQuery.setParameter(2, device.getAliases());
-            countQuery.setParameter(2, device.getAliases());
+        if (deviceStateEnum != null) {
+            dataQuery.setParameter(2, deviceStateEnum);
+            countQuery.setParameter(2, deviceStateEnum);
         }
-        if (device != null && !StringUtils.isEmpty(device.getDeviceState())) {
-            if (device.getDeviceState() == DeviceStateEnum.REGISTERED) {
-
-            } else {
-                countQuery.setParameter(3, device.getDeviceState());
-                dataQuery.setParameter(3, device.getDeviceState());
-            }
-        }*/
         log.info("总数:" + countQuery.getSingleResult());
         return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }

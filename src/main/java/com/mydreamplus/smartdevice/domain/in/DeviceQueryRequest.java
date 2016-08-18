@@ -1,7 +1,5 @@
 package com.mydreamplus.smartdevice.domain.in;
 
-import com.mydreamplus.smartdevice.domain.DeviceSituationEnum;
-import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.domain.PageDto;
 
 /**
@@ -19,35 +17,27 @@ public class DeviceQueryRequest extends BaseRequest {
      */
     private PageDto pageDto;
 
-    /**
-     * 设 的mac
-     */
-    private String macAddress;
-
-    /**
-     * 设 运行状况
-     */
-    private DeviceSituationEnum situation;
 
     /**
      * 设 的状态
      */
-    private DeviceStateEnum state;
-
-    /**
-     * 设 别名
-     */
-    private String aliases;
-
+    private String state;
     /**
      * 设 类
      */
     private String deviceType;
-
     /**
      * 是否注册
      */
     private boolean isRegistered;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public boolean isRegistered() {
         return isRegistered;
@@ -75,77 +65,6 @@ public class DeviceQueryRequest extends BaseRequest {
         this.pageDto = pageDto;
     }
 
-    /**
-     * Gets mac address.
-     *
-     * @return the mac address
-     */
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    /**
-     * Sets mac address.
-     *
-     * @param macAddress the mac address
-     */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    /**
-     * Gets situation.
-     *
-     * @return the situation
-     */
-    public DeviceSituationEnum getSituation() {
-        return situation;
-    }
-
-    /**
-     * Sets situation.
-     *
-     * @param situation the situation
-     */
-    public void setSituation(DeviceSituationEnum situation) {
-        this.situation = situation;
-    }
-
-    /**
-     * Gets state.
-     *
-     * @return the state
-     */
-    public DeviceStateEnum getState() {
-        return state;
-    }
-
-    /**
-     * Sets state.
-     *
-     * @param state the state
-     */
-    public void setState(DeviceStateEnum state) {
-        this.state = state;
-    }
-
-    /**
-     * Gets aliases.
-     *
-     * @return the aliases
-     */
-    public String getAliases() {
-        return aliases;
-    }
-
-    /**
-     * Sets aliases.
-     *
-     * @param aliases the aliases
-     */
-    public void setAliases(String aliases) {
-        this.aliases = aliases;
-    }
 
     /**
      * Gets device type.

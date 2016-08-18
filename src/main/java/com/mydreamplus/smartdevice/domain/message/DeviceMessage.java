@@ -1,7 +1,5 @@
 package com.mydreamplus.smartdevice.domain.message;
 
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: liji
@@ -13,12 +11,19 @@ public class DeviceMessage extends BaseDeviceMessage {
 
     private String macAddress;
 
-    private Map<String, Object> data;
-
+    private String config;
     /**
-     * 服务器时间
+     * 服务 时间
      */
     private long serverTime;
+
+    public String getConfig() {
+        return config;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
+    }
 
     public long getServerTime() {
         return serverTime;
@@ -26,24 +31,6 @@ public class DeviceMessage extends BaseDeviceMessage {
 
     public void setServerTime(long serverTime) {
         this.serverTime = serverTime;
-    }
-
-    /**
-     * Gets data.
-     *
-     * @return the data
-     */
-    public Map<String, Object> getData() {
-        return data;
-    }
-
-    /**
-     * Sets data.
-     *
-     * @param data the data
-     */
-    public void setData(Map<String, Object> data) {
-        this.data = data;
     }
 
     /**

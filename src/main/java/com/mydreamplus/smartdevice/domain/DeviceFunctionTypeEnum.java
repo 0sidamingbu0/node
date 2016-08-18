@@ -12,5 +12,5 @@ public enum DeviceFunctionTypeEnum {
     /**
      * 开关、传感器、被控
      */
-    SWITCH, SENSOR, CONTROLLED, TV
+    SWITCH, SENSOR, CONTROLLED, TV , ANDROID , WINDOWS
 }

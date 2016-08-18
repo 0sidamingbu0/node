@@ -99,6 +99,7 @@ public class PolicyService {
                 policyConfigDto.setMasterDeviceMap(masterDeviceMap);
                 ConditionAndSlaveDto conditionAndSlaveDto = new ConditionAndSlaveDto();
                 conditionAndSlaveDto.setSlaveDeviceMap(slaveDeviceMap);
+                conditionAndSlaveDto.setConditions(new ArrayList<>());
                 List<ConditionAndSlaveDto> conditionAndSlaveDtos = new ArrayList<>();
                 conditionAndSlaveDtos.add(conditionAndSlaveDto);
                 policyConfigDto.setConditionAndSlaveDtos(conditionAndSlaveDtos);
@@ -128,7 +129,7 @@ public class PolicyService {
         if (source == null) {
             this.policyRepository.save(policy);
         } else {
-            log.info("策略:s% 已经存在!", policy.getName());
+            log.info("策略:{} 已经存在!", policy.getName());
             source.setUpdateTime(new Date());
             this.policyRepository.save(source);
         }

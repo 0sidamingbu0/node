@@ -1,15 +1,14 @@
 package com.mydreamplus.smartdevice.service;
 
-import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.dao.jpa.*;
-import com.mydreamplus.smartdevice.domain.DeviceDto;
-import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
-import com.mydreamplus.smartdevice.domain.PIDeviceDto;
-import com.mydreamplus.smartdevice.domain.PingDto;
+import com.mydreamplus.smartdevice.domain.*;
+import com.mydreamplus.smartdevice.domain.in.AndroidDeviceRequest;
+import com.mydreamplus.smartdevice.domain.in.CommonDeviceRequest;
 import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.DeviceType;
 import com.mydreamplus.smartdevice.entity.PI;
 import com.mydreamplus.smartdevice.entity.SensorData;
+import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.exception.DeviceNotFoundException;
 import com.mydreamplus.smartdevice.exception.DeviceTypeNotFoundException;
 import com.mydreamplus.smartdevice.exception.PINotFoundException;
@@ -19,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -47,6 +47,48 @@ public class DeviceService {
     private SensorDataRepository sensorDataRepository;
     @Autowired
     private WebSocketService webSocketService;
+
+
+    /**
+     * 注册通用设
+     *
+     * @param request
+     */
+    public void registerCommonDevice(CommonDeviceRequest request) {
+        Device device = deviceRepository.findByMacAddressAndName(request.getMacAddress(), request.getDeviceType());
+        if (device != null) {
+            device.setRegistered(true);
+            device.setRegisteTime(new Date());
+            device.setUpdateTime(new Date());
+            device.setDeviceState(DeviceStateEnum.ONLINE);
+            this.deviceRestService.registerFeedback(request.getMacAddress());
+            this.deviceRestService.sendConfigProperty(device);
+            this.deviceRepository.save(device);
+        } else {
+            Device newDevice = new Device();
+            newDevice.setMacAddress(request.getMacAddress());
+            newDevice.setName(request.getDeviceType());
+            DeviceType deviceType = this.deviceTypeRepository.findByName(request.getDeviceType());
+            if (deviceType == null) {
+                throw new DataInvalidException("没有找到设备类型!");
+            }
+            newDevice.setDeviceType(deviceType);
+            newDevice.setDeviceState(DeviceStateEnum.ONLINE);
+            newDevice.setSymbol(request.getMacAddress() + "-1");
+            newDevice.setAliases(newDevice.getMacAddress() + "-" + request.getDeviceType());
+            newDevice.setRegistered(false);
+            newDevice.setFactory(DeviceSourceEnum.DREAMPLUS.toString());
+            newDevice.setParentDeviceType(deviceType.getName());
+            newDevice.setAdditionalAttributes(deviceType.getAdditionalAttributes());
+            newDevice.setCreateTime(new Date());
+            newDevice.setUpdateTime(new Date());
+            this.deviceRepository.save(newDevice);
+        }
+        // 注册成功反馈
+//        this.deviceRestService.registerFeedback(request.getMacAddress(), request.getMacAddress());
+    }
+
+
 
     /**
      * Register.
@@ -101,6 +143,7 @@ public class DeviceService {
         if (pi == null) {
             pi = new PI();
             pi.setMacAddress(piDeviceDto.getPiMacAddress());
+            pi.setName(piDeviceDto.getHostName());
             pi.setCreateTime(new Date());
         }
         pi.setIpAddress(piDeviceDto.getIpAddress());
@@ -124,7 +167,7 @@ public class DeviceService {
             throw new DeviceNotFoundException(String.format("更新设备状态失败,没有找到设备,symbol:%s ", deviceDto.getSymbol()));
         }
         // 设备未注册,状态为未注册
-        if(device.getDeviceState() != DeviceStateEnum.UNREGISTERED){
+        if (device.getDeviceState() != DeviceStateEnum.UNREGISTERED) {
             device.setDeviceSituation(deviceDto.getDeviceSituation());
             device.setDeviceState(DeviceStateEnum.ONLINE);
             device.setUpdateTime(new Date());
@@ -192,6 +235,9 @@ public class DeviceService {
             device.setRegistered(true);
             this.deviceRepository.save(device);
         });
+        if(StringUtils.isEmpty(piMacAddress)){
+            piMacAddress = deviceMacAddress;
+        }
         deviceRestService.registerFeedback(piMacAddress, deviceMacAddress);
     }
 
