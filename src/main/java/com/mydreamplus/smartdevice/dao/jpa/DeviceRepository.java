@@ -3,6 +3,7 @@ package com.mydreamplus.smartdevice.dao.jpa;
 import com.mydreamplus.smartdevice.domain.DeviceFunctionTypeEnum;
 import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.entity.Device;
+import com.mydreamplus.smartdevice.entity.DeviceGroup;
 import com.mydreamplus.smartdevice.entity.DeviceType;
 import com.mydreamplus.smartdevice.entity.PI;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * Find by mac address device.
      *
      * @param macAddress the mac address
+     * @param name       the name
      * @return the device
      */
     Device findByMacAddressAndName(String macAddress, String name);
@@ -81,6 +83,15 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
     Page<Device> search(Device device, Pageable pageable);
 
 
+    /**
+     * Search page.
+     *
+     * @param isRegistered    the is registered
+     * @param deviceTypeName  the device type name
+     * @param deviceStateEnum the device state enum
+     * @param pageable        the pageable
+     * @return the page
+     */
     Page<Device> search(boolean isRegistered, String deviceTypeName, DeviceStateEnum deviceStateEnum, Pageable pageable);
 
 
@@ -115,8 +126,28 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
     @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2)")
     List<Device> findAllMasterByFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum1, DeviceFunctionTypeEnum deviceFunctionTypeEnum2);
 
+    /**
+     * Find all master by function type and pi list.
+     *
+     * @param deviceFunctionTypeEnum1 the device function type enum 1
+     * @param deviceFunctionTypeEnum2 the device function type enum 2
+     * @param pi                      the pi
+     * @return the list
+     */
     @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2) and u.pi =?3")
     List<Device> findAllMasterByFunctionTypeAndPI(DeviceFunctionTypeEnum deviceFunctionTypeEnum1, DeviceFunctionTypeEnum deviceFunctionTypeEnum2, PI pi);
+
+
+    /**
+     * Find all master by function type and group list.
+     *
+     * @param deviceFunctionTypeEnum1 the device function type enum 1
+     * @param deviceFunctionTypeEnum2 the device function type enum 2
+     * @param group                   the group
+     * @return the list
+     */
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2) and u.pi.deviceGroup =?3")
+    List<Device> findAllMasterByFunctionTypeAndGroup(DeviceFunctionTypeEnum deviceFunctionTypeEnum1, DeviceFunctionTypeEnum deviceFunctionTypeEnum2, DeviceGroup group);
 
 
     /**
@@ -186,6 +217,12 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
     @Query("update Device u set u.deviceState =?1 where u.updateTime < ?2")
     void updateOfflineState(DeviceStateEnum deviceState, Date updateTime);
 
+    /**
+     * Find by device type list.
+     *
+     * @param deviceType the device type
+     * @return the list
+     */
     List<Device> findByDeviceType(DeviceType deviceType);
 
 }

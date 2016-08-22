@@ -23,10 +23,19 @@ public class DevicePolicyRequest extends BaseRequest {
 
     private PolicyConfigDto policyConfigDto;
 
+    private Long groupId;
     /**
      * PI mac地址
      */
     private String piMacAddress;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
 
     public String getPiMacAddress() {
         return piMacAddress;

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -95,7 +94,7 @@ public class DeviceManager {
      */
     public DeviceEvent saveDeviceEvent(DeviceEvent deviceEvent) {
         // 修改
-        if (deviceEvent != null && deviceEvent.getID() != 0) {
+        if (deviceEvent != null && deviceEvent.getID() != null) {
             DeviceEvent deviceEvent1 = deviceEventRepository.findOne(deviceEvent.getID());
             BeanUtils.copyProperties(deviceEvent, deviceEvent1);
             return deviceEventRepository.save(deviceEvent1);
@@ -111,7 +110,7 @@ public class DeviceManager {
      * @return the device function
      */
     public DeviceFunction saveDeviceFunction(DeviceFunction function) {
-        if (function != null && function.getID() != 0) {
+        if (function != null && function.getID() != null) {
             DeviceFunction function1 = this.deviceFunctionRepository.findOne(function.getID());
             BeanUtils.copyProperties(function, function1);
             this.deviceFunctionRepository.save(function1);
@@ -213,9 +212,9 @@ public class DeviceManager {
      * @return the page
      */
     public Page<Device> findAllDevices(DeviceQueryRequest request, Pageable pageable) {
-        if(!StringUtils.isEmpty(request.getState())){
+        if (!StringUtils.isEmpty(request.getState())) {
             return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), DeviceStateEnum.valueOf(request.getState()), pageable);
-        }else{
+        } else {
             return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), null, pageable);
         }
     }
@@ -227,6 +226,12 @@ public class DeviceManager {
      * @param policyDto the policy dto
      */
     public void savePolicy(PolicyDto policyDto) {
+        if(policyDto.getGroupId() != null){
+            DeviceGroup deviceGroup = this.getDeviceGroup(policyDto.getGroupId());
+            if(deviceGroup != null){
+                policyDto.setGroupName(deviceGroup.getName());
+            }
+        }
         Policy policy = new Policy();
         BeanUtils.copyProperties(policyDto, policy);
         policy.setPolicyConfig(JsonUtil.toJsonString(policyDto.getPolicyConfigDto()));
@@ -318,7 +323,20 @@ public class DeviceManager {
             throw new DataInvalidException("没有找到PI");
         }
         return this.deviceRepository.findAllMasterByFunctionTypeAndPI(DeviceFunctionTypeEnum.SWITCH, DeviceFunctionTypeEnum.SENSOR, pi);
+    }
 
+    /**
+     * Find all master device by pi list.
+     *
+     * @param groupId the pi mac address
+     * @return the list
+     */
+    public List<Device> findAllMasterDeviceByGroup(Long groupId) {
+        DeviceGroup group = groupRepository.findOne(groupId);
+        if (group == null) {
+            throw new DataInvalidException("没有找到分组");
+        }
+        return this.deviceRepository.findAllMasterByFunctionTypeAndGroup(DeviceFunctionTypeEnum.SWITCH, DeviceFunctionTypeEnum.SENSOR, group);
     }
 
 
@@ -365,6 +383,9 @@ public class DeviceManager {
      */
     public List<DeviceEvent> findAllDeviceEventBySymbol(String symbol) {
         Device device = this.deviceRepository.findBySymbol(symbol);
+        if(device == null){
+            throw new DataInvalidException("没有找到设备:" + symbol);
+        }
         return device.getDeviceType().getDeviceEvents();
     }
 
@@ -498,7 +519,7 @@ public class DeviceManager {
         if (pi == null) {
             throw new DataInvalidException("没有找到PI");
         }
-        if(piDto.getGroupId() != null){
+        if (piDto.getGroupId() != null) {
             DeviceGroup deviceGroup = this.deviceGroupRepository.findOne(piDto.getGroupId());
             if (deviceGroup != null) {
                 pi.setDeviceGroup(deviceGroup);
@@ -576,6 +597,11 @@ public class DeviceManager {
         } else {
             return null;
         }
+    }
+
+
+    public DeviceGroup getDeviceGroup(Long id) {
+        return this.deviceGroupRepository.findOne(id);
     }
 }
 

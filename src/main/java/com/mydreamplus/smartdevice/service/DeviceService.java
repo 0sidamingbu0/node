@@ -23,6 +23,8 @@ import org.springframework.util.StringUtils;
 import java.util.Date;
 import java.util.List;
 
+import static com.sun.tools.doclint.Entity.Pi;
+
 /**
  * Created with IntelliJ IDEA.
  * User: liji
@@ -121,6 +123,11 @@ public class DeviceService {
             device.setDeviceState(DeviceStateEnum.UNREGISTERED);
             device.setFactory(deviceType.getDeviceSource().toString());
         } else {
+            // 设备有可能注册到其他PI上
+            PI pi = piRespository.findByMacAddress(deviceDto.getPIID());
+            if(pi != null){
+                device.setPi(pi);
+            }
             device.setUpdateTime(new Date());
             // 已经注册过,更新设备上线状态
 //            device.setDeviceState(DeviceStateEnum.ONLINE);

@@ -1,6 +1,10 @@
 package com.khoubyari;
 
 import com.mydreamplus.smartdevice.Application;
+import junit.framework.TestCase;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,10 +17,21 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * Time: 下午8:00
  * To change this template use File | Settings | File Templates.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@WebAppConfiguration
-public class TestDeviceRestService {
+public class TestDeviceRestService extends TestCase implements MqttCallback {
+    @Override
+    public void connectionLost(Throwable throwable) {
+
+    }
+
+    @Override
+    public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+    }
 
 /*    @Autowired
     private DeviceRestService deviceRestService;

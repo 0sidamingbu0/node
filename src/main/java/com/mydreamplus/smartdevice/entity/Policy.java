@@ -46,6 +46,10 @@ public class Policy extends BaseEntity {
     @Basic(fetch = FetchType.LAZY)
     @Column
     private String policyConfig;
+
+    private Long groupId;
+
+    private String groupName;
     /**
      * Sets pis.
      *
@@ -58,6 +62,22 @@ public class Policy extends BaseEntity {
     @JoinColumn(name = "pi_id")
     private PI pi;
 
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     public String getMasterEvent() {
         return masterEvent;

@@ -87,6 +87,7 @@ public class DeviceManagerController extends AbstractRestHandler {
     /**
      * Create device event.
      *
+     * @param symbol the symbol
      * @return the base response
      */
     @RequestMapping(value = "/config/{symbol}",
@@ -269,18 +270,21 @@ public class DeviceManagerController extends AbstractRestHandler {
         List<DeviceDto> deviceDtos = new ArrayList<>();
         Page<Device> pageDevice = this.deviceManager.findAllDevices(request,
                 new PageRequest(request.getPageDto().getPage() - 1, request.getPageDto().getSize()));
-        pageDevice.forEach(device -> {
-            PI pi = device.getPi();
-            DeviceDto d = new DeviceDto();
-            BeanUtils.copyProperties(device, d, "deviceGroupList");
-            if (pi != null) {
-                d.setPIID(pi.getMacAddress());
-                d.setPiName(pi.getName());
-            }
-            d.setDeviceType(device.getDeviceType().getAliases());
-            d.setLinkQuality(LinkQualityRepositoryImpl.getLinkQuality(d.getMacAddress()));
-            deviceDtos.add(d);
-        });
+        if(pageDevice != null && pageDevice.getTotalElements() > 0){
+            pageDevice.forEach(device -> {
+                PI pi = device.getPi();
+                DeviceDto d = new DeviceDto();
+                BeanUtils.copyProperties(device, d, "deviceGroupList");
+                if (pi != null) {
+                    d.setPIID(pi.getMacAddress());
+                    d.setPiName(pi.getName());
+                }
+                if(device.getDeviceType() != null)
+                    d.setDeviceType(device.getDeviceType().getAliases());
+                d.setLinkQuality(LinkQualityRepositoryImpl.getLinkQuality(d.getMacAddress()));
+                deviceDtos.add(d);
+            });
+        }
         PageResponse response = new PageResponse();
         response.setCurrentPage(request.getPageDto().getPage());
         response.setPerPage(request.getPageDto().getSize());
@@ -929,9 +933,9 @@ public class DeviceManagerController extends AbstractRestHandler {
             method = RequestMethod.GET,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "查询分组的PI")
+    @ApiOperation(value = "根据PI查询主控设备")
     @Transactional
-    public BaseResponse findMasterDeviceByGroup(@PathVariable String piMacAddress) {
+    public BaseResponse findMasterDeviceByPi(@PathVariable String piMacAddress) {
         if (StringUtils.isEmpty(piMacAddress)) {
             throw new DataInvalidException("没有PI的Mac地址");
         }
@@ -947,20 +951,63 @@ public class DeviceManagerController extends AbstractRestHandler {
         return response;
     }
 
+
+    /**
+     * Find master device by group base response.
+     *
+     * @param groupId the pi mac address
+     * @return the base response
+     */
+    @RequestMapping(value = "/findMasterDeviceByGroup/{groupId}",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "根据group查询主控设备")
+    @Transactional
+    public BaseResponse findMasterDeviceByGroup(@PathVariable Long groupId) {
+        if (groupId == null) {
+            throw new DataInvalidException("没有找到分组");
+        }
+        List<DeviceDto> deviceDtos = new ArrayList<>();
+        this.deviceManager.findAllMasterDeviceByGroup(groupId).forEach(device -> {
+            DeviceDto dto = new DeviceDto();
+            dto.setSymbol(device.getSymbol());
+            dto.setPIID(device.getPi().getMacAddress());
+            dto.setAliases(device.getAliases());
+            deviceDtos.add(dto);
+        });
+        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
+        response.setData(deviceDtos);
+        return response;
+    }
+
+    /**
+     * Find master device by group base response.
+     *
+     * @param symbol the symbol
+     * @param event  the event
+     * @return the base response
+     */
     @RequestMapping(value = "/findPolicy/{symbol}/{event}",
             method = RequestMethod.GET,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "查询分组的PI")
     @Transactional
-    public BaseResponse findMasterDeviceByGroup(@PathVariable String symbol, @PathVariable String event) {
+    public BaseResponse findMasterDeviceBySymbolEvent(@PathVariable String symbol, @PathVariable String event) {
 
         Policy policy = this.deviceManager.findPolicyByMasterEvent(symbol, event);
-        PolicyDto policyDto = new PolicyDto();
-        BeanUtils.copyProperties(policy, policyDto, "pi");
-        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
-        response.setData(policyDto);
+        BaseResponse response;
+        if (policy != null) {
+            PolicyDto policyDto = new PolicyDto();
+            BeanUtils.copyProperties(policy, policyDto, "pi");
+            response = new BaseResponse(RESPONSE_SUCCESS);
+            response.setData(policyDto);
+        } else {
+            response = new BaseResponse(RESPONSE_FAILURE);
+        }
         return response;
     }
+
 
 }
