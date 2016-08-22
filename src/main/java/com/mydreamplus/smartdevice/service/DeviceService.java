@@ -2,7 +2,6 @@ package com.mydreamplus.smartdevice.service;
 
 import com.mydreamplus.smartdevice.dao.jpa.*;
 import com.mydreamplus.smartdevice.domain.*;
-import com.mydreamplus.smartdevice.domain.in.AndroidDeviceRequest;
 import com.mydreamplus.smartdevice.domain.in.CommonDeviceRequest;
 import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.DeviceType;
@@ -22,8 +21,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.sun.tools.doclint.Entity.Pi;
 
 /**
  * Created with IntelliJ IDEA.
