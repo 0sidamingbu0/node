@@ -14,7 +14,7 @@ public class DeviceConfig {
     /**
      * The constant AUTO_JOIN_IN.
      */
-    private static boolean AUTO_JOIN_IN = true;
+    private static boolean AUTO_JOIN_IN = false;
 
     public static boolean isAutoJoinIn() {
         return AUTO_JOIN_IN;

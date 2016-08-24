@@ -59,6 +59,9 @@ public class EventLogDto extends BaseLogDto {
      */
     private String message;
 
+
+
+
     /**
      * Gets device id.
      *

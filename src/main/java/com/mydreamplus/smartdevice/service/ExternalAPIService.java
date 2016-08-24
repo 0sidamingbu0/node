@@ -27,6 +27,7 @@ public class ExternalAPIService {
     private final static Logger log = LoggerFactory.getLogger(ExternalAPIService.class);
     private static final String DOOR_PASSWORD_API = "/api/door/authentication/password";
     private static final String DOOR_CARD_API = "/api/door/authentication/card";
+    private static final String DOOR_EVENT_API = "/api/door/authentication/event";
     private static final String SERVER_URL = "http://dev.so.aws.mxj.mx/";
 
     private static ResponseMessage callApi(Map<String, String> map, String url) {
@@ -122,6 +123,37 @@ public class ExternalAPIService {
             return false;
         } else {
             log.info("卡号验证成功!");
+            return true;
+        }
+    }
+
+    /**
+     * Check permission door card boolean.
+     *
+     *错误返回
+     code: -2 门禁卡号错误
+     code:-3 门被关闭
+     code:-4 门被禁用
+     code:-5 没有门禁权限
+     code:-6 没有找到门
+     code: -1 其他错误，如参数错误等
+     *
+     * @param card         the card
+     * @param piMacAddress the pi mac address
+     * @return the boolean
+     */
+    public boolean checkPermissionDoor(String card, String piMacAddress, String eventType) {
+        String url = SERVER_URL + DOOR_EVENT_API;
+        Map<String, String> map = new HashMap<>();
+        map.put("card", card);
+        map.put("piMacAddress", piMacAddress);
+        map.put("eventType", eventType);
+        ResponseMessage responseMessage = callApi(map, url);
+        if (responseMessage.getCode() != 1) {
+            log.info("卡号验证失败:{} ,{}", responseMessage.getMessage(), eventType);
+            return false;
+        } else {
+            log.info("卡号验证成功!, {}", eventType);
             return true;
         }
     }

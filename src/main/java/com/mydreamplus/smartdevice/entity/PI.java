@@ -24,6 +24,7 @@ public class PI extends BaseEntity {
     /**
      * PI的mac
      */
+    @Column(unique = true)
     private String macAddress;
     /**
      * PI的描述信息

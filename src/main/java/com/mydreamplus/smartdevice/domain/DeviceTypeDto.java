@@ -49,6 +49,16 @@ public class DeviceTypeDto {
      */
     private Long parentDeviceType;
 
+    private String additionalAttributes;
+
+    public String getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(String additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
+    }
+
     public Long getID() {
         return ID;
     }

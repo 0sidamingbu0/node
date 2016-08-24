@@ -31,6 +31,19 @@ public class DeviceQueryRequest extends BaseRequest {
      */
     private boolean isRegistered;
 
+    /**
+     * 搜索字段
+     */
+    private String searchKey;
+
+    public String getSearchKey() {
+        return searchKey;
+    }
+
+    public void setSearchKey(String searchKey) {
+        this.searchKey = searchKey;
+    }
+
     public String getState() {
         return state;
     }

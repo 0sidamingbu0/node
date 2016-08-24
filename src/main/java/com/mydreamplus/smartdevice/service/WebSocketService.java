@@ -1,7 +1,9 @@
 package com.mydreamplus.smartdevice.service;
 
+import com.mydreamplus.smartdevice.domain.EventLog;
 import com.mydreamplus.smartdevice.domain.PingDto;
 import com.mydreamplus.smartdevice.domain.message.Greeting;
+import com.mydreamplus.smartdevice.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,17 @@ public class WebSocketService {
      */
     public void sendMessage(String message) {
         messageTemplate.convertAndSend("/topic/greetings", new Greeting(message));
+    }
+
+
+    /**
+     * Send message.
+     *
+     * @param eventLog the evnet log
+     */
+    public void sendMessage(EventLog eventLog){
+        String logs = JsonUtil.toJsonString(eventLog);
+        messageTemplate.convertAndSend("/topic/greetings", new Greeting(logs));
     }
 
     /**

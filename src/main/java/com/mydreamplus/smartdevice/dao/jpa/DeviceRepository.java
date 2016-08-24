@@ -92,7 +92,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param pageable        the pageable
      * @return the page
      */
-    Page<Device> search(boolean isRegistered, String deviceTypeName, DeviceStateEnum deviceStateEnum, Pageable pageable);
+    Page<Device> search(boolean isRegistered, String deviceTypeName, DeviceStateEnum deviceStateEnum, Pageable pageable, String searchKey);
 
 
     /**

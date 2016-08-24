@@ -199,14 +199,19 @@ public class DeviceController extends AbstractRestHandler {
         log.info(":::::设备触发事件:{} , symbol:{}, {}, 耗时:{} 毫秒", request.getEventName(), request.getSymbol(),
                 new Date(request.getEventTime()), System.currentTimeMillis() - request.getEventTime());
 
-        // 刷卡开门
+        // 刷卡或者扫码
+        if(request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD) || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)){
+            this.doorEventAction(request);
+        }
+
+        /*// 刷卡开门
         if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD)) {
             this.cardEventAction(request);
         }
         // 扫码开门
         if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
             this.passwordEventAction(request);
-        }
+        }*/
 
         // 请求的事件超时,不执行场景
         if (System.currentTimeMillis() - request.getEventTime() >= Constant.EVENT_TIME_OUT) {
@@ -315,6 +320,18 @@ public class DeviceController extends AbstractRestHandler {
     private void passwordEventAction(DeviceEventRequest event) {
         // 密码开门
         if (externalAPIService.checkPermissionDoorPassword(event.getData(), event.getPiMacAddress())) {
+            this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
+        } else {
+            this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.OFF);
+        }
+    }
+
+    /**
+     * 开门事件处理方法
+     * @param event
+     */
+    private void doorEventAction(DeviceEventRequest event){
+        if (externalAPIService.checkPermissionDoor(event.getData(), event.getPiMacAddress(), event.getEventName())) {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
         } else {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.OFF);

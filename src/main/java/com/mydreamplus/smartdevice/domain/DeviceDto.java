@@ -336,14 +336,6 @@ public class DeviceDto {
         }
     }
 
-    /**
-     * Gets index.
-     *
-     * @return the index
-     */
-    public int getIndex() {
-        return SymbolUtil.parseIndex(this.symbol);
-    }
 
     @Override
     public String toString() {

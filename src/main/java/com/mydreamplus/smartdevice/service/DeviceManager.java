@@ -16,9 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -134,7 +132,7 @@ public class DeviceManager {
             deviceType = new DeviceType();
         }
         BeanUtils.copyProperties(deviceTypeDto, deviceType, "deviceEvents", "deviceFunctions");
-        List<DeviceEvent> deviceEventList = new ArrayList<>();
+        Set<DeviceEvent> deviceEventList = new HashSet<>();
         DeviceType finalDeviceType = deviceType;
         deviceTypeDto.getDeviceEvents().stream().forEach(aLong -> {
             DeviceEvent event = this.findDeviceEventByID(aLong);
@@ -143,7 +141,7 @@ public class DeviceManager {
                 event.getDeviceTypes().add(finalDeviceType);
             }
         });
-        List<DeviceFunction> deviceFunctionList = new ArrayList<>();
+        Set<DeviceFunction> deviceFunctionList = new HashSet<>();
         DeviceType finalDeviceType1 = deviceType;
         deviceTypeDto.getDeviceFunctions().stream().forEach(aLong -> {
             DeviceFunction function = this.findDeviceFunctionByID(aLong);
@@ -213,9 +211,9 @@ public class DeviceManager {
      */
     public Page<Device> findAllDevices(DeviceQueryRequest request, Pageable pageable) {
         if (!StringUtils.isEmpty(request.getState())) {
-            return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), DeviceStateEnum.valueOf(request.getState()), pageable);
+            return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), DeviceStateEnum.valueOf(request.getState()), pageable, request.getSearchKey());
         } else {
-            return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), null, pageable);
+            return this.deviceRepository.search(request.isRegistered(), request.getDeviceType(), null, pageable, request.getSearchKey());
         }
     }
 
@@ -381,7 +379,7 @@ public class DeviceManager {
      * @param symbol the symbol
      * @return the list
      */
-    public List<DeviceEvent> findAllDeviceEventBySymbol(String symbol) {
+    public Set<DeviceEvent> findAllDeviceEventBySymbol(String symbol) {
         Device device = this.deviceRepository.findBySymbol(symbol);
         if(device == null){
             throw new DataInvalidException("没有找到设备:" + symbol);
@@ -395,7 +393,7 @@ public class DeviceManager {
      * @param symbol the symbol
      * @return the list
      */
-    public List<DeviceFunction> findAllDeviceFunctionBySymbol(String symbol) {
+    public Set<DeviceFunction> findAllDeviceFunctionBySymbol(String symbol) {
         Device device = this.deviceRepository.findBySymbol(symbol);
         return device.getDeviceType().getDeviceFunctions();
     }

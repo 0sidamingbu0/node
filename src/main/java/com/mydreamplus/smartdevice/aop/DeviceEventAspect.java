@@ -32,6 +32,7 @@ public class DeviceEventAspect {
 
     /**
      * 记录设备产生的时间信息
+     *
      * @param deviceDto
      * @throws Throwable
      */

@@ -57,3 +57,13 @@ spring:
   datasource:
     test-on-borrow: true
     validation-query: select 1
+
+# RabbitMQ
+mqtt:
+  topic: SmartDeviceServerTopic
+  qos: 0
+  broker: tcp://10.28.1.29:1883
+  clientId: SmartDeviceServer
+  userName: alex
+  password: alex
+

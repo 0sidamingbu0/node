@@ -110,7 +110,16 @@ public class DeviceRepositoryImpl {
     }
 
 
-    public Page<Device> search(boolean isRegistered, String deviceTypeName, DeviceStateEnum deviceStateEnum, Pageable pageable) {
+    /**
+     * 查询在线设备
+     *
+     * @param isRegistered
+     * @param deviceTypeName
+     * @param deviceStateEnum
+     * @param pageable
+     * @return
+     */
+    public Page<Device> search(boolean isRegistered, String deviceTypeName, DeviceStateEnum deviceStateEnum, Pageable pageable, String searchKey) {
 
         String dataSql = "select t from Device t where 1 = 1";
         String countSql = "select count(t) from Device t where 1 = 1";
@@ -129,6 +138,11 @@ public class DeviceRepositoryImpl {
             dataSql += " and t.isRegistered = false";
             countSql += " and t.isRegistered = false";
         }
+        // 模糊查询
+        if (!StringUtils.isEmpty(searchKey)) {
+            dataSql += " and t.symbol like  ?3 or t.name like ?3 or t.aliases like ?3 or t.macAddress like ?3 or t.factory like ?3";
+            countSql += " and t.symbol like  ?3 or t.name like ?3 or t.aliases like ?3 or t.macAddress like ?3 or t.factory like ?3";
+        }
 
         dataSql += " order by updateTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
@@ -142,6 +156,12 @@ public class DeviceRepositoryImpl {
             dataQuery.setParameter(2, deviceStateEnum);
             countQuery.setParameter(2, deviceStateEnum);
         }
+        if (!StringUtils.isEmpty(searchKey)) {
+            searchKey = "%" + searchKey + "%";
+            dataQuery.setParameter(3, searchKey);
+            countQuery.setParameter(3, searchKey);
+        }
+
         log.info("总数:" + countQuery.getSingleResult());
         return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }

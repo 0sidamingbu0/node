@@ -4,7 +4,7 @@ import com.mydreamplus.smartdevice.domain.DeviceFunctionTypeEnum;
 import com.mydreamplus.smartdevice.domain.DeviceSourceEnum;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,14 +51,14 @@ public class DeviceType extends BaseEntity {
      * 设备事件
      */
     @ManyToMany(mappedBy = "deviceTypes", cascade = CascadeType.ALL)
-    private List<DeviceEvent> deviceEvents;
+    private Set<DeviceEvent> deviceEvents;
     /**
      * 设备可以被施放的方法
      *
      * @return the description
      */
     @ManyToMany(mappedBy = "deviceTypes", cascade = CascadeType.ALL)
-    private List<DeviceFunction> deviceFunctions;
+    private Set<DeviceFunction> deviceFunctions;
     /**
      * 父设备类型
      */
@@ -109,21 +109,19 @@ public class DeviceType extends BaseEntity {
         this.description = description;
     }
 
-    /**
-     * Gets device functions.
-     *
-     * @return the device functions
-     */
-    public List<DeviceFunction> getDeviceFunctions() {
+    public Set<DeviceEvent> getDeviceEvents() {
+        return deviceEvents;
+    }
+
+    public void setDeviceEvents(Set<DeviceEvent> deviceEvents) {
+        this.deviceEvents = deviceEvents;
+    }
+
+    public Set<DeviceFunction> getDeviceFunctions() {
         return deviceFunctions;
     }
 
-    /**
-     * Sets device functions.
-     *
-     * @param deviceFunctions the device functions
-     */
-    public void setDeviceFunctions(List<DeviceFunction> deviceFunctions) {
+    public void setDeviceFunctions(Set<DeviceFunction> deviceFunctions) {
         this.deviceFunctions = deviceFunctions;
     }
 
@@ -163,23 +161,6 @@ public class DeviceType extends BaseEntity {
         this.aliases = aliases;
     }
 
-    /**
-     * Gets device events.
-     *
-     * @return the device events
-     */
-    public List<DeviceEvent> getDeviceEvents() {
-        return deviceEvents;
-    }
-
-    /**
-     * Sets device events.
-     *
-     * @param deviceEvents the device events
-     */
-    public void setDeviceEvents(List<DeviceEvent> deviceEvents) {
-        this.deviceEvents = deviceEvents;
-    }
 
     /**
      * Gets device source.

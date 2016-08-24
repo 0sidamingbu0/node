@@ -1,13 +1,13 @@
 package com.mydreamplus.smartdevice;
 
 import com.mydreamplus.smartdevice.config.Constant;
+import com.mydreamplus.smartdevice.config.MQTTConfig;
+import com.mydreamplus.smartdevice.service.MQTTService;
 import mousio.etcd4j.EtcdClient;
-import mousio.etcd4j.promises.EtcdResponsePromise;
 import mousio.etcd4j.requests.EtcdKeyGetRequest;
 import mousio.etcd4j.responses.EtcdAuthenticationException;
 import mousio.etcd4j.responses.EtcdException;
 import mousio.etcd4j.responses.EtcdKeysResponse;
-import mousio.etcd4j.responses.EtcdResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -29,11 +29,10 @@ import java.util.concurrent.TimeoutException;
  * This is the main Spring Boot application class. It configures Spring Boot, JPA, Swagger
  */
 
-@EnableAutoConfiguration  // Sprint Boot Auto Configuration
+@EnableAutoConfiguration
 @ComponentScan(basePackages = "com.mydreamplus.smartdevice")
 @EnableJpaRepositories("com.mydreamplus.smartdevice.dao.jpa")
-// To segregate MongoDB and JPA repositories. Otherwise not needed.
-@EnableSwagger2 // auto generation of API docs
+@EnableSwagger2
 public class Application extends SpringBootServletInitializer {
 
     private static final String ETCD_URL_KEY = "etcd.url";
@@ -46,6 +45,8 @@ public class Application extends SpringBootServletInitializer {
     public static void main(String[] args) throws IOException, EtcdAuthenticationException, TimeoutException, EtcdException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         Environment env = context.getEnvironment();
+
+        //================== WebSocket ==================
         String etcdUrl = env.getProperty(ETCD_URL_KEY);
         String webSocketUrl = env.getProperty(WEBSOCKET_SERVICE_URL_ETCD_KEY);
         log.info("-----------------------------" + etcdUrl);
@@ -62,6 +63,16 @@ public class Application extends SpringBootServletInitializer {
         Constant.WEBSOCKET_SERVICE_URI = webSocketServiceUrl;
         log.info("WebSocket service: {}", webSocketServiceUrl);
 
+
+        //================== MQTT ==================
+        // Configuration mqtt
+        /*MQTTConfig.setBroker(env.getProperty("mqtt.broker"));
+        MQTTConfig.setClientId(env.getProperty("mqtt.clientId"));
+        MQTTConfig.setPassword(env.getProperty("mqtt.password"));
+        MQTTConfig.setQos(Integer.valueOf(env.getProperty("mqtt.qos")));
+        MQTTConfig.setUserName(env.getProperty("mqtt.userName"));
+        MQTTConfig.setTopic(env.getProperty("mqtt.topic"));
+        MQTTService.initMQTT(context);*/
     }
 
     @Override

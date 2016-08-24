@@ -1,9 +1,10 @@
 package com.mydreamplus.smartdevice.util;
 
-import com.mydreamplus.smartdevice.domain.message.DeviceMessage;
-import com.mydreamplus.smartdevice.exception.DataInvalidException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
-import org.springframework.util.StringUtils;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,14 +15,38 @@ import org.springframework.util.StringUtils;
  */
 public class JsonUtil {
 
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
+    static {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
     /**
      * Object to json string string.
      *
      * @param object the object
      * @return the string
      */
-    public static String toJsonString(Object object){
+    public static String toJsonString(Object object) {
         JSONObject jsonObject = new JSONObject(object);
         return jsonObject.toString();
+    }
+
+    /**
+     * Gets entity.
+     *
+     * @param <T>        the type parameter
+     * @param jsonString the json string
+     * @param prototype  the prototype
+     * @return the entity
+     */
+    public static <T> T getEntity(String jsonString, Class<T> prototype) {
+        try {
+            return objectMapper.readValue(jsonString, prototype);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
