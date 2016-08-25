@@ -16,7 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -224,9 +227,9 @@ public class DeviceManager {
      * @param policyDto the policy dto
      */
     public void savePolicy(PolicyDto policyDto) {
-        if(policyDto.getGroupId() != null){
+        if (policyDto.getGroupId() != null) {
             DeviceGroup deviceGroup = this.getDeviceGroup(policyDto.getGroupId());
-            if(deviceGroup != null){
+            if (deviceGroup != null) {
                 policyDto.setGroupName(deviceGroup.getName());
             }
         }
@@ -292,6 +295,18 @@ public class DeviceManager {
     public Page<Policy> findAllPolicy(PageDto pageDto) {
         Pageable pageable = new PageRequest(pageDto.getPage() - 1, pageDto.getSize());
         return this.policyRepository.search(null, pageable);
+    }
+
+    /**
+     * Find all policy page.
+     *
+     * @param pageDto   the page dto
+     * @param searchKey the search key
+     * @return the page
+     */
+    public Page<Policy> findAllPolicy(PageDto pageDto, String searchKey) {
+        Pageable pageable = new PageRequest(pageDto.getPage() - 1, pageDto.getSize());
+        return this.policyRepository.search(null, pageable, searchKey);
     }
 
     /**
@@ -381,7 +396,7 @@ public class DeviceManager {
      */
     public Set<DeviceEvent> findAllDeviceEventBySymbol(String symbol) {
         Device device = this.deviceRepository.findBySymbol(symbol);
-        if(device == null){
+        if (device == null) {
             throw new DataInvalidException("没有找到设备:" + symbol);
         }
         return device.getDeviceType().getDeviceEvents();
@@ -462,6 +477,15 @@ public class DeviceManager {
         policy.setUpdateTime(new Date());
         this.policyRepository.save(policy);*/
         this.policyRepository.delete(ID);
+    }
+
+    /**
+     * Remove gateway.
+     *
+     * @param ID the id
+     */
+    public void removeGateway(Long ID) {
+        this.piRespository.delete(ID);
     }
 
     /**
@@ -598,8 +622,42 @@ public class DeviceManager {
     }
 
 
+    /**
+     * Gets device group.
+     *
+     * @param id the id
+     * @return the device group
+     */
     public DeviceGroup getDeviceGroup(Long id) {
         return this.deviceGroupRepository.findOne(id);
+    }
+
+    /**
+     * Remove device type.
+     *
+     * @param id the id
+     */
+    public void removeDeviceType(Long id) {
+        this.deviceTypeRepository.delete(id);
+    }
+
+    /**
+     * Remove group.
+     *
+     * @param id the id
+     */
+    public void removeGroup(Long id) {
+        this.deviceGroupRepository.delete(id);
+    }
+
+    /**
+     * Gets pi by mac address.
+     *
+     * @param macAddress the mac address
+     * @return the pi by mac address
+     */
+    public PI getPIByMacAddress(String macAddress) {
+        return this.piRespository.findByMacAddress(macAddress);
     }
 }
 

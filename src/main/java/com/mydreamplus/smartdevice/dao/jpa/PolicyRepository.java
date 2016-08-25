@@ -44,10 +44,21 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
      */
     Page<Policy> search(Policy policy, Pageable pageable);
 
+    /**
+     * Search page.
+     *
+     * @param policy    the policy
+     * @param pageable  the pageable
+     * @param searchKey the search key
+     * @return the page
+     */
+    Page<Policy> search(Policy policy, Pageable pageable, String searchKey);
+
 
     /**
      * Find all policy by update time greater than list.
      *
+     * @param pi         the pi
      * @param updateTime the update time
      * @return the list
      */

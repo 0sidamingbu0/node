@@ -6,7 +6,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by Alex on 16/8/18.
@@ -37,10 +36,8 @@ public class PahoTest {
         }
 
 
-
-
         MemoryPersistence persistence2 = new MemoryPersistence();
-        MqttClient client2 = new MqttClient("tcp://localhost:1883",macAddr,persistence2);
+        MqttClient client2 = new MqttClient("tcp://localhost:1883", macAddr, persistence2);
         MqttConnectOptions connectOptions2 = new MqttConnectOptions();
         connectOptions2.setCleanSession(true);
         connectOptions2.setUserName("devices");

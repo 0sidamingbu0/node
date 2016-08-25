@@ -31,7 +31,10 @@ public class PI extends BaseEntity {
      */
     private String description;
 
-
+    /**
+     * 设备离线
+     */
+    private boolean isOffLine;
     /**
      * 连接到这个PI上的ZIGBEE设
      */
@@ -46,13 +49,20 @@ public class PI extends BaseEntity {
      * 最近一次注册时间
      */
     private Date registerTime;
-
     @ManyToOne(fetch = FetchType.EAGER)
     private DeviceGroup deviceGroup;
     /**
      * PI的ip
      */
     private String ipAddress;
+
+    public boolean isOffLine() {
+        return isOffLine;
+    }
+
+    public void setOffLine(boolean offLine) {
+        isOffLine = offLine;
+    }
 
     public DeviceGroup getDeviceGroup() {
         return deviceGroup;

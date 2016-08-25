@@ -71,22 +71,23 @@ public class DeviceService {
             if (deviceType == null) {
                 throw new DataInvalidException("没有找到设备类型!");
             }
+            if (!StringUtils.isEmpty(request.getFactory())) {
+                newDevice.setFactory(request.getFactory());
+            } else {
+                newDevice.setFactory(DeviceSourceEnum.DREAMPLUS.toString());
+            }
             newDevice.setDeviceType(deviceType);
             newDevice.setDeviceState(DeviceStateEnum.ONLINE);
             newDevice.setSymbol(request.getMacAddress() + "-1");
             newDevice.setAliases(newDevice.getMacAddress() + "-" + request.getDeviceType());
             newDevice.setRegistered(false);
-            newDevice.setFactory(DeviceSourceEnum.DREAMPLUS.toString());
             newDevice.setParentDeviceType(deviceType.getName());
             newDevice.setAdditionalAttributes(deviceType.getAdditionalAttributes());
             newDevice.setCreateTime(new Date());
             newDevice.setUpdateTime(new Date());
             this.deviceRepository.save(newDevice);
         }
-        // 注册成功反馈
-//        this.deviceRestService.registerFeedback(request.getMacAddress(), request.getMacAddress());
     }
-
 
 
     /**
@@ -122,7 +123,7 @@ public class DeviceService {
         } else {
             // 设备有可能注册到其他PI上
             PI pi = piRespository.findByMacAddress(deviceDto.getPIID());
-            if(pi != null){
+            if (pi != null) {
                 device.setPi(pi);
             }
             device.setUpdateTime(new Date());
@@ -239,7 +240,7 @@ public class DeviceService {
             device.setRegistered(true);
             this.deviceRepository.save(device);
         });
-        if(StringUtils.isEmpty(piMacAddress)){
+        if (StringUtils.isEmpty(piMacAddress)) {
             piMacAddress = deviceMacAddress;
         }
         deviceRestService.registerFeedback(piMacAddress, deviceMacAddress);

@@ -23,6 +23,15 @@ public class MQTTConfig {
 
     private static String password;
 
+    private static String deviceWillTopic;
+
+    public static String getDeviceWillTopic() {
+        return deviceWillTopic;
+    }
+
+    public static void setDeviceWillTopic(String deviceWillTopic) {
+        MQTTConfig.deviceWillTopic = deviceWillTopic;
+    }
 
     public static String getTopic() {
         return topic;

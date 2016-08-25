@@ -1,23 +1,24 @@
 package com.mydreamplus.smartdevice.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mydreamplus.smartdevice.config.Constant;
+import com.mydreamplus.smartdevice.config.MQTTConfig;
 import com.mydreamplus.smartdevice.domain.MessageTypeEnum;
 import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 import com.mydreamplus.smartdevice.domain.message.DeviceMessage;
 import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
-import com.mydreamplus.smartdevice.domain.message.WebSocketMessageResponse;
 import com.mydreamplus.smartdevice.entity.Device;
+import com.mydreamplus.smartdevice.exception.DataInvalidException;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,16 +35,49 @@ public class DeviceRestService {
     private static final int TIME_OUT = 5000;
     private final static Logger log = LoggerFactory.getLogger(DeviceRestService.class);
 
+
     /**
+     * MQTT 发送消息
+     *
+     * @param deviceMessage
+     * @param topic
+     */
+    private static void send(DeviceMessage deviceMessage, String topic) {
+        if (deviceMessage == null) {
+            throw new DataInvalidException("消息内容不能为空!");
+        }
+        JSONObject jsonObj = new JSONObject(deviceMessage);
+        jsonObj.put("deviceId", deviceMessage.getPiAddress());
+        String content = jsonObj.toString();
+        int qos = MQTTConfig.getQos();
+        log.info("Publishing message: " + content);
+        MqttMessage message = new MqttMessage(content.getBytes());
+        message.setQos(qos);
+        message.setPayload(content.getBytes());
+        try {
+            MQTTService.getAsyncClient().publish(topic, message);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        log.info("Message published");
+    }
+
+    /**
+     * WebSocket 发送消息
+     *
      * @param message
      */
     private static void send(DeviceMessage message) {
-//        String url = "http://localhost:8089/api/websocket/sendMessageToClient";
-        String url = Constant.WEBSOCKET_SERVICE_URI + Constant.WEBSOCKET_SERVICE_API;
+        //==================    MQTT   ===================
+        send(message, message.getPiAddress());
+        //================== WebSocket ===================
+//        log.info("socket message");
+        /*String url = "http://localhost:8089/api/websocket/sendMessageToClient";
+//       String url = Constant.WEBSOCKET_SERVICE_URI + Constant.WEBSOCKET_SERVICE_API;
         log.info("Send message to url: {}", url);
         int timeout = TIME_OUT;
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
-                new HttpComponentsClientHttpRequestFactory();
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory;
+        clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
         clientHttpRequestFactory.setConnectTimeout(timeout);
         RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -64,7 +98,7 @@ public class DeviceRestService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -105,6 +139,11 @@ public class DeviceRestService {
     }
 
 
+    /**
+     * Register feedback.
+     *
+     * @param macAddress the mac address
+     */
     @Async(value = "messageExecutor")
     public void registerFeedback(String macAddress) {
         DeviceMessage deviceMessage = new DeviceMessage();

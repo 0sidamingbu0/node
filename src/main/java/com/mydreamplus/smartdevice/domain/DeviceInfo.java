@@ -20,6 +20,19 @@ public class DeviceInfo {
      */
     private String description;
 
+    /**
+     * 设备所在的父亲设备
+     */
+    private String deviceGroupName;
+
+    public String getDeviceGroupName() {
+        return deviceGroupName;
+    }
+
+    public void setDeviceGroupName(String deviceGroupName) {
+        this.deviceGroupName = deviceGroupName;
+    }
+
     public String getSymbol() {
         return symbol;
     }

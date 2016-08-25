@@ -23,6 +23,7 @@ public class PIDto {
     private String name;
     private String groupName;
 
+    private boolean isOffLine;
     /**
      * PI的mac
      */
@@ -43,6 +44,14 @@ public class PIDto {
      * IP
      */
     private String ipAddress;
+
+    public boolean isOffLine() {
+        return isOffLine;
+    }
+
+    public void setOffLine(boolean offLine) {
+        isOffLine = offLine;
+    }
 
     public Long getGroupId() {
         return groupId;

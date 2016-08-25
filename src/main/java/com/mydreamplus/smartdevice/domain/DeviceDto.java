@@ -78,6 +78,8 @@ public class DeviceDto {
 
     private boolean isRegistered;
 
+    private String deviceGroupName;
+
     /**
      * Instantiates a new Device dto.
      */
@@ -91,6 +93,14 @@ public class DeviceDto {
      */
     public DeviceDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public String getDeviceGroupName() {
+        return deviceGroupName;
+    }
+
+    public void setDeviceGroupName(String deviceGroupName) {
+        this.deviceGroupName = deviceGroupName;
     }
 
     public boolean isRegistered() {

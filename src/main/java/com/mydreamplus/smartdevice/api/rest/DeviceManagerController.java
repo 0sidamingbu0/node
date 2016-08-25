@@ -122,6 +122,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+
     /**
      * Create parent device type base response.
      *
@@ -161,7 +162,7 @@ public class DeviceManagerController extends AbstractRestHandler {
      * @param deviceEventDto the device event dto
      * @return the base response
      */
-    @RequestMapping(value = "/device/update",
+    @RequestMapping(value = "/deviceEvent/create",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建设备事件")
@@ -270,7 +271,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         List<DeviceDto> deviceDtos = new ArrayList<>();
         Page<Device> pageDevice = this.deviceManager.findAllDevices(request,
                 new PageRequest(request.getPageDto().getPage() - 1, request.getPageDto().getSize()));
-        if(pageDevice != null && pageDevice.getTotalElements() > 0){
+        if (pageDevice != null && pageDevice.getTotalElements() > 0) {
             pageDevice.forEach(device -> {
                 PI pi = device.getPi();
                 DeviceDto d = new DeviceDto();
@@ -279,7 +280,7 @@ public class DeviceManagerController extends AbstractRestHandler {
                     d.setPIID(pi.getMacAddress());
                     d.setPiName(pi.getName());
                 }
-                if(device.getDeviceType() != null)
+                if (device.getDeviceType() != null)
                     d.setDeviceType(device.getDeviceType().getAliases());
                 d.setLinkQuality(LinkQualityRepositoryImpl.getLinkQuality(d.getMacAddress()));
                 deviceDtos.add(d);
@@ -546,7 +547,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             throw new DataInvalidException("没有分页信息");
         }
         PageResponse pageResponse = new PageResponse();
-        Page<Policy> page = this.deviceManager.findAllPolicy(request.getPageDto());
+        Page<Policy> page = this.deviceManager.findAllPolicy(request.getPageDto(), request.getSearchKey());
         List<PolicyDto> policyDtos = new ArrayList<>();
         page.forEach(policy -> {
             policy.setPi(null);
@@ -709,6 +710,37 @@ public class DeviceManagerController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+    @RequestMapping(value = "/gateway/remove/{ID}",
+            method = RequestMethod.POST,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "删除网关")
+    public BaseResponse removeGateway(@PathVariable Long ID) {
+        this.deviceManager.removeGateway(ID);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+
+    @RequestMapping(value = "/deviceType/remove/{ID}",
+            method = RequestMethod.POST,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "删除设备类型")
+    public BaseResponse removeDeviceType(@PathVariable Long ID) {
+        this.deviceManager.removeDeviceType(ID);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+    @RequestMapping(value = "/group/remove/{ID}",
+            method = RequestMethod.POST,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "删除组")
+    public BaseResponse removeGroup(@PathVariable Long ID) {
+        this.deviceManager.removeGroup(ID);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
 
     /**
      * Remove device event base response.
@@ -736,7 +768,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             method = RequestMethod.POST,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "删除事件")
+    @ApiOperation(value = "删除方法")
     public BaseResponse removeDeviceFunction(@PathVariable Long ID) {
         this.deviceManager.removeDeviceFunction(ID);
         return new BaseResponse(RESPONSE_SUCCESS);

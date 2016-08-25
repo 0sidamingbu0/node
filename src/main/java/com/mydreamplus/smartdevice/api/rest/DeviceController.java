@@ -60,7 +60,6 @@ public class DeviceController extends AbstractRestHandler {
     private ExternalAPIService externalAPIService;
 
 
-
     @RequestMapping(value = "/common/register",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -71,9 +70,6 @@ public class DeviceController extends AbstractRestHandler {
         this.deviceService.registerCommonDevice(commonDeviceRequest);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
-
-
-
 
 
     /**
@@ -200,7 +196,7 @@ public class DeviceController extends AbstractRestHandler {
                 new Date(request.getEventTime()), System.currentTimeMillis() - request.getEventTime());
 
         // 刷卡或者扫码
-        if(request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD) || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)){
+        if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD) || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
             this.doorEventAction(request);
         }
 
@@ -288,19 +284,9 @@ public class DeviceController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
-    @RequestMapping(value = "/removeCallback",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "删除设备,设备重新注册")
-    public BaseResponse removeCallback(@RequestBody DeviceMacAddrRequest request) {
-        this.deviceService.callbackRemoveDevice(request.getMacAddress());
-        return new BaseResponse(RESPONSE_SUCCESS);
-    }
-
 
     /**
-     *  理刷卡事件
+     * 理刷卡事件
      *
      * @param event
      */
@@ -328,9 +314,10 @@ public class DeviceController extends AbstractRestHandler {
 
     /**
      * 开门事件处理方法
+     *
      * @param event
      */
-    private void doorEventAction(DeviceEventRequest event){
+    private void doorEventAction(DeviceEventRequest event) {
         if (externalAPIService.checkPermissionDoor(event.getData(), event.getPiMacAddress(), event.getEventName())) {
             this.deviceRestService.sendCommandToDevice(event.getPiMacAddress(), event.getSymbol(), Command.ON);
         } else {

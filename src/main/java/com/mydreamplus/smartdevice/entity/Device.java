@@ -58,6 +58,11 @@ public class Device extends BaseEntity {
     @Column
     private String factory;
 
+
+    /**
+     * 设备所在分组的别名
+     */
+    private String deviceGroupName;
     /**
      * 已经注册
      */
@@ -98,6 +103,14 @@ public class Device extends BaseEntity {
     @Basic(fetch = FetchType.LAZY)
     @Column
     private String additionalAttributes;
+
+    public String getDeviceGroupName() {
+        return deviceGroupName;
+    }
+
+    public void setDeviceGroupName(String deviceGroupName) {
+        this.deviceGroupName = deviceGroupName;
+    }
 
     public boolean isRegistered() {
         return isRegistered;

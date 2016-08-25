@@ -1,13 +1,9 @@
 package com.mydreamplus.smartdevice;
 
-import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.config.MQTTConfig;
 import com.mydreamplus.smartdevice.service.MQTTService;
-import mousio.etcd4j.EtcdClient;
-import mousio.etcd4j.requests.EtcdKeyGetRequest;
 import mousio.etcd4j.responses.EtcdAuthenticationException;
 import mousio.etcd4j.responses.EtcdException;
-import mousio.etcd4j.responses.EtcdKeysResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -18,11 +14,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.util.StringUtils;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
 /*
@@ -47,7 +41,7 @@ public class Application extends SpringBootServletInitializer {
         Environment env = context.getEnvironment();
 
         //================== WebSocket ==================
-        String etcdUrl = env.getProperty(ETCD_URL_KEY);
+        /*String etcdUrl = env.getProperty(ETCD_URL_KEY);
         String webSocketUrl = env.getProperty(WEBSOCKET_SERVICE_URL_ETCD_KEY);
         log.info("-----------------------------" + etcdUrl);
         log.info("-----------------------------" + webSocketUrl);
@@ -61,18 +55,19 @@ public class Application extends SpringBootServletInitializer {
             System.exit(1);
         }
         Constant.WEBSOCKET_SERVICE_URI = webSocketServiceUrl;
-        log.info("WebSocket service: {}", webSocketServiceUrl);
+        log.info("WebSocket service: {}", webSocketServiceUrl);*/
 
 
         //================== MQTT ==================
         // Configuration mqtt
-        /*MQTTConfig.setBroker(env.getProperty("mqtt.broker"));
+        MQTTConfig.setBroker(env.getProperty("mqtt.broker"));
         MQTTConfig.setClientId(env.getProperty("mqtt.clientId"));
         MQTTConfig.setPassword(env.getProperty("mqtt.password"));
         MQTTConfig.setQos(Integer.valueOf(env.getProperty("mqtt.qos")));
         MQTTConfig.setUserName(env.getProperty("mqtt.userName"));
         MQTTConfig.setTopic(env.getProperty("mqtt.topic"));
-        MQTTService.initMQTT(context);*/
+        MQTTConfig.setDeviceWillTopic(env.getProperty("mqtt.deviceWillTopic"));
+        MQTTService.initMQTT(context);
     }
 
     @Override

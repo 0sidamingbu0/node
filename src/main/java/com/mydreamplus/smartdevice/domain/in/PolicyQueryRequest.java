@@ -17,6 +17,16 @@ public class PolicyQueryRequest extends BaseRequest {
      */
     private PageDto pageDto;
 
+    private String searchKey;
+
+    public String getSearchKey() {
+        return searchKey;
+    }
+
+    public void setSearchKey(String searchKey) {
+        this.searchKey = searchKey;
+    }
+
     public PageDto getPageDto() {
         return pageDto;
     }

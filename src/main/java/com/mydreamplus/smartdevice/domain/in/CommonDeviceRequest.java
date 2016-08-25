@@ -13,9 +13,19 @@ public class CommonDeviceRequest extends BaseRequest {
     private String macAddress;
 
     /**
-     *类型: ANDROIDTV 、Coffee
+     * 类型: ANDROIDTV 、Coffee
      */
     private String deviceType;
+
+    private String factory;
+
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
+    }
 
     public String getMacAddress() {
         return macAddress;

@@ -61,9 +61,10 @@ spring:
 # RabbitMQ
 mqtt:
   topic: SmartDeviceServerTopic
+  deviceWillTopic: device-will
   qos: 0
-  broker: tcp://10.28.1.29:1883
   clientId: SmartDeviceServer
-  userName: alex
-  password: alex
+  broker: tcp://dev.mqtt.mxj.mx:1883
+  userName: smartdevice
+  password: f1zzb4ck
 
