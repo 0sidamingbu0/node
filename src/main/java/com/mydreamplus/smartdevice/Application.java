@@ -67,6 +67,8 @@ public class Application extends SpringBootServletInitializer {
         MQTTConfig.setUserName(env.getProperty("mqtt.userName"));
         MQTTConfig.setTopic(env.getProperty("mqtt.topic"));
         MQTTConfig.setDeviceWillTopic(env.getProperty("mqtt.deviceWillTopic"));
+
+        System.out.println("userName:" + MQTTConfig.getUserName());
         MQTTService.initMQTT(context);
     }
 

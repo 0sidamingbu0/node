@@ -46,7 +46,7 @@ public class DeviceManagerController extends AbstractRestHandler {
     /**
      * 设 入网时间缓
      */
-    private static final Map<String, Date> PERMIT_TIME_CACHE = new HashMap<>(1000);
+    private static final Map<String, Date> PERMIT_TIME_CACHE = new HashMap<>();
     /**
      * PING命令次数
      */
@@ -81,6 +81,20 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ApiOperation(value = "配置AndroidTV")
     public BaseResponse updateAndroidTVConfig(@RequestBody AndroidTVConfigRequest request) {
         this.deviceManager.updateAndroidConfig(request);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+    /**
+     * common Config
+     *
+     * @return the base response
+     */
+    @RequestMapping(value = "/common/config",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "配置AndroidTV")
+    public BaseResponse commonConfig(@RequestBody DeviceConfigRequest request) {
+        this.deviceManager.commonConfig(request);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
@@ -635,12 +649,12 @@ public class DeviceManagerController extends AbstractRestHandler {
      * @param piMacAddress the pi mac address
      * @return the base response
      */
-    @RequestMapping(value = "/permit/{piMacAddress}/{minute}",
+    @RequestMapping(value = "/permit/{piMacAddress}/{minute}/{clientTime}",
             method = RequestMethod.GET,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "允许设备加入网络,单位:分钟")
-    public BaseResponse permit(@PathVariable int minute, @PathVariable String piMacAddress) {
+    public BaseResponse permit(@PathVariable int minute, @PathVariable String piMacAddress, @PathVariable long clientTime) {
         if (minute > 60) {
             throw new DataInvalidException("设备入网时间不能超过1个小时");
         }
@@ -648,7 +662,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         if (PERMIT_TIME_CACHE.get(piMacAddress) != null && PERMIT_TIME_CACHE.get(piMacAddress).getTime() > System.currentTimeMillis()) {
             throw new DataInvalidException("倒计时还未结束,结束时间:" + PERMIT_TIME_CACHE.get(piMacAddress));
         }
-        PERMIT_TIME_CACHE.put(piMacAddress, new Date(System.currentTimeMillis() + 1000 * 60 * minute));
+        PERMIT_TIME_CACHE.put(piMacAddress, new Date(clientTime + 1000 * 60 * minute));
         this.deviceService.permitJoinIn(piMacAddress, minute);
         return new BaseResponse(RESPONSE_SUCCESS);
     }

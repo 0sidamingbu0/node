@@ -116,7 +116,7 @@ public class DeviceRestService {
         deviceMessage.setPiAddress(device.getMacAddress());
         deviceMessage.setConfig(device.getAdditionalAttributes());
         send(deviceMessage);
-        log.info(":::::::::配置 Android TV!");
+        log.info(":::::::::配置 设备!");
     }
 
 

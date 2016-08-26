@@ -3,6 +3,7 @@ package com.mydreamplus.smartdevice.service;
 import com.mydreamplus.smartdevice.dao.jpa.*;
 import com.mydreamplus.smartdevice.domain.*;
 import com.mydreamplus.smartdevice.domain.in.AndroidTVConfigRequest;
+import com.mydreamplus.smartdevice.domain.in.DeviceConfigRequest;
 import com.mydreamplus.smartdevice.domain.in.DeviceQueryRequest;
 import com.mydreamplus.smartdevice.entity.*;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
@@ -602,6 +603,22 @@ public class DeviceManager {
         dto.setCustomerUrl(request.getCustomerUrl());
         dto.setDefaultUrl(request.getDefaultUrl());
         device.setAdditionalAttributes(JsonUtil.toJsonString(dto));
+        this.deviceRepository.save(device);
+        this.deviceRestService.sendConfigProperty(device);
+    }
+
+
+    /**
+     * Common config.
+     *
+     * @param request the request
+     */
+    public void commonConfig(DeviceConfigRequest request) {
+        Device device = this.deviceRepository.findOne(request.getDeviceId());
+        if (device == null) {
+            throw new DataInvalidException("没有找到设备");
+        }
+        device.setAdditionalAttributes(request.getConfigJson());
         this.deviceRepository.save(device);
         this.deviceRestService.sendConfigProperty(device);
     }

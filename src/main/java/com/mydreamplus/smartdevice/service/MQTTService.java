@@ -77,10 +77,23 @@ public class MQTTService {
             connOpts.setPassword(password.toCharArray());
             connOpts.setCleanSession(true);
             log.info("Connecting to broker: " + broker);
-            asyncClient.connect(connOpts).waitForCompletion();
+            asyncClient.connect(connOpts).setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    try {
+                        subscripe(deviceWillTopic, serverTopic);
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+
+                }
+            });
             log.info("Connected");
             asyncClient.setCallback(new DeviceMQTTCallBack(connOpts, serverTopic, deviceWillTopic));
-            subscripe(deviceWillTopic, serverTopic);
         } catch (MqttException me) {
             me.printStackTrace();
         }
