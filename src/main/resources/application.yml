@@ -63,8 +63,8 @@ mqtt:
   topic: SmartDeviceServerTopic
   deviceWillTopic: device-will
   qos: 0
-  clientId: SmartDeviceServer-stable
+  clientId: SmartDeviceServer-stable1
   broker: tcp://mqtt.mxj.mx:1883
-  userName: /qa:smartdevice
+  userName: prod
   password: f1zzb4ck
 
