@@ -647,8 +647,14 @@ public class DeviceManager {
      * @param id the id
      */
     public void removeGroup(Long id) {
-        this.deviceGroupRepository.delete(id);
+        try {
+            this.deviceGroupRepository.delete(id);
+        } catch (RuntimeException exception) {
+            throw new DataInvalidException("请先删除该组关联的设备");
+        }
+
     }
+
 
     /**
      * Gets pi by mac address.

@@ -187,9 +187,9 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ApiOperation(value = "查询设备类型", notes = "全部")
     public PageResponse findAllDeviceTypes(@RequestBody PageDto pageDto) {
         PageResponse response = new PageResponse();
-        Page<DeviceType> deviceTypes = deviceManager.findALLDeviceTypes(pageDto);
+        Page<DeviceType> page = deviceManager.findALLDeviceTypes(pageDto);
         List<DeviceTypeDto> deviceTypeDtos = new ArrayList<>();
-        deviceTypes.forEach(deviceType -> {
+        page.forEach(deviceType -> {
             log.info(deviceType.getName());
             DeviceTypeDto dto = new DeviceTypeDto();
             BeanUtils.copyProperties(deviceType, dto, "deviceEvents", "deviceFunctions");
@@ -201,9 +201,9 @@ public class DeviceManagerController extends AbstractRestHandler {
             dto.setDeviceFunctions(functionList);
             deviceTypeDtos.add(dto);
         });
-        response.setTotalPages(deviceTypes.getTotalPages());
+        response.setTotalPages(page.getTotalPages());
         response.setCurrentPage(pageDto.getPage());
-        response.setTotalElements(deviceTypes.getNumberOfElements());
+        response.setTotalElements(page.getTotalElements());
         response.setPerPage(pageDto.getSize());
         response.setData(deviceTypeDtos);
         return response;
