@@ -47,6 +47,19 @@ public class BaseCondition {
      */
     private long continuedTime;
 
+    /**
+     * 设备类型
+     */
+    private String deviceType;
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public int getLogic() {
         return logic;
     }

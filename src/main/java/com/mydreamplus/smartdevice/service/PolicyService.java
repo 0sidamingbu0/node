@@ -1,6 +1,7 @@
 package com.mydreamplus.smartdevice.service;
 
 import com.mydreamplus.smartdevice.config.Constant;
+import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
 import com.mydreamplus.smartdevice.dao.jpa.PIRespository;
 import com.mydreamplus.smartdevice.dao.jpa.PolicyRepository;
 import com.mydreamplus.smartdevice.domain.ConditionAndSlaveDto;
@@ -8,6 +9,7 @@ import com.mydreamplus.smartdevice.domain.DeviceRegisterDto;
 import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 import com.mydreamplus.smartdevice.domain.PolicyDto;
 import com.mydreamplus.smartdevice.domain.in.DeviceRegisterRequest;
+import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.PI;
 import com.mydreamplus.smartdevice.entity.Policy;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
@@ -39,6 +41,45 @@ public class PolicyService {
     private PIRespository piRespository;
     @Autowired
     private PolicyRepository policyRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
+
+    /**
+     * 验证是否是云端执行的场景(是否跨PI)
+     *
+     * @param policyConfigDto
+     * @return
+     */
+    public Set<PI> checkIsRootPolicy(PolicyConfigDto policyConfigDto) {
+        log.info("===========验证场景是否跨网关==========");
+        Set<PI> pis = new HashSet<>();
+        policyConfigDto.getMasterDeviceMap().keySet().forEach(symble -> {
+            Device device = this.deviceRepository.findBySymbol(symble);
+            if (device != null && device.getPi() != null) {
+                pis.add(device.getPi());
+                log.info("主控设备所在网关:{}", device.getPi().getMacAddress());
+            }
+        });
+
+        policyConfigDto.getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> {
+            conditionAndSlaveDto.getConditions().forEach(baseCondition -> {
+                Device device = deviceRepository.findBySymbol(baseCondition.getSymbol());
+                if (device != null && device.getPi() != null) {
+                    pis.add(device.getPi());
+                    log.info("条件设备所在网关:{}", device.getPi().getMacAddress());
+                }
+            });
+            conditionAndSlaveDto.getSlaveDeviceMap().keySet().forEach(symble -> {
+                Device device = deviceRepository.findBySymbol(symble);
+                if (device != null && device.getPi() != null) {
+                    pis.add(device.getPi());
+                    log.info("被控设备所在网关:{}", device.getPi().getMacAddress());
+                }
+            });
+        });
+        return pis;
+    }
 
     /**
      * Parse and save policy list.
@@ -106,6 +147,7 @@ public class PolicyService {
                 policy.setPolicyConfig(JsonUtil.toJsonString(policyConfigDto));
                 policy.setDefaultPolicy(true);
                 policy.setMasterEvent(masterDeviceMap.toString());
+                policy.setDeleted(false);
                 this.saveOrUpdatePolicy(policy);
                 PolicyDto policyDto = new PolicyDto();
                 policyDto.setPi(pi);
@@ -119,20 +161,26 @@ public class PolicyService {
         return policyDots;
     }
 
-
     /**
      * 保存策略,如果策略存在则更新
+     *
      * @param policy
      */
     private void saveOrUpdatePolicy(Policy policy) {
-        Policy source = this.policyRepository.findByName(policy.getName());
-        if (source == null) {
-            this.policyRepository.save(policy);
-        } else {
-            log.info("策略:{} 已经存在!", policy.getName());
-            source.setUpdateTime(new Date());
-            this.policyRepository.save(source);
-        }
+        this.policyRepository.save(policy);
+    }
+
+    /**
+     * 根据设备标识和事件查找场景
+     * {00:12:4b:00:07:dc:27:58-1=AnyEvent}
+     *
+     * @param deviceSymbol
+     * @param event
+     * @return
+     */
+    public Policy findByDeviceAndEvent(String deviceSymbol, String event) {
+        String key = "{" + deviceSymbol + "=" + event + "}";
+        return this.policyRepository.findByMasterEventAndDeleted(key, false);
     }
 
 }

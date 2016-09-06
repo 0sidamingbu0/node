@@ -55,13 +55,16 @@ public class DeviceService {
      */
     public void registerCommonDevice(CommonDeviceRequest request) {
         Device device = deviceRepository.findByMacAddressAndName(request.getMacAddress(), request.getDeviceType());
-        if (device != null) {
-            device.setRegistered(true);
+        if (device != null ) { // 更新设备信息
             device.setRegisteTime(new Date());
             device.setUpdateTime(new Date());
+            device.setMacAddress(request.getMacAddress());
             device.setDeviceState(DeviceStateEnum.ONLINE);
-            this.deviceRestService.registerFeedback(request.getMacAddress());
-            this.deviceRestService.sendConfigProperty(device);
+            //
+            if(device.isRegistered()){
+                this.deviceRestService.registerFeedback(request.getMacAddress());
+                this.deviceRestService.sendConfigProperty(device);
+            }
             this.deviceRepository.save(device);
         } else {
             Device newDevice = new Device();
@@ -78,13 +81,24 @@ public class DeviceService {
             }
             newDevice.setDeviceType(deviceType);
             newDevice.setDeviceState(DeviceStateEnum.ONLINE);
-            newDevice.setSymbol(request.getMacAddress() + "-1");
+            newDevice.setMacAddress(request.getMacAddress());
+            newDevice.setSymbol(request.getMacAddress());
             newDevice.setAliases(newDevice.getMacAddress() + "-" + request.getDeviceType());
             newDevice.setRegistered(false);
             newDevice.setParentDeviceType(deviceType.getName());
             newDevice.setAdditionalAttributes(deviceType.getAdditionalAttributes());
             newDevice.setCreateTime(new Date());
             newDevice.setUpdateTime(new Date());
+            // 未通用设备类型分配一个默认网关(PI)
+//            PI pi = new PI();
+//            newDevice.setPi(pi);
+//            pi.setName(newDevice.getName());
+//            pi.setOffLine(false);
+//            pi.setDescription("创建的默认网关");
+//            pi.setMacAddress(newDevice.getMacAddress());
+//            pi.setRegisterTime(new Date());
+//            pi.setZbDeviceList(Arrays.asList(newDevice));
+//            this.piRespository.save(pi);
             this.deviceRepository.save(newDevice);
         }
     }
@@ -113,7 +127,7 @@ public class DeviceService {
             }
             pi.getZbDeviceList().add(device);
             device.setName(deviceType.getName());
-            device.setAliases(deviceType.getAliases() + device.getSymbol());
+            device.setAliases(deviceType.getAliases() + "_" + device.getSymbol());
             device.setPi(pi);
             device.setMacAddress(deviceDto.getMacAddress());
             device.setCreateTime(new Date());

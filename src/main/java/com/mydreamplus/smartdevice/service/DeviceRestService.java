@@ -1,6 +1,7 @@
 package com.mydreamplus.smartdevice.service;
 
 import com.mydreamplus.smartdevice.config.MQTTConfig;
+import com.mydreamplus.smartdevice.domain.DoorInfo;
 import com.mydreamplus.smartdevice.domain.MessageTypeEnum;
 import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 import com.mydreamplus.smartdevice.domain.message.DeviceMessage;
@@ -286,6 +287,51 @@ public class DeviceRestService {
         log.info(":::::::::对设备下发命令:" + command);
     }
 
+    /**
+     * Command
+     *
+     * @param piMacAddress the pi mac address
+     * @param symbol       the symbol
+     * @param command      the command
+     */
+    @Async(value = "messageExecutor")
+    public void sendCommandToDevice(String piMacAddress, String symbol, String command, String parameter) {
+        DeviceMessage deviceMessage = new DeviceMessage();
+        deviceMessage.setAction("/command");
+        deviceMessage.setMessageType(MessageTypeEnum.COMMAND);
+        deviceMessage.setPiAddress(piMacAddress);
+        Map<String, Object> data = new HashMap<>();
+        data.put("command", command);
+        data.put("symbol", symbol);
+        data.put("parameter", parameter);
+        deviceMessage.setMessage(SUCCESS);
+        deviceMessage.setData(data);
+        send(deviceMessage);
+        log.info(":::::::::对设备下发命令:" + command);
+    }
+
+
+    /**
+     * 开门
+     *
+     * @param piMacAddress
+     * @param symbol
+     * @param doorInfo
+     */
+    @Async(value = "messageExecutor")
+    public void openDoor(String piMacAddress, String symbol, DoorInfo doorInfo) {
+        DeviceMessage deviceMessage = new DeviceMessage();
+        deviceMessage.setAction("/openDoor");
+        deviceMessage.setMessageType(MessageTypeEnum.COMMAND);
+        deviceMessage.setPiAddress(piMacAddress);
+        Map<String, Object> data = new HashMap<>();
+        data.put("info", doorInfo);
+        data.put("symbol", symbol);
+        deviceMessage.setMessage(SUCCESS);
+        deviceMessage.setData(data);
+        send(deviceMessage);
+        log.info(":::::::::对设备下发命令 : 开门");
+    }
 
     /**
      * 让传感 上报数据

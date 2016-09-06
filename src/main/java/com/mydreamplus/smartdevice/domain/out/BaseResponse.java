@@ -31,6 +31,11 @@ public class BaseResponse {
     }
 
     public BaseResponse(String message) {
+        if (message.equals("FAILURE")) {
+            this.setCode(0);
+        } else {
+            this.setCode(1);
+        }
         this.message = message;
     }
 
@@ -73,6 +78,11 @@ public class BaseResponse {
      * @param message the message
      */
     public void setMessage(String message) {
+        if (message.equals("FAILURE")) {
+            this.setCode(0);
+        } else {
+            this.setCode(1);
+        }
         this.message = message;
     }
 

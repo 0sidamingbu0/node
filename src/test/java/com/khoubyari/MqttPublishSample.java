@@ -9,13 +9,13 @@ public class MqttPublishSample {
 
     public static void main(String[] args) {
 
-        String topic = "MQTT TOPIC";
-        String liliangTopic = "alex";
-        String content = "Message from MqttPublishSample";
+        String topic = "inTopic";
+        String liliangTopic = "outTopic";
+        String content = "Message from liji's IntellJIDEA:";
         StringBuilder sb = new StringBuilder();
 
         int qos = 0;
-        String broker = "tcp://10.28.1.30:1883";
+        String broker = "tcp://localhost:1883";
         String clientId = "liji-mqtt";
 //        MemoryPersistence persistence = new MemoryPersistence();
         MqttDefaultFilePersistence persistence = new MqttDefaultFilePersistence("/Users/liji/test");
@@ -29,8 +29,8 @@ public class MqttPublishSample {
             sampleClient.setBufferOpts(op);
 //            connOpts.setMaxInflight(100);
             connOpts.setCleanSession(true);
-            connOpts.setUserName("devices");
-            connOpts.setPassword("123456".toCharArray());
+            connOpts.setUserName("alex");
+            connOpts.setPassword("alex".toCharArray());
             connOpts.setCleanSession(true);
             System.out.println("Connecting to broker: " + broker);
             sampleClient.connect(connOpts).waitForCompletion();

@@ -74,11 +74,13 @@ public class DeviceInfoDto {
      * 设 分组
      */
     private List<DeviceGroup> deviceGroupList;
+
     /**
      * Instantiates a new Device dto.
      */
     public DeviceInfoDto() {
     }
+
     /**
      * Instantiates a new Device dto.
      *
@@ -339,14 +341,6 @@ public class DeviceInfoDto {
         }
     }
 
-    /**
-     * Gets index.
-     *
-     * @return the index
-     */
-    public int getIndex() {
-        return SymbolUtil.parseIndex(this.symbol);
-    }
 
     @Override
     public String toString() {

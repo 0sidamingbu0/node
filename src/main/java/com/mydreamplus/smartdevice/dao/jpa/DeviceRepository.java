@@ -112,7 +112,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param deviceFunctionTypeEnum2 the device function type enum 2
      * @return the list
      */
-    @Query("select u from Device u where u.aliases like %?1% and (u.deviceType.deviceFunctionType = ?2 or u.deviceType.deviceFunctionType = ?3)")
+    @Query("select u from Device u where u.aliases like %?1% and (u.deviceType.deviceFunctionType = ?2 or u.deviceType.deviceFunctionType = ?3 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED')")
     List<Device> findAllMasterByAliasesContainingAndFunctionType(String aliases, DeviceFunctionTypeEnum deviceFunctionTypeEnum1, DeviceFunctionTypeEnum deviceFunctionTypeEnum2);
 
 
@@ -123,7 +123,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param deviceFunctionTypeEnum2 the device function type enum 2
      * @return the list
      */
-    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2)")
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED')")
     List<Device> findAllMasterByFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum1, DeviceFunctionTypeEnum deviceFunctionTypeEnum2);
 
     /**
@@ -134,7 +134,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param pi                      the pi
      * @return the list
      */
-    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2) and u.pi =?3")
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED') and u.pi =?3")
     List<Device> findAllMasterByFunctionTypeAndPI(DeviceFunctionTypeEnum deviceFunctionTypeEnum1, DeviceFunctionTypeEnum deviceFunctionTypeEnum2, PI pi);
 
 
@@ -146,7 +146,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param group                   the group
      * @return the list
      */
-    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2) and u.pi.deviceGroup =?3")
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = ?2 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED') and u.pi.deviceGroup =?3")
     List<Device> findAllMasterByFunctionTypeAndGroup(DeviceFunctionTypeEnum deviceFunctionTypeEnum1, DeviceFunctionTypeEnum deviceFunctionTypeEnum2, DeviceGroup group);
 
 
@@ -159,7 +159,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param piMacAddress           the piid
      * @return the list
      */
-    @Query("select u from Device u where u.aliases like %?1% and (u.deviceType.deviceFunctionType = ?2) and u.pi.macAddress = ?3")
+    @Query("select u from Device u where u.aliases like %?1% and (u.deviceType.deviceFunctionType = ?2 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED') and u.pi.macAddress = ?3")
     List<Device> findAllByAliasesContainingAndPi(String aliases, DeviceFunctionTypeEnum deviceFunctionTypeEnum, String piMacAddress);
 
 
@@ -170,8 +170,16 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param piMacAddress           the pi mac address
      * @return the list
      */
-    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1) and u.pi.macAddress = ?2")
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED') and u.pi.macAddress = ?2")
     List<Device> findAllByPiAndDeviceFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum, String piMacAddress);
+
+
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED') and u.pi.deviceGroup.id = ?2")
+    List<Device> findAllByPiAndDeviceFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum, long groupId);
+
+
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED')")
+    List<Device> findAllByDeviceFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum);
 
     /**
      * Find all by update time less than list.

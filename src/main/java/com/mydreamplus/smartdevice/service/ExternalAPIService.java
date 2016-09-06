@@ -1,5 +1,6 @@
 package com.mydreamplus.smartdevice.service;
 
+import com.mydreamplus.smartdevice.config.DoorApi;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +26,11 @@ public class ExternalAPIService {
 
     private static final int TIME_OUT = 5000;
     private final static Logger log = LoggerFactory.getLogger(ExternalAPIService.class);
-    private static final String DOOR_PASSWORD_API = "/api/door/authentication/password";
-    private static final String DOOR_CARD_API = "/api/door/authentication/card";
-    private static final String DOOR_EVENT_API = "/api/door/authentication/event";
-    private static final String SERVER_URL = "http://dev.so.aws.mxj.mx/";
+    private String host = "http://qa.so.aws.mxj.mx/";
 
-    private static ResponseMessage callApi(Map<String, String> map, String url) {
+    private static Object callApi(Map<String, String> map, String url) {
         log.info("Send message to url: {}", url);
-        ResponseMessage response = null;
+        Object response = null;
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
                 new HttpComponentsClientHttpRequestFactory();
         clientHttpRequestFactory.setConnectTimeout(TIME_OUT);
@@ -65,29 +63,39 @@ public class ExternalAPIService {
         ExternalAPIService externalAPIService = new ExternalAPIService();
         externalAPIService.checkPermissionDoorPassword("1", "1");
         externalAPIService.checkPermissionDoorCard("1", "2");
+//        externalAPIService.checkPermissionDoor("1","2","card","http://qa.so.aws.mxj.mx/");
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     /**
      * Check permission door password boolean.
-     *
+     * <p>
      * 正确返回
-     { "code": 1, "message": "success" }
-     错误返回
-     code: -2 随机密码错误，无微信消息
-     code:-3 门被关闭,微信提示 ：当前门禁已关闭
-     code:-4 门被禁用， 微信提示：当前门被禁用
-     code:-5 没有门禁权限微信提示：门禁权限不足
-     code:-6 没有找到门,如果输入密码正确，微信提示:请绑定门禁: 门禁mac地址.
+     * { "code": 1, "message": "success" }
+     * 错误返回
+     * code: -2 随机密码错误，无微信消息
+     * code:-3 门被关闭,微信提示 ：当前门禁已关闭
+     * code:-4 门被禁用， 微信提示：当前门被禁用
+     * code:-5 没有门禁权限微信提示：门禁权限不足
+     * code:-6 没有找到门,如果输入密码正确，微信提示:请绑定门禁: 门禁mac地址.
+     *
      * @param password     the password
      * @param piMacAddress the pi mac address
      * @return the boolean
      */
     public boolean checkPermissionDoorPassword(String password, String piMacAddress) {
-        String url = SERVER_URL + DOOR_PASSWORD_API;
+        String url = host + DoorApi.DOOR_PASSWORD_API;
         Map<String, String> map = new HashMap<>();
         map.put("password", password);
         map.put("piMacAddress", piMacAddress);
-        ResponseMessage responseMessage = callApi(map, url);
+        ResponseMessage responseMessage = (ResponseMessage) callApi(map, url);
         if (responseMessage.getCode() != 1) {
             log.info("密码验证失败:{}", responseMessage.getMessage());
             return false;
@@ -99,25 +107,25 @@ public class ExternalAPIService {
 
     /**
      * Check permission door card boolean.
-     *
-     *错误返回
-     code: -2 门禁卡号错误
-     code:-3 门被关闭
-     code:-4 门被禁用
-     code:-5 没有门禁权限
-     code:-6 没有找到门
-     code: -1 其他错误，如参数错误等
+     * <p>
+     * 错误返回
+     * code: -2 门禁卡号错误
+     * code:-3 门被关闭
+     * code:-4 门被禁用
+     * code:-5 没有门禁权限
+     * code:-6 没有找到门
+     * code: -1 其他错误，如参数错误等
      *
      * @param card         the card
      * @param piMacAddress the pi mac address
      * @return the boolean
      */
     public boolean checkPermissionDoorCard(String card, String piMacAddress) {
-        String url = SERVER_URL + DOOR_CARD_API;
+        String url = host + DoorApi.DOOR_CARD_API;
         Map<String, String> map = new HashMap<>();
         map.put("card", card);
         map.put("piMacAddress", piMacAddress);
-        ResponseMessage responseMessage = callApi(map, url);
+        ResponseMessage responseMessage = (ResponseMessage) callApi(map, url);
         if (responseMessage.getCode() != 1) {
             log.info("卡号验证失败:{}", responseMessage.getMessage());
             return false;
@@ -129,26 +137,19 @@ public class ExternalAPIService {
 
     /**
      * Check permission door card boolean.
+     * <p>
+     * 错误返回
      *
-     *错误返回
-     code: -2 门禁卡号错误
-     code:-3 门被关闭
-     code:-4 门被禁用
-     code:-5 没有门禁权限
-     code:-6 没有找到门
-     code: -1 其他错误，如参数错误等
-     *
-     * @param card         the card
-     * @param piMacAddress the pi mac address
+     * @param data         the card
+     * @param piMacAddress the pi mac address 门设备的mac地址
      * @return the boolean
      */
-    public boolean checkPermissionDoor(String card, String piMacAddress, String eventType) {
-        String url = SERVER_URL + DOOR_EVENT_API;
+    public boolean checkPermissionDoor(String data, String piMacAddress, String eventType, String url) {
         Map<String, String> map = new HashMap<>();
-        map.put("card", card);
+        map.put("data", data);
         map.put("piMacAddress", piMacAddress);
-        map.put("eventType", eventType);
-        ResponseMessage responseMessage = callApi(map, url);
+        map.put("type", eventType);
+        ResponseMessage responseMessage = (ResponseMessage) callApi(map, url + DoorApi.DOOR_EVENT_API);
         if (responseMessage.getCode() != 1) {
             log.info("卡号验证失败:{} ,{}", responseMessage.getMessage(), eventType);
             return false;
@@ -157,6 +158,7 @@ public class ExternalAPIService {
             return true;
         }
     }
+
 
     /**
      * The type Response message.
@@ -207,6 +209,18 @@ public class ExternalAPIService {
                     "code=" + code +
                     ", message='" + message + '\'' +
                     '}';
+        }
+    }
+
+    static class ResponseDoorCode {
+        private String code;
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
         }
     }
 

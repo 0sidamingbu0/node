@@ -25,6 +25,16 @@ public class DeviceEventDto {
 
     private String description;
 
+    private boolean isCloudEvent;
+
+    public boolean isCloudEvent() {
+        return isCloudEvent;
+    }
+
+    public void setCloudEvent(boolean cloudEvent) {
+        isCloudEvent = cloudEvent;
+    }
+
     public Long getID() {
         return ID;
     }

@@ -29,7 +29,7 @@ import java.util.Date;
 public class MQTTService {
 
     private static final Logger log = LoggerFactory.getLogger(MQTTService.class);
-    private static MqttAsyncClient asyncClient;
+    private static org.eclipse.paho.client.mqttv3.MqttClient asyncClient;
     private static int qos = 0;
     private static PIRespository pIRespository;
     private static DeviceController deviceController;
@@ -40,12 +40,13 @@ public class MQTTService {
      *
      * @return the async client
      */
-    public static MqttAsyncClient getAsyncClient() {
+    public static MqttClient getAsyncClient() {
         return asyncClient;
     }
 
 
     /**
+     * A
      * Init mqtt.
      *
      * @param applicationContext the application context
@@ -66,21 +67,19 @@ public class MQTTService {
         qos = MQTTConfig.getQos();
         MemoryPersistence persistence = new MemoryPersistence();
         try {
-            asyncClient = new MqttAsyncClient(broker, clientId, persistence);
+            asyncClient = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             DisconnectedBufferOptions op = new DisconnectedBufferOptions();
             op.setBufferEnabled(true);
             op.setBufferSize(100);
-            asyncClient.setBufferOpts(op);
             connOpts.setCleanSession(true);
             connOpts.setUserName(userName);
             connOpts.setPassword(password.toCharArray());
             connOpts.setCleanSession(true);
             log.info("Connecting to broker: " + broker);
-            asyncClient.connect(connOpts).waitForCompletion();
-            log.info("Connected");
-            asyncClient.setCallback(new DeviceMQTTCallBack(connOpts, serverTopic, deviceWillTopic));
+            asyncClient.connect(connOpts);
             subscripe(deviceWillTopic, serverTopic);
+            asyncClient.setCallback(new DeviceMQTTCallBack(connOpts, serverTopic, deviceWillTopic));
         } catch (MqttException me) {
             me.printStackTrace();
         }
@@ -179,6 +178,16 @@ public class MQTTService {
                     deviceController.getSensorValue(request);
                     break;
                 }
+                case "/pm25/register": {
+                    DeviceRegisterRequest request = JsonUtil.getEntity(content, DeviceRegisterRequest.class);
+                    deviceController.registerPM25(request);
+                    break;
+                }
+                case "/door/register": {
+                    CommonDeviceRequest request = JsonUtil.getEntity(content, CommonDeviceRequest.class);
+                    deviceController.registerDoor(request);
+                    break;
+                }
             }
         });
     }
@@ -217,9 +226,14 @@ public class MQTTService {
         @Override
         public void connectionLost(Throwable cause) {
             try {
-                asyncClient.connect(connOpts).waitForCompletion();
+                log.info("服务器掉线,1秒以后重新连接!");
+                // 等待5秒后重新连接
+                Thread.sleep(1000 * 1);
+                asyncClient.connect(connOpts);
                 subscripe(deviceWillTopic, serverTopic);
             } catch (MqttException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

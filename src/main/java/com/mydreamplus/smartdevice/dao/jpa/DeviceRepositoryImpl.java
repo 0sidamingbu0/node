@@ -105,7 +105,6 @@ public class DeviceRepositoryImpl {
                 dataQuery.setParameter(3, device.getDeviceState());
             }
         }
-        log.info("总数:" + countQuery.getSingleResult());
         return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }
 
@@ -162,7 +161,6 @@ public class DeviceRepositoryImpl {
             countQuery.setParameter(3, searchKey);
         }
 
-        log.info("总数:" + countQuery.getSingleResult());
         return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
     }
 }

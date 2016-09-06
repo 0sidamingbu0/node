@@ -21,23 +21,28 @@ public class Constant {
      */
     public static final String PARENT_DEVICE_TYPE_N_SWITCHPANEL = "PowerPanel";
 
+    /**
+     * 老版门禁设备
+     */
     public static final String DEVICE_TYPE_DOOR = "Door";
 
     /**
-     * 事件触发超时时间
-     */
-    public static final long EVENT_TIME_OUT = 1000 * 3;
-
-    public static final String WEBSOCKET_SERVICE_API = "/api/websocket/sendMessageToClient";
-    /**
      * 门设备的事件
      */
-    public static final String DEVICE_EVENT_REPORT_PASSWORD = "ReportCardId";
-    public static final String DEVICE_EVENT_REPORT_CARD = "ReportPassword";
-    public static String WEBSOCKET_SERVICE_URI = "";
+    public static final String DEVICE_EVENT_REPORT_PASSWORD = "ReportPassword";
+    public static final String DEVICE_EVENT_REPORT_CARD = "ReportCardId";
+    public static final String DEVICE_EVENT_REPORT_PASSWORD_OR_CARD = "ReportPassword|ReportCardId";
+    public static final String DEVICE_FUNCTION_OPEN_DOOR = "On";
+
+    public static final String API_CONDITION_URL = "ValidateUrl";
+    public static final String DOOR_ATTRIBUUTE = "DoorCode";
+
 
     public static final String DEFAULT_GROUP_NAME = "DEFAULT_GROUP";
+    public static final String CONDITION_TYPE_API = "CONTROLLED";
+    public static final String OLD_DOOR_TYPE = "Door";
 
+    public static final int LOGIC_TRUE = 1;
 
 
 }

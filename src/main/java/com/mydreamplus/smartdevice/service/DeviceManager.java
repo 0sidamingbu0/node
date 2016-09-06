@@ -8,6 +8,8 @@ import com.mydreamplus.smartdevice.domain.in.DeviceQueryRequest;
 import com.mydreamplus.smartdevice.entity.*;
 import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.util.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,39 +36,31 @@ import java.util.Set;
 @Service
 public class DeviceManager {
 
+    private static final Logger log = LoggerFactory.getLogger(DeviceManager.class);
     @Autowired
     private DeviceEventRepository deviceEventRepository;
-
     @Autowired
     private DeviceFunctionRepository deviceFunctionRepository;
-
     @Autowired
     private DeviceTypeRepository deviceTypeRepository;
-
     @Autowired
     private PolicyRepository policyRepository;
-
     @Autowired
     private ParentDeviceTypeRepository parentDeviceTypeRepository;
-
     @Autowired
     private GroupRepository groupRepository;
-
     @Autowired
     private DeviceRepository deviceRepository;
-
     @Autowired
     private PIRespository piRespository;
-
     @Autowired
     private SensorDataRepository sensorDataRepository;
-
     @Autowired
     private DeviceRestService deviceRestService;
-
     @Autowired
     private DeviceGroupRepository deviceGroupRepository;
-
+    @Autowired
+    private PolicyService policyService;
 
     /**
      * FinFind device event by id device event.
@@ -236,10 +230,24 @@ public class DeviceManager {
         }
         Policy policy = new Policy();
         BeanUtils.copyProperties(policyDto, policy);
+        // 设备条件设备类型
+        policyDto.getPolicyConfigDto().getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> conditionAndSlaveDto.getConditions().forEach(baseCondition -> {
+            Device device = deviceRepository.findBySymbol(baseCondition.getSymbol());
+            baseCondition.setDeviceType(device.getName());
+        }));
         policy.setPolicyConfig(JsonUtil.toJsonString(policyDto.getPolicyConfigDto()));
         policy.setMasterEvent(policyDto.getPolicyConfigDto().getMasterDeviceMap().toString());
         // 场景存在,更新场景
-        Policy old = policyRepository.findByMasterEvent(policyDto.getPolicyConfigDto().getMasterDeviceMap().toString());
+        Policy old = policyRepository.findByMasterEventAndDeleted(policyDto.getPolicyConfigDto().getMasterDeviceMap().toString(), false);
+        // 检验是否是云端场景
+        Set<PI> pis = this.policyService.checkIsRootPolicy(policyDto.getPolicyConfigDto());
+        policy.setRootPolicy(pis.size() != 1);
+        log.info("Root policy : {}", policy.isRootPolicy());
+        if (!policy.isRootPolicy()) {
+            // 下发策略
+            log.info("下发策略:{}", JsonUtil.toJsonString(policyDto.getPolicyConfigDto()));
+            pis.forEach(pi -> this.deviceRestService.sendPolicy(pi.getMacAddress(), policyDto.getPolicyConfigDto()));
+        }
         if (old != null) {
             BeanUtils.copyProperties(policy, old, "ID");
             policyRepository.save(old);
@@ -256,7 +264,7 @@ public class DeviceManager {
      * @return the policy  {00:15:8d:00:00:f2:44:9e-1=PressDown}
      */
     public Policy findPolicyByMasterEvent(String symbol, String event) {
-        return policyRepository.findByMasterEvent("{" + symbol + "=" + event + "}");
+        return policyRepository.findByMasterEventAndDeleted("{" + symbol + "=" + event + "}", false);
     }
 
     /**
@@ -377,6 +385,14 @@ public class DeviceManager {
         return this.deviceRepository.findAllByPiAndDeviceFunctionType(DeviceFunctionTypeEnum.CONTROLLED, piMacAddress);
     }
 
+
+    public List<Device> findAllDevicesByGroupIdForBecontrolled(long groupId) {
+        if (groupId == -1) { // 查询全部
+            return this.deviceRepository.findAllByDeviceFunctionType(DeviceFunctionTypeEnum.CONTROLLED);
+        }
+        return this.deviceRepository.findAllByPiAndDeviceFunctionType(DeviceFunctionTypeEnum.CONTROLLED, groupId);
+    }
+
     /**
      * Find all devices by mac address and function type list.
      * 查询 PI上所有设
@@ -387,6 +403,13 @@ public class DeviceManager {
      */
     public List<Device> findAllDevicesByMacAddressAndFunctionType(DeviceFunctionTypeEnum functionType, String piMacAddress) {
         return this.deviceRepository.findAllByPiAndDeviceFunctionType(functionType, piMacAddress);
+    }
+
+    public List<Device> findAllDevicesByMacAddressAndFunctionType(DeviceFunctionTypeEnum functionType, long groupId) {
+        if (groupId == -1) { // 查询全部
+            return this.deviceRepository.findAllByDeviceFunctionType(functionType);
+        }
+        return this.deviceRepository.findAllByPiAndDeviceFunctionType(functionType, groupId);
     }
 
     /**
@@ -473,11 +496,10 @@ public class DeviceManager {
      * @param ID the id
      */
     public void removePolicy(Long ID) {
-        /*Policy policy = this.policyRepository.findOne(ID);
+        Policy policy = this.policyRepository.findOne(ID);
         policy.setDeleted(true);
         policy.setUpdateTime(new Date());
-        this.policyRepository.save(policy);*/
-        this.policyRepository.delete(ID);
+        this.policyRepository.save(policy);
     }
 
     /**

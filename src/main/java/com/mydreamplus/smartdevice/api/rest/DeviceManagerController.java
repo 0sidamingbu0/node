@@ -14,6 +14,7 @@ import com.mydreamplus.smartdevice.service.DeviceRestService;
 import com.mydreamplus.smartdevice.service.DeviceService;
 import com.mydreamplus.smartdevice.util.JsonUtil;
 import com.mydreamplus.smartdevice.util.SymbolUtil;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -87,6 +88,7 @@ public class DeviceManagerController extends AbstractRestHandler {
     /**
      * common Config
      *
+     * @param request the request
      * @return the base response
      */
     @RequestMapping(value = "/common/config",
@@ -131,9 +133,15 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ApiOperation(value = "创建设备被操作方法")
     public BaseResponse createDeviceFunction(@RequestBody DeviceFunctionDto deviceFunctionDto) {
         DeviceFunction deviceFunction = new DeviceFunction();
+        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
         BeanUtils.copyProperties(deviceFunctionDto, deviceFunction);
-        this.deviceManager.saveDeviceFunction(deviceFunction);
-        return new BaseResponse(RESPONSE_SUCCESS);
+        try {
+            this.deviceManager.saveDeviceFunction(deviceFunction);
+        } catch (Exception exception) {
+            response.setMessage(RESPONSE_FAILURE);
+            response.setDetails("已经存在:" + deviceFunction.getName());
+        }
+        return response;
     }
 
 
@@ -143,15 +151,23 @@ public class DeviceManagerController extends AbstractRestHandler {
      * @param parentDeviceTypeDto the parent device type dto
      * @return the base response
      */
-    @RequestMapping(value = "/parentDeviceType/create",
+    /*@RequestMapping(value = "/parentDeviceType/create",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "创建设备类型")
     public BaseResponse createParentDeviceType(@RequestBody ParentDeviceTypeDto parentDeviceTypeDto) {
-        this.deviceManager.saveParentDeviceType(parentDeviceTypeDto);
+        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
+        try {
+            this.deviceManager.saveParentDeviceType(parentDeviceTypeDto);
+        } catch (Exception exception) {
+            if (exception instanceof MySQLIntegrityConstraintViolationException) {
+                response.setMessage(RESPONSE_FAILURE);
+                response.setDetails("已经存在:" + parentDeviceTypeDto.getName());
+            }
+        }
         return new BaseResponse(RESPONSE_SUCCESS);
-    }
+    }*/
 
     /**
      * Create device type.
@@ -165,8 +181,16 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "创建设备类型")
     public BaseResponse createDeviceType(@RequestBody DeviceTypeDto deviceTypeDto) {
-        this.deviceManager.saveDeviceType(deviceTypeDto);
-        return new BaseResponse(RESPONSE_SUCCESS);
+        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
+        try {
+            this.deviceManager.saveDeviceType(deviceTypeDto);
+        } catch (Exception exception) {
+            if (exception instanceof MySQLIntegrityConstraintViolationException) {
+                response.setMessage(RESPONSE_FAILURE);
+                response.setDetails("已经存在:" + deviceTypeDto.getName());
+            }
+        }
+        return response;
     }
 
 
@@ -181,10 +205,18 @@ public class DeviceManagerController extends AbstractRestHandler {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建设备事件")
     public BaseResponse createDeviceEvent(@RequestBody DeviceEventDto deviceEventDto) {
+        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
         DeviceEvent deviceEvent = new DeviceEvent();
         BeanUtils.copyProperties(deviceEventDto, deviceEvent);
-        this.deviceManager.saveDeviceEvent(deviceEvent);
-        return new BaseResponse(RESPONSE_SUCCESS);
+        try {
+            this.deviceManager.saveDeviceEvent(deviceEvent);
+        } catch (Exception exception) {
+            if (exception instanceof MySQLIntegrityConstraintViolationException) {
+                response.setMessage(RESPONSE_FAILURE);
+                response.setDetails("已经存在:" + deviceEventDto.getName());
+            }
+        }
+        return response;
     }
 
 
@@ -204,7 +236,7 @@ public class DeviceManagerController extends AbstractRestHandler {
         Page<DeviceType> page = deviceManager.findALLDeviceTypes(pageDto);
         List<DeviceTypeDto> deviceTypeDtos = new ArrayList<>();
         page.forEach(deviceType -> {
-            log.info(deviceType.getName());
+//            log.info(deviceType.getName());
             DeviceTypeDto dto = new DeviceTypeDto();
             BeanUtils.copyProperties(deviceType, dto, "deviceEvents", "deviceFunctions");
             List<Long> eventList = new ArrayList<>();
@@ -346,12 +378,16 @@ public class DeviceManagerController extends AbstractRestHandler {
         List<DeviceDto> deviceDtos = new ArrayList<>();
         this.deviceManager.findAllDevicesByNameForSwitchOrSensor("").forEach(device -> {
             DeviceDto dto = new DeviceDto(device.getSymbol());
-            dto.setPIID(device.getPi().getMacAddress());
-            String groupName = Constant.DEFAULT_GROUP_NAME;
-            if (device.getPi().getDeviceGroup() != null) {
-                groupName = device.getPi().getDeviceGroup().getName();
+            if (device.getPi() != null) {
+                dto.setPIID(device.getPi().getMacAddress());
             }
-            dto.setAliases(groupName + "-" + device.getPi().getName() + "-" + device.getAliases());
+            String groupName = Constant.DEFAULT_GROUP_NAME;
+            String piName = "";
+            if (device.getPi() != null && device.getPi().getDeviceGroup() != null) {
+                groupName = device.getPi().getDeviceGroup().getName();
+                piName = device.getPi().getName();
+            }
+            dto.setAliases(groupName + "-" + piName + "-" + device.getAliases());
             deviceDtos.add(dto);
         });
         return deviceDtos;
@@ -401,6 +437,28 @@ public class DeviceManagerController extends AbstractRestHandler {
         return deviceDtos;
     }
 
+
+    /**
+     * Find all slave device by group list.
+     *
+     * @param groupId the group id
+     * @return the list
+     */
+    @RequestMapping(value = "/device/findAllSlaveDeviceByGroupId/{groupId}",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "根据组ID查询被控设备")
+    public List<DeviceDto> findAllSlaveDeviceByGroup(@PathVariable long groupId) {
+        List<DeviceDto> deviceDtos = new ArrayList<>();
+        this.deviceManager.findAllDevicesByGroupIdForBecontrolled(groupId).forEach(device -> {
+            DeviceDto dto = new DeviceDto(device.getSymbol());
+            dto.setAliases(device.getAliases());
+            deviceDtos.add(dto);
+        });
+        return deviceDtos;
+    }
+
     /**
      * Find all slave device by pi mac address list.
      *
@@ -416,6 +474,28 @@ public class DeviceManagerController extends AbstractRestHandler {
     public List<DeviceDto> findAllConditionDeviceByType(@PathVariable String piMacAddress, @PathVariable String type) {
         List<DeviceDto> deviceDtos = new ArrayList<>();
         this.deviceManager.findAllDevicesByMacAddressAndFunctionType(DeviceFunctionTypeEnum.valueOf(type), piMacAddress).forEach(device -> {
+            DeviceDto dto = new DeviceDto(device.getSymbol());
+            dto.setAliases(device.getAliases());
+            deviceDtos.add(dto);
+        });
+        return deviceDtos;
+    }
+
+    /**
+     * Find all condition device by type and group id list.
+     *
+     * @param type    the type
+     * @param groupId the group id
+     * @return the list
+     */
+    @RequestMapping(value = "/device/findAllConditionDeviceByTypeAndGroupId/{type}/{groupId}",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "查询条件类型的设备")
+    public List<DeviceDto> findAllConditionDeviceByTypeAndGroupId(@PathVariable String type, @PathVariable long groupId) {
+        List<DeviceDto> deviceDtos = new ArrayList<>();
+        this.deviceManager.findAllDevicesByMacAddressAndFunctionType(DeviceFunctionTypeEnum.valueOf(type), groupId).forEach(device -> {
             DeviceDto dto = new DeviceDto(device.getSymbol());
             dto.setAliases(device.getAliases());
             deviceDtos.add(dto);
@@ -482,23 +562,11 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ApiOperation(value = "创建场景策略")
     @Transactional
     public BaseResponse createPolicy(@RequestBody DevicePolicyRequest request) {
-        if (request == null || StringUtils.isEmpty(request.getPiMacAddress())) {
-            throw new DataInvalidException("没有PI的mac地址");
-        }
-        PI pi = this.deviceManager.findPiByMacAddress(request.getPiMacAddress());
-        if (pi == null) {
-            throw new DataInvalidException("没有找到PI");
-        }
-        log.info(request.toString());
         BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
         PolicyDto policyDto = new PolicyDto();
         BeanUtils.copyProperties(request, policyDto, "pi");
-        policyDto.setPi(pi);
         log.info("保存策略:{}", request.getName());
         this.deviceManager.savePolicy(policyDto);
-        // 下发策略
-        log.info("下发策略:{}", JsonUtil.toJsonString(policyDto.getPolicyConfigDto()));
-        this.restService.sendPolicy(request.getPiMacAddress(), policyDto.getPolicyConfigDto());
         return response;
     }
 
@@ -647,6 +715,7 @@ public class DeviceManagerController extends AbstractRestHandler {
      *
      * @param minute       the minute
      * @param piMacAddress the pi mac address
+     * @param clientTime   the client time
      * @return the base response
      */
     @RequestMapping(value = "/permit/{piMacAddress}/{minute}/{clientTime}",
@@ -724,6 +793,12 @@ public class DeviceManagerController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+    /**
+     * Remove gateway base response.
+     *
+     * @param ID the id
+     * @return the base response
+     */
     @RequestMapping(value = "/gateway/remove/{ID}",
             method = RequestMethod.POST,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -735,6 +810,12 @@ public class DeviceManagerController extends AbstractRestHandler {
     }
 
 
+    /**
+     * Remove device type base response.
+     *
+     * @param ID the id
+     * @return the base response
+     */
     @RequestMapping(value = "/deviceType/remove/{ID}",
             method = RequestMethod.POST,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -745,6 +826,12 @@ public class DeviceManagerController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+    /**
+     * Remove group base response.
+     *
+     * @param ID the id
+     * @return the base response
+     */
     @RequestMapping(value = "/group/remove/{ID}",
             method = RequestMethod.POST,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -816,9 +903,22 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "删除设备,设备重新注册")
     public BaseResponse removeDevice(@RequestBody DeviceMacAddrRequest request) {
+        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
         log.info(String.format(":::::删除设备 %s!", request.getMacAddress()));
-        this.deviceService.removeDevice(request.getPiMacAddress(), request.getMacAddress());
-        return new BaseResponse(RESPONSE_SUCCESS);
+        PageDto pageDto = new PageDto();
+        pageDto.setPage(1);
+        pageDto.setSize(1);
+        if (this.deviceManager.findAllPolicy(pageDto, request.getMacAddress()).getTotalElements() > 0) {
+            response.setMessage(RESPONSE_FAILURE);
+            response.setDetails("请先删除该设备的关联场景!");
+            return response;
+        }
+        String piMacAddress = request.getPiMacAddress();
+        if (StringUtils.isEmpty(piMacAddress)) {
+            piMacAddress = request.getMacAddress();
+        }
+        this.deviceService.removeDevice(piMacAddress, request.getMacAddress());
+        return response;
     }
 
     /**
@@ -1038,9 +1138,9 @@ public class DeviceManagerController extends AbstractRestHandler {
             method = RequestMethod.GET,
             consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "查询分组的PI")
+    @ApiOperation(value = "查询场景是否已经存在")
     @Transactional
-    public BaseResponse findMasterDeviceBySymbolEvent(@PathVariable String symbol, @PathVariable String event) {
+    public BaseResponse findPolicy(@PathVariable String symbol, @PathVariable String event) {
 
         Policy policy = this.deviceManager.findPolicyByMasterEvent(symbol, event);
         BaseResponse response;

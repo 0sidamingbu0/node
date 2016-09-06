@@ -2,6 +2,7 @@ package com.mydreamplus.smartdevice.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mydreamplus.smartdevice.config.Constant;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -48,5 +49,16 @@ public class JsonUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Get value
+     *
+     * @param json
+     * @return
+     */
+    public static String getKey(String json, String key) {
+        JSONObject jsonObject = new JSONObject(json);
+        return (String) jsonObject.get(Constant.API_CONDITION_URL);
     }
 }

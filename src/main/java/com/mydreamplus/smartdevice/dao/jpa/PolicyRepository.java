@@ -24,15 +24,16 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
      * @param name the name
      * @return the device type
      */
-    Policy findByName(String name);
+    Policy findByNameAndDeleted(String name, boolean deleted);
 
     /**
-     * Find by master event policy.
+     * Find by master event and deleted policy.
      *
      * @param masterEvent the master event
+     * @param deleted     the deleted
      * @return the policy
      */
-    Policy findByMasterEvent(String masterEvent);
+    Policy findByMasterEventAndDeleted(String masterEvent, boolean deleted);
 
 
     /**
@@ -58,9 +59,10 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
     /**
      * Find all policy by update time greater than list.
      *
-     * @param pi         the pi
-     * @param updateTime the update time
+     * @param pi           the pi
+     * @param updateTime   the update time
+     * @param isRootPolicy the is root policy
      * @return the list
      */
-    List<Policy> findAllByPiAndUpdateTimeGreaterThan(PI pi, Date updateTime);
+    List<Policy> findAllByPiAndUpdateTimeGreaterThanAndIsRootPolicy(PI pi, Date updateTime, boolean isRootPolicy);
 }

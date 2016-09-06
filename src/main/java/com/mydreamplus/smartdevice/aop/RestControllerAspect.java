@@ -9,7 +9,6 @@ import com.mydreamplus.smartdevice.domain.EventLog;
 import com.mydreamplus.smartdevice.domain.in.*;
 import com.mydreamplus.smartdevice.domain.message.PolicyMessage;
 import com.mydreamplus.smartdevice.entity.PI;
-import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.service.DeviceRestService;
 import com.mydreamplus.smartdevice.service.WebSocketService;
 import com.mydreamplus.smartdevice.util.PolicyParseUtil;
@@ -62,8 +61,8 @@ public class RestControllerAspect {
             // 根据时间戳查询变化的策略集合
             List<PolicyMessage> list = new ArrayList<>();
             PI pi = piRespository.findByMacAddress(deviceRequest.getPiMacAddress());
-            if(pi != null){
-                this.policyRepository.findAllByPiAndUpdateTimeGreaterThan(pi, new Date(deviceRequest.getPolicyUpdateTime())).forEach(policy -> {
+            if (pi != null) {
+                this.policyRepository.findAllByPiAndUpdateTimeGreaterThanAndIsRootPolicy(pi, new Date(deviceRequest.getPolicyUpdateTime()), false).forEach(policy -> {
                     PolicyMessage policyMessage = new PolicyMessage();
                     policyMessage.setUpdateTime(policy.getUpdateTime().getTime());
                     policyMessage.setPolicyId(policy.getID());

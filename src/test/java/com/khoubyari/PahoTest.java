@@ -1,11 +1,11 @@
 package com.khoubyari;
 
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by Alex on 16/8/18.
@@ -20,31 +20,37 @@ public class PahoTest {
         String macAddr = macSb.toString();
 
         MemoryPersistence persistence = new MemoryPersistence();
-        MqttClient client = new MqttClient("tcp://10.28.1.30:1883", macAddr, persistence);
+        MqttClient client = new MqttClient("tcp://localhost:1883", macAddr, persistence);
 
         MqttConnectOptions connectOptions = new MqttConnectOptions();
         connectOptions.setCleanSession(true);
-        connectOptions.setUserName("devices");
-        connectOptions.setPassword("123456".toCharArray());
+        connectOptions.setUserName("alex");
+        connectOptions.setPassword("alex".toCharArray());
 
         client.connect(connectOptions);
 
-//        client.subscribe(macAddr, 1, (topic, message) -> System.out.println(new String(message.getPayload(), StandardCharsets.UTF_8)));
+        client.subscribe("outTopic");
+        client.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable cause) {
 
-        for (int i = 0; i < 100; i++) {
-            client.publish(macAddr, "Hello".getBytes(), 1, true);
-        }
+            }
 
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                System.out.println(topic);
+                System.out.println(message.getPayload());
+            }
 
-        MemoryPersistence persistence2 = new MemoryPersistence();
-        MqttClient client2 = new MqttClient("tcp://localhost:1883", macAddr, persistence2);
-        MqttConnectOptions connectOptions2 = new MqttConnectOptions();
-        connectOptions2.setCleanSession(true);
-        connectOptions2.setUserName("devices");
-        connectOptions2.setPassword("123456".toCharArray());
-        client2.connect(connectOptions2);
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
+
+        client.publish("inTopic", "Hello from Idea".getBytes(), 1, true);
+
 
         System.out.println(client.isConnected());
-        System.out.println(client2.isConnected());
     }
 }

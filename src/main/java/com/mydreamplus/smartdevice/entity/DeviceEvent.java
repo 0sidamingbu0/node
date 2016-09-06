@@ -23,6 +23,8 @@ public class DeviceEvent extends BaseEntity {
      */
     @Column()
     private String alias;
+
+    private boolean isCloudEvent;
     /**
      * 事件的描述信息
      */
@@ -34,6 +36,14 @@ public class DeviceEvent extends BaseEntity {
             joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "ID"),
             inverseJoinColumns = @JoinColumn(name = "type_id", referencedColumnName = "ID"))
     private List<DeviceType> deviceTypes;
+
+    public boolean isCloudEvent() {
+        return isCloudEvent;
+    }
+
+    public void setCloudEvent(boolean cloudEvent) {
+        isCloudEvent = cloudEvent;
+    }
 
     /**
      * Gets device types.

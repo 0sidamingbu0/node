@@ -50,6 +50,11 @@ public class Policy extends BaseEntity {
     private Long groupId;
 
     private String groupName;
+
+    /**
+     * 标记是云端场景
+     */
+    private boolean isRootPolicy;
     /**
      * Sets pis.
      *
@@ -61,6 +66,14 @@ public class Policy extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pi_id")
     private PI pi;
+
+    public boolean isRootPolicy() {
+        return isRootPolicy;
+    }
+
+    public void setRootPolicy(boolean rootPolicy) {
+        isRootPolicy = rootPolicy;
+    }
 
     public Long getGroupId() {
         return groupId;

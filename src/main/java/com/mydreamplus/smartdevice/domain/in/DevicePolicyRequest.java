@@ -24,10 +24,6 @@ public class DevicePolicyRequest extends BaseRequest {
     private PolicyConfigDto policyConfigDto;
 
     private Long groupId;
-    /**
-     * PI mac地址
-     */
-    private String piMacAddress;
 
     public Long getGroupId() {
         return groupId;
@@ -37,13 +33,6 @@ public class DevicePolicyRequest extends BaseRequest {
         this.groupId = groupId;
     }
 
-    public String getPiMacAddress() {
-        return piMacAddress;
-    }
-
-    public void setPiMacAddress(String piMacAddress) {
-        this.piMacAddress = piMacAddress;
-    }
 
     public String getName() {
         return name;
@@ -67,15 +56,5 @@ public class DevicePolicyRequest extends BaseRequest {
 
     public void setPolicyConfigDto(PolicyConfigDto policyConfigDto) {
         this.policyConfigDto = policyConfigDto;
-    }
-
-    @Override
-    public String toString() {
-        return "DevicePolicyRequest{" +
-                "piMacAddress='" + piMacAddress + '\'' +
-                ", policyConfigDto=" + policyConfigDto +
-                ", description='" + description + '\'' +
-                ", name='" + name + '\'' +
-                '}';
     }
 }
