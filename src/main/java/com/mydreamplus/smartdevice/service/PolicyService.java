@@ -147,7 +147,8 @@ public class PolicyService {
                 policy.setPolicyConfig(JsonUtil.toJsonString(policyConfigDto));
                 policy.setDefaultPolicy(true);
                 policy.setMasterEvent(masterDeviceMap.toString());
-                policy.setDeleted(false);
+//                policy.setDeleted(true); // 设备注册时候默认策略不能使用
+                policy.setDisabled(true); // 默认场景被禁用的状态
                 this.saveOrUpdatePolicy(policy);
                 PolicyDto policyDto = new PolicyDto();
                 policyDto.setPi(pi);

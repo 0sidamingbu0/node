@@ -21,7 +21,8 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
     /**
      * Find by name device type.
      *
-     * @param name the name
+     * @param name    the name
+     * @param deleted the deleted
      * @return the device type
      */
     Policy findByNameAndDeleted(String name, boolean deleted);
@@ -64,5 +65,15 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
      * @param isRootPolicy the is root policy
      * @return the list
      */
-    List<Policy> findAllByPiAndUpdateTimeGreaterThanAndIsRootPolicy(PI pi, Date updateTime, boolean isRootPolicy);
+    List<Policy> findAllByPiAndUpdateTimeGreaterThanAndIsRootPolicyAndDeletedAndIsDisabled(PI pi, Date updateTime, boolean isRootPolicy, boolean isDeleted, boolean isDisabled);
+
+
+    /**
+     * Find all policy by like name list.
+     *
+     * @param name    the name
+     * @param disable the is deleted
+     * @return the list
+     */
+    List<Policy> findAllPolicyByLikeName(String name, boolean disable);
 }

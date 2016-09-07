@@ -22,9 +22,10 @@ public class Constant {
     public static final String PARENT_DEVICE_TYPE_N_SWITCHPANEL = "PowerPanel";
 
     /**
-     * 老版门禁设备
+     * 门禁设备
      */
     public static final String DEVICE_TYPE_DOOR = "Door";
+    public static final String DEVICE_TYPE_PASSWORD_CONTROLLER = "DoorController";
 
     /**
      * 门设备的事件
@@ -43,6 +44,11 @@ public class Constant {
     public static final String OLD_DOOR_TYPE = "Door";
 
     public static final int LOGIC_TRUE = 1;
+
+    /**
+     * 事件超时 8秒 以上则不执行云端场景方法
+     */
+    public static final long EXECUTE_POLICY_INTERVAL = 1000 * 8;
 
 
 }

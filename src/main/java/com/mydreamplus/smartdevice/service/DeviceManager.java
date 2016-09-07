@@ -1,5 +1,6 @@
 package com.mydreamplus.smartdevice.service;
 
+import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.dao.jpa.*;
 import com.mydreamplus.smartdevice.domain.*;
 import com.mydreamplus.smartdevice.domain.in.AndroidTVConfigRequest;
@@ -233,7 +234,8 @@ public class DeviceManager {
         // 设备条件设备类型
         policyDto.getPolicyConfigDto().getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> conditionAndSlaveDto.getConditions().forEach(baseCondition -> {
             Device device = deviceRepository.findBySymbol(baseCondition.getSymbol());
-            baseCondition.setDeviceType(device.getName());
+            if (device != null)
+                baseCondition.setDeviceType(device.getName());
         }));
         policy.setPolicyConfig(JsonUtil.toJsonString(policyDto.getPolicyConfigDto()));
         policy.setMasterEvent(policyDto.getPolicyConfigDto().getMasterDeviceMap().toString());
@@ -242,6 +244,14 @@ public class DeviceManager {
         // 检验是否是云端场景
         Set<PI> pis = this.policyService.checkIsRootPolicy(policyDto.getPolicyConfigDto());
         policy.setRootPolicy(pis.size() != 1);
+        policyDto.getPolicyConfigDto().getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> {
+            conditionAndSlaveDto.getConditions().forEach(baseCondition -> {
+                if (baseCondition.getConditionType().equals(Constant.CONDITION_TYPE_API)) {
+                    policy.setRootPolicy(true);
+                }
+            });
+        });
+
         log.info("Root policy : {}", policy.isRootPolicy());
         if (!policy.isRootPolicy()) {
             // 下发策略
@@ -703,6 +713,15 @@ public class DeviceManager {
      */
     public PI getPIByMacAddress(String macAddress) {
         return this.piRespository.findByMacAddress(macAddress);
+    }
+
+
+    public List<Policy> getPolicysByName(String name) {
+        return this.policyRepository.findAllPolicyByLikeName(name, true);
+    }
+
+    public void savePolicy(Policy policy) {
+        this.policyRepository.save(policy);
     }
 }
 

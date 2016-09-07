@@ -133,61 +133,65 @@ public class MQTTService {
     private static void subscribeServerTopic(String serverTopic) throws MqttException {
         log.info("订阅频道: {}", serverTopic);
         asyncClient.subscribe(serverTopic, qos, (s, mqttMessage) -> {
-            String content = new String(mqttMessage.getPayload(), StandardCharsets.UTF_8);
-            log.info("Client message : " + content);
-            JSONObject jsonObject = new JSONObject(content);
-            String action = (String) jsonObject.get("action");
-            log.info("Action =================>" + action);
-            switch (action) {
-                case "regPi": {
-                    PIRegisterRequest registerRequest = JsonUtil.getEntity(content, PIRegisterRequest.class);
-                    deviceController.registerPi(registerRequest);
-                    break;
+            try {
+                String content = new String(mqttMessage.getPayload(), StandardCharsets.UTF_8);
+                log.info("Client message : " + content);
+                JSONObject jsonObject = new JSONObject(content);
+                String action = (String) jsonObject.get("action");
+                log.info("Action =================>" + action);
+                switch (action) {
+                    case "regPi": {
+                        PIRegisterRequest registerRequest = JsonUtil.getEntity(content, PIRegisterRequest.class);
+                        deviceController.registerPi(registerRequest);
+                        break;
+                    }
+                    case "commonReg": {
+                        CommonDeviceRequest request = JsonUtil.getEntity(content, CommonDeviceRequest.class);
+                        deviceController.registerCommonDevice(request);
+                        break;
+                    }
+                    case "register": {
+                        DeviceRegisterRequest request = JsonUtil.getEntity(content, DeviceRegisterRequest.class);
+                        deviceController.registerDevice(request);
+                        break;
+                    }
+                    case "status": {
+                        DeviceSituationRequest request = JsonUtil.getEntity(content, DeviceSituationRequest.class);
+                        deviceController.status(request);
+                        break;
+                    }
+                    case "event": {
+                        DeviceEventRequest request = JsonUtil.getEntity(content, DeviceEventRequest.class);
+                        deviceController.event(request);
+                        break;
+                    }
+                    case "ping": {
+                        DevicePingRequest request = JsonUtil.getEntity(content, DevicePingRequest.class);
+                        deviceController.ping(request);
+                        break;
+                    }
+                    case "rest": {
+                        deviceController.reset(content);
+                        break;
+                    }
+                    case "value": {
+                        SensorValueRequest request = JsonUtil.getEntity(content, SensorValueRequest.class);
+                        deviceController.getSensorValue(request);
+                        break;
+                    }
+                    case "/pm25/register": {
+                        DeviceRegisterRequest request = JsonUtil.getEntity(content, DeviceRegisterRequest.class);
+                        deviceController.registerPM25(request);
+                        break;
+                    }
+                    case "/door/register": {
+                        CommonDeviceRequest request = JsonUtil.getEntity(content, CommonDeviceRequest.class);
+                        deviceController.registerDoor(request);
+                        break;
+                    }
                 }
-                case "commonReg": {
-                    CommonDeviceRequest request = JsonUtil.getEntity(content, CommonDeviceRequest.class);
-                    deviceController.registerCommonDevice(request);
-                    break;
-                }
-                case "register": {
-                    DeviceRegisterRequest request = JsonUtil.getEntity(content, DeviceRegisterRequest.class);
-                    deviceController.registerDevice(request);
-                    break;
-                }
-                case "status": {
-                    DeviceSituationRequest request = JsonUtil.getEntity(content, DeviceSituationRequest.class);
-                    deviceController.status(request);
-                    break;
-                }
-                case "event": {
-                    DeviceEventRequest request = JsonUtil.getEntity(content, DeviceEventRequest.class);
-                    deviceController.event(request);
-                    break;
-                }
-                case "ping": {
-                    DevicePingRequest request = JsonUtil.getEntity(content, DevicePingRequest.class);
-                    deviceController.ping(request);
-                    break;
-                }
-                case "rest": {
-                    deviceController.reset(content);
-                    break;
-                }
-                case "value": {
-                    SensorValueRequest request = JsonUtil.getEntity(content, SensorValueRequest.class);
-                    deviceController.getSensorValue(request);
-                    break;
-                }
-                case "/pm25/register": {
-                    DeviceRegisterRequest request = JsonUtil.getEntity(content, DeviceRegisterRequest.class);
-                    deviceController.registerPM25(request);
-                    break;
-                }
-                case "/door/register": {
-                    CommonDeviceRequest request = JsonUtil.getEntity(content, CommonDeviceRequest.class);
-                    deviceController.registerDoor(request);
-                    break;
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -226,9 +230,8 @@ public class MQTTService {
         @Override
         public void connectionLost(Throwable cause) {
             try {
-                log.info("服务器掉线,1秒以后重新连接!");
-                // 等待5秒后重新连接
-                Thread.sleep(1000 * 1);
+                log.info("服务器掉线, 后重新连接!");
+                Thread.sleep(500 * 1);
                 asyncClient.connect(connOpts);
                 subscripe(deviceWillTopic, serverTopic);
             } catch (MqttException e) {

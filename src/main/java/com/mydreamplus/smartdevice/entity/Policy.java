@@ -31,12 +31,15 @@ public class Policy extends BaseEntity {
     private boolean defaultPolicy;
 
     /**
+     * 场景是否被禁用
+     */
+    private boolean isDisabled;
+    /**
      * 主控设备的触发事件
      * symbol + eventName
      */
     @Column
     private String masterEvent;
-
     @Column
     private Boolean deleted = false;
     /**
@@ -46,11 +49,8 @@ public class Policy extends BaseEntity {
     @Basic(fetch = FetchType.LAZY)
     @Column
     private String policyConfig;
-
     private Long groupId;
-
     private String groupName;
-
     /**
      * 标记是云端场景
      */
@@ -66,6 +66,14 @@ public class Policy extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pi_id")
     private PI pi;
+
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        isDisabled = disabled;
+    }
 
     public boolean isRootPolicy() {
         return isRootPolicy;

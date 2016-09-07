@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,6 +66,20 @@ public class PolicyRepositoryImpl {
             countQuery.setParameter(1, searchKey);
         }
         return new PageImpl(dataQuery.getResultList(), pageable, (long) countQuery.getSingleResult());
+    }
+
+
+    public List<Policy> findAllPolicyByLikeName(String name, boolean isDisabled) {
+        String dataSql = "select t from Policy t where isDisabled = " + isDisabled;
+        if (!StringUtils.isEmpty(name)) {
+            dataSql += " and t.name like ?1";
+        }
+        Query dataQuery = em.createQuery(dataSql);
+        if (!StringUtils.isEmpty(name)) {
+            name = "%" + name + "%";
+            dataQuery.setParameter(1, name);
+        }
+        return dataQuery.getResultList();
     }
 
 }

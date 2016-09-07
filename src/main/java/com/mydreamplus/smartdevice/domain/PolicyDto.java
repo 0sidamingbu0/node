@@ -27,15 +27,22 @@ public class PolicyDto {
      * 场景配置
      */
     private PolicyConfigDto policyConfigDto;
+
+    private boolean defaultPolicy;
     /**
      * 策略的更新时间,时间戳,在PI上根据该字段来判断是否更新策略
      */
     private Long updateTime;
-
-
     private Long groupId;
-
     private String groupName;
+
+    public boolean isDefaultPolicy() {
+        return defaultPolicy;
+    }
+
+    public void setDefaultPolicy(boolean defaultPolicy) {
+        this.defaultPolicy = defaultPolicy;
+    }
 
     public String getGroupName() {
         return groupName;

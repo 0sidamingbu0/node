@@ -30,10 +30,27 @@ public class BaseDeviceMessage {
 
 
     private Map<String, Object> data;
+
+    /**
+     * 设备的时间戳
+     */
+    private long serverTime;
     /**
      * 消息类
      */
     private MessageTypeEnum messageType;
+
+    public BaseDeviceMessage() {
+        this.setServerTime(System.currentTimeMillis());
+    }
+
+    public long getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(long serverTime) {
+        this.serverTime = serverTime;
+    }
 
     public Map<String, Object> getData() {
         return data;

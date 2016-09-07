@@ -609,6 +609,14 @@ public class DeviceManagerController extends AbstractRestHandler {
                 this.restService.sendConfigProperty(device);
             }
         });
+        List<Policy> policies = this.deviceManager.getPolicysByName("%" + request.getMacAddress() + "%");
+        if (policies != null && policies.size() > 0)
+            policies.forEach(policy -> {
+                log.info("=============== 设备注册,下发场景策略:{} ==============", policy.getName());
+                policy.setDisabled(false); // 启用场景
+                this.deviceManager.savePolicy(policy);
+                this.restService.sendPolicy(request.getPiMacAddress(), JsonUtil.getEntity(policy.getPolicyConfig(), PolicyConfigDto.class));
+            });
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 

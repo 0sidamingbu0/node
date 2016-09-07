@@ -24,6 +24,7 @@ public class DevicePolicyRequest extends BaseRequest {
     private PolicyConfigDto policyConfigDto;
 
     private Long groupId;
+    private boolean defaultPolicy;
 
     public Long getGroupId() {
         return groupId;
@@ -32,7 +33,6 @@ public class DevicePolicyRequest extends BaseRequest {
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
-
 
     public String getName() {
         return name;

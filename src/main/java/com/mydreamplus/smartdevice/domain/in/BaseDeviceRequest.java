@@ -25,6 +25,20 @@ public class BaseDeviceRequest extends BaseRequest {
      */
     private int linkQuality;
 
+
+    /**
+     * 事件发生时间
+     */
+    private long occurTime;
+
+    public long getOccurTime() {
+        return occurTime;
+    }
+
+    public void setOccurTime(long occurTime) {
+        this.occurTime = occurTime;
+    }
+
     public int getLinkQuality() {
         return linkQuality;
     }

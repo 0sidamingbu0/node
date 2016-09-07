@@ -61,12 +61,12 @@ public class DeviceAPIController extends AbstractRestHandler {
     public BaseResponse findDoors() {
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         baseResponse.setDetails("门的mac地址");
-        DeviceType deviceType = deviceManager.findDeviceTypeByName(Constant.DEVICE_TYPE_DOOR);
+        DeviceType door = deviceManager.findDeviceTypeByName(Constant.DEVICE_TYPE_DOOR);
+        DeviceType doorController = deviceManager.findDeviceTypeByName(Constant.DEVICE_TYPE_PASSWORD_CONTROLLER);
         Map<String, List<String>> map = new HashMap<>();
         List<String> list = new ArrayList<>();
-        deviceManager.findAllDevicesByType(deviceType).forEach(device -> {
-            list.add(device.getMacAddress());
-        });
+        deviceManager.findAllDevicesByType(door).forEach(device -> list.add(device.getMacAddress()));
+        deviceManager.findAllDevicesByType(doorController).forEach(device -> list.add(device.getMacAddress()));
         map.put("doors", list);
         baseResponse.setData(map);
         return baseResponse;
