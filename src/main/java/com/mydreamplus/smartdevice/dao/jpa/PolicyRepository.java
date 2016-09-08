@@ -63,9 +63,31 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
      * @param pi           the pi
      * @param updateTime   the update time
      * @param isRootPolicy the is root policy
+     * @param isDeleted    the is deleted
+     * @param isDisabled   the is disabled
      * @return the list
      */
     List<Policy> findAllByPiAndUpdateTimeGreaterThanAndIsRootPolicyAndDeletedAndIsDisabled(PI pi, Date updateTime, boolean isRootPolicy, boolean isDeleted, boolean isDisabled);
+
+    /**
+     * Find all policy by update time greater than list.
+     *
+     * @param pi           the pi
+     * @param updateTime   the update time
+     * @param isRootPolicy the is root policy
+     * @return the list
+     */
+    List<Policy> findAllByPiAndUpdateTimeGreaterThanAndIsRootPolicy(PI pi, Date updateTime, boolean isRootPolicy);
+
+
+    /**
+     * Find all by pi and update time list.
+     *
+     * @param pi         the pi
+     * @param updateTime the update time
+     * @return the list
+     */
+    List<Policy> findAllByPiAndUpdateTimeGreaterThan(PI pi, Date updateTime);
 
 
     /**

@@ -31,6 +31,16 @@ public class PolicyMessage {
      */
     private Boolean deleted;
 
+    private boolean disabled;
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     public Boolean getDeleted() {
         return deleted;
     }

@@ -239,18 +239,24 @@ public class DeviceManager {
         }));
         policy.setPolicyConfig(JsonUtil.toJsonString(policyDto.getPolicyConfigDto()));
         policy.setMasterEvent(policyDto.getPolicyConfigDto().getMasterDeviceMap().toString());
+        // 场景所在网关:主控设备所在网关
+        policyDto.getPolicyConfigDto().getMasterDeviceMap().keySet().forEach(s -> {
+            Device masterDevie = deviceRepository.findBySymbol(s);
+            log.info("根据场景中主控设备设置场景网关!");
+            policy.setPi(masterDevie.getPi());
+        });
         // 场景存在,更新场景
         Policy old = policyRepository.findByMasterEventAndDeleted(policyDto.getPolicyConfigDto().getMasterDeviceMap().toString(), false);
         // 检验是否是云端场景
         Set<PI> pis = this.policyService.checkIsRootPolicy(policyDto.getPolicyConfigDto());
-        policy.setRootPolicy(pis.size() != 1);
-        policyDto.getPolicyConfigDto().getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> {
-            conditionAndSlaveDto.getConditions().forEach(baseCondition -> {
-                if (baseCondition.getConditionType().equals(Constant.CONDITION_TYPE_API)) {
-                    policy.setRootPolicy(true);
-                }
-            });
-        });
+        if (pis.size() != 1) {
+            policy.setRootPolicy(pis.size() != 1);
+        }
+        policyDto.getPolicyConfigDto().getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> conditionAndSlaveDto.getConditions().forEach(baseCondition -> {
+            if (baseCondition.getConditionType().equals(Constant.CONDITION_TYPE_API)) {
+                policy.setRootPolicy(true);
+            }
+        }));
 
         log.info("Root policy : {}", policy.isRootPolicy());
         if (!policy.isRootPolicy()) {

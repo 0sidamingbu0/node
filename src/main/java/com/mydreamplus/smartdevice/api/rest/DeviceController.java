@@ -87,6 +87,12 @@ public class DeviceController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+    /**
+     * Register door base response.
+     *
+     * @param commonDeviceRequest the common device request
+     * @return the base response
+     */
     @RequestMapping(value = "/door/register",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -99,6 +105,12 @@ public class DeviceController extends AbstractRestHandler {
     }
 
 
+    /**
+     * Register common device base response.
+     *
+     * @param commonDeviceRequest the common device request
+     * @return the base response
+     */
     @RequestMapping(value = "/common/register",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -192,11 +204,18 @@ public class DeviceController extends AbstractRestHandler {
             log.info("设备{} 状态{}", deviceSituationDto.getSymbol(), deviceSituationDto.getValue());
             DeviceDto deviceDto = new DeviceDto();
             deviceDto.setSymbol(deviceSituationDto.getSymbol());
-            if (0 == deviceSituationDto.getValue()) {
-                deviceDto.setDeviceSituation(DeviceSituationEnum.OFF);
-            } else {
-                deviceDto.setDeviceSituation(DeviceSituationEnum.ON);
+            switch (deviceSituationDto.getValue()) {
+                case 0: {
+                    deviceDto.setDeviceSituation(DeviceSituationEnum.OFF);
+                    break;
+                }
+                case 1: {
+                    deviceDto.setDeviceSituation(DeviceSituationEnum.ON);
+                    break;
+                }
             }
+            // 设置档位级别
+            deviceDto.setLevel(deviceSituationDto.getValue());
             // 更新设备状态,开关
             this.deviceService.updateDeviceSituationAndSetOnline(deviceDto);
         });
@@ -218,26 +237,42 @@ public class DeviceController extends AbstractRestHandler {
         //记录日志
         log.info("::::::::::::::::::::::::设备触发事件:{} , symbol:{}, {}, 耗时:{} 毫秒", request.getEventName(), request.getSymbol(),
                 new Date(request.getEventTime()), System.currentTimeMillis() - request.getEventTime());
-        // 查找默认云端场景
 
-        Policy policy = this.policyService.findByDeviceAndEvent(request.getSymbol(), Constant.DEVICE_EVENT_REPORT_PASSWORD_OR_CARD);
-        if (policy == null && request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD)) {
-            policy = this.policyService.findByDeviceAndEvent(request.getSymbol(), Constant.DEVICE_EVENT_REPORT_CARD);
+        // 门事件
+        if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD) || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)
+                || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD_OR_CARD)) {
+            this.doorAction(request);
         }
-        if (policy == null && request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
-            policy = this.policyService.findByDeviceAndEvent(request.getSymbol(), Constant.DEVICE_EVENT_REPORT_PASSWORD);
-        }
-        if (policy != null) {
-            log.info("场景:{} , 云端:{}", policy.getPolicyConfig(), policy.isRootPolicy());
-            if (policy.isRootPolicy()) {
-                if (Constant.EXECUTE_POLICY_INTERVAL > (System.currentTimeMillis() - request.getOccurTime())) {
-                    doorAction(request, policy);
-                } else {
-                    log.info("事件超时,不执行动作");
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
+    /**
+     * 响应门事件
+     *
+     * @param request
+     */
+    private void doorAction(DeviceEventRequest request) {
+        if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD) || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)
+                || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD_OR_CARD)) {
+            // 查找默认云端场景
+            Policy policy = this.policyService.findByDeviceAndEvent(request.getSymbol(), Constant.DEVICE_EVENT_REPORT_PASSWORD_OR_CARD);
+            if (policy == null && request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD)) {
+                policy = this.policyService.findByDeviceAndEvent(request.getSymbol(), Constant.DEVICE_EVENT_REPORT_CARD);
+            }
+            if (policy == null && request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
+                policy = this.policyService.findByDeviceAndEvent(request.getSymbol(), Constant.DEVICE_EVENT_REPORT_PASSWORD);
+            }
+            if (policy != null) {
+                log.info("场景:{} , 云端:{}", policy.getPolicyConfig(), policy.isRootPolicy());
+                if (policy.isRootPolicy()) {
+                    if (Constant.EXECUTE_POLICY_INTERVAL > (System.currentTimeMillis() - request.getOccurTime())) {
+                        executeDoorPolicy(request, policy);
+                    } else {
+                        log.info("事件超时,不执行动作");
+                    }
                 }
             }
         }
-        return new BaseResponse(RESPONSE_SUCCESS);
     }
 
     /**
@@ -245,7 +280,7 @@ public class DeviceController extends AbstractRestHandler {
      *
      * @param request
      */
-    private void doorAction(DeviceEventRequest request, Policy policy) {
+    private void executeDoorPolicy(DeviceEventRequest request, Policy policy) {
         // 刷卡或者扫码
         if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD) || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
             // 查询场景是否存在
@@ -271,14 +306,17 @@ public class DeviceController extends AbstractRestHandler {
                             if (!StringUtils.isEmpty(baseCondition.getUri())) {
                                 externalAPIService.setHost(baseCondition.getUri());
                             }
-                            log.info("验证API: 数据:{}, MAC地址:{}, 事件名:{}", request.getData(), request.getPiMacAddress(), request.getEventName());
-                            if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
+                            String macAddress = SymbolUtil.parseMacAddress(request.getSymbol());
+                            String eventName = request.getEventName();
+                            String data = request.getData();
+                            log.info("验证API: 数据:{}, MAC地址:{}, 事件名:{}", data, macAddress, eventName);
+                            if (eventName.equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)) {
                                 log.info("验证密码开门:");
-                                b[0] = b[0] & externalAPIService.checkPermissionDoorPassword(request.getData(), SymbolUtil.parseMacAddress(request.getSymbol()));
+                                b[0] = b[0] & externalAPIService.checkPermissionDoorPassword(data, macAddress);
                             }
-                            if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD)) {
+                            if (eventName.equals(Constant.DEVICE_EVENT_REPORT_CARD)) {
                                 log.info("验证刷卡开门:");
-                                b[0] = b[0] & externalAPIService.checkPermissionDoorCard(request.getData(), request.getPiMacAddress());
+                                b[0] = b[0] & externalAPIService.checkPermissionDoorCard(data, macAddress);
                             }
 //                            b[0] = b[0] & externalAPIService.checkPermissionDoor(request.getData(), device.getMacAddress(), request.getEventName(), hostUrl);
                         }
@@ -290,9 +328,11 @@ public class DeviceController extends AbstractRestHandler {
                             deviceRestService.sendCommandToDevice(request.getPiMacAddress(), symbol, event, request.getData()); // 附加卡号
                         });
                     } else {
-                        slaveDeviceMap.forEach((symbol, event) -> {
-                            deviceRestService.sendCommandToDevice(request.getPiMacAddress(), symbol, "removeCard", request.getData()); // 删除卡号
-                        });
+                        if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD)) {
+                            slaveDeviceMap.forEach((symbol, event) -> {
+                                deviceRestService.sendCommandToDevice(request.getPiMacAddress(), symbol, "removeCard", request.getData()); // 删除卡号
+                            });
+                        }
                     }
                 });
             } else {
@@ -359,11 +399,19 @@ public class DeviceController extends AbstractRestHandler {
         SensorRepositoryImpl.addValue(request.getSymbol(), request.getValue());
         // 保存传感器上传数据
         request.getValue().forEach((s, o) -> {
+
             SensorData sensorData = new SensorData();
             sensorData.setSensorType(s);
+            if (s.equals("PM10")) {
+                sensorData.setSymbol(SymbolUtil.parseMacAddress(request.getSymbol()) + "-1");
+            } else if (s.equals("PM2.5")) {
+                sensorData.setSymbol(SymbolUtil.parseMacAddress(request.getSymbol()) + "-2");
+            } else {
+                sensorData.setSymbol(request.getSymbol());
+            }
             sensorData.setData(Double.valueOf(o));
-            sensorData.setSymbol(request.getSymbol());
             this.deviceService.saveSensorData(sensorData);
+
         });
         return new BaseResponse(RESPONSE_SUCCESS);
     }

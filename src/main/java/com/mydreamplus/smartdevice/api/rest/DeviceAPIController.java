@@ -128,7 +128,7 @@ public class DeviceAPIController extends AbstractRestHandler {
             baseResponse.setMessage(RESPONSE_FAILURE);
             return baseResponse;
         }
-        deviceRestService.openDoor(device.getMacAddress(), device.getSymbol(), doorInfo);
+        deviceRestService.sendCommandToDevice(device.getMacAddress(), device.getSymbol(), Constant.DEVICE_FUNCTION_OPEN_DOOR);
         return baseResponse;
     }
 

@@ -53,6 +53,8 @@ public class DeviceDto {
      * 厂家
      */
     private String factory;
+
+    private int level;
     /**
      * 设备状态
      */
@@ -65,19 +67,15 @@ public class DeviceDto {
      * 设备的注册时间
      */
     private Date registeTime;
-
     /**
      * 设备分组
      */
     private List<DeviceGroup> deviceGroupList;
-
     /**
      * 设备网络情况
      */
     private int linkQuality;
-
     private boolean isRegistered;
-
     private String deviceGroupName;
 
     /**
@@ -93,6 +91,14 @@ public class DeviceDto {
      */
     public DeviceDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public String getDeviceGroupName() {

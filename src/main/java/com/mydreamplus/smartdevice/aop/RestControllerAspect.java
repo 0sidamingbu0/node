@@ -62,12 +62,13 @@ public class RestControllerAspect {
             List<PolicyMessage> list = new ArrayList<>();
             PI pi = piRespository.findByMacAddress(deviceRequest.getPiMacAddress());
             if (pi != null) {
-                this.policyRepository.findAllByPiAndUpdateTimeGreaterThanAndIsRootPolicyAndDeletedAndIsDisabled(pi, new Date(deviceRequest.getPolicyUpdateTime()), false, false, false).forEach(policy -> {
+                this.policyRepository.findAllByPiAndUpdateTimeGreaterThan(pi, new Date(deviceRequest.getPolicyUpdateTime())).forEach(policy -> {
                     PolicyMessage policyMessage = new PolicyMessage();
                     policyMessage.setUpdateTime(policy.getUpdateTime().getTime());
                     policyMessage.setPolicyId(policy.getID());
                     policyMessage.setPolicyConfigDto(PolicyParseUtil.josnToPolicyConfigDto(policy.getPolicyConfig()));
                     policyMessage.setDeleted(policy.getDeleted());
+                    policyMessage.setDisabled(policy.isDisabled());
                     list.add(policyMessage);
                     log.info("更新策略:{}", policy.getName());
                 });

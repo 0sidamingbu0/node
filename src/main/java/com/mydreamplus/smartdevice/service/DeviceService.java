@@ -55,13 +55,13 @@ public class DeviceService {
      */
     public void registerCommonDevice(CommonDeviceRequest request) {
         Device device = deviceRepository.findByMacAddressAndName(request.getMacAddress(), request.getDeviceType());
-        if (device != null ) { // 更新设备信息
+        if (device != null) { // 更新设备信息
             device.setRegisteTime(new Date());
             device.setUpdateTime(new Date());
             device.setMacAddress(request.getMacAddress());
             device.setDeviceState(DeviceStateEnum.ONLINE);
             //
-            if(device.isRegistered()){
+            if (device.isRegistered()) {
                 this.deviceRestService.registerFeedback(request.getMacAddress());
                 this.deviceRestService.sendConfigProperty(device);
             }
@@ -170,6 +170,7 @@ public class DeviceService {
         pi.setRegisterTime(new Date());
         pi.setUpdateTime(new Date());
         log.info(String.format("MAC地址: %s, PI注册成功!", pi.getMacAddress()));
+        pi.setOffLine(false);
         piRespository.save(pi);
         this.deviceRestService.registerPiFeedback(piDeviceDto.getPiMacAddress());
     }
@@ -189,6 +190,7 @@ public class DeviceService {
         if (device.getDeviceState() != DeviceStateEnum.UNREGISTERED) {
             device.setDeviceSituation(deviceDto.getDeviceSituation());
             device.setDeviceState(DeviceStateEnum.ONLINE);
+            device.setLevel(deviceDto.getLevel());
             device.setUpdateTime(new Date());
             deviceRepository.save(device);
         }

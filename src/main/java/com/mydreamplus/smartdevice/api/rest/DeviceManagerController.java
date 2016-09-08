@@ -708,6 +708,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             deviceInfoDto.setDeviceType(device.getDeviceType().getAliases());
             deviceInfoDto.setSensorDatas(deviceManager.findSensorDatasBySymbol(device.getSymbol()));
             PI pi = device.getPi();
+            deviceInfoDto.setLevel(device.getLevel());
             if (pi != null) {
                 deviceInfoDto.setPIID(device.getPi().getMacAddress());
                 deviceInfoDto.setLinkQuality(LinkQualityRepositoryImpl.getLinkQuality(device.getMacAddress()));
@@ -768,6 +769,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             piDto.setMacAddress(pi.getMacAddress());
             piDto.setRegisterTime(pi.getRegisterTime());
             piDto.setCreateTime(pi.getCreateTime());
+            piDto.setOffLine(pi.isOffLine());
             if (pi.getDeviceGroup() != null) {
                 piDto.setGroupId(pi.getDeviceGroup().getID());
                 piDto.setGroupName(pi.getDeviceGroup().getName());
@@ -813,8 +815,13 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "删除网关")
     public BaseResponse removeGateway(@PathVariable Long ID) {
-        this.deviceManager.removeGateway(ID);
-        return new BaseResponse(RESPONSE_SUCCESS);
+        BaseResponse response = new BaseResponse(RESPONSE_SUCCESS);
+        try {
+            this.deviceManager.removeGateway(ID);
+        } catch (Exception e) {
+            response.setMessage("删除失败!");
+        }
+        return response;
     }
 
 

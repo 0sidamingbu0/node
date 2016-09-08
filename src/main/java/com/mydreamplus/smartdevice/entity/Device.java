@@ -67,6 +67,12 @@ public class Device extends BaseEntity {
      * 已经注册
      */
     private boolean isRegistered = false;
+
+
+    /**
+     * 开关档位、1、2、3档位
+     */
+    private int level;
     /**
      * 设备所在组
      */
@@ -103,6 +109,14 @@ public class Device extends BaseEntity {
     @Basic(fetch = FetchType.LAZY)
     @Column
     private String additionalAttributes;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public String getDeviceGroupName() {
         return deviceGroupName;

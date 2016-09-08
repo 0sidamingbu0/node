@@ -43,13 +43,14 @@ public class DeviceInfoDto {
      * 设 的描述信息
      */
     private String description;
+
+    private int level;
     /**
      * 设 的类
      */
     private String deviceType;
     private String factory;
     private int linkQuality;
-
     /**
      * 设 的配置信息
      */
@@ -74,13 +75,11 @@ public class DeviceInfoDto {
      * 设 分组
      */
     private List<DeviceGroup> deviceGroupList;
-
     /**
      * Instantiates a new Device dto.
      */
     public DeviceInfoDto() {
     }
-
     /**
      * Instantiates a new Device dto.
      *
@@ -88,6 +87,14 @@ public class DeviceInfoDto {
      */
     public DeviceInfoDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public String getAdditionalAttributes() {

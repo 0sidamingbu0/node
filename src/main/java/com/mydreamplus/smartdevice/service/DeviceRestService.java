@@ -312,28 +312,6 @@ public class DeviceRestService {
 
 
     /**
-     * 开门
-     *
-     * @param piMacAddress
-     * @param symbol
-     * @param doorInfo
-     */
-    @Async(value = "messageExecutor")
-    public void openDoor(String piMacAddress, String symbol, DoorInfo doorInfo) {
-        DeviceMessage deviceMessage = new DeviceMessage();
-        deviceMessage.setAction("/openDoor");
-        deviceMessage.setMessageType(MessageTypeEnum.COMMAND);
-        deviceMessage.setPiAddress(piMacAddress);
-        Map<String, Object> data = new HashMap<>();
-        data.put("info", doorInfo);
-        data.put("symbol", symbol);
-        deviceMessage.setMessage(SUCCESS);
-        deviceMessage.setData(data);
-        send(deviceMessage);
-        log.info(":::::::::对设备下发命令 : 开门");
-    }
-
-    /**
      * 让传感 上报数据
      *
      * @param piMacAddress the pi mac address

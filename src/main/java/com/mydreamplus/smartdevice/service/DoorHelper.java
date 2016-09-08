@@ -49,7 +49,7 @@ public class DoorHelper {
                 JSONObject jsonObject = new JSONObject(door.getAdditionalAttributes());
                 String apiUrl = (String) jsonObject.get(Constant.API_CONDITION_URL);
                 policy.setName(policyName);
-                policy.setDescription("这是老版门禁");
+                policy.setDescription("门禁设备");
                 policy.setPi(null);
                 PolicyConfigDto policyConfigDto = new PolicyConfigDto();
                 Map<String, String> masterDeviceMap = new HashMap<>();
