@@ -1,6 +1,8 @@
 package com.mydreamplus.smartdevice;
 
 import com.mydreamplus.smartdevice.config.MQTTConfig;
+import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
+import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.service.MQTTService;
 import mousio.etcd4j.responses.EtcdAuthenticationException;
 import mousio.etcd4j.responses.EtcdException;
@@ -17,6 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
 /*
@@ -36,9 +39,11 @@ public class Application extends SpringBootServletInitializer {
     private static final Class<Application> applicationClass = Application.class;
     private static final Logger log = LoggerFactory.getLogger(applicationClass);
 
+
     public static void main(String[] args) throws IOException, EtcdAuthenticationException, TimeoutException, EtcdException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         Environment env = context.getEnvironment();
+        DeviceRepository deviceRepository = context.getBean(DeviceRepository.class);
 
         //================== WebSocket ==================
         /*String etcdUrl = env.getProperty(ETCD_URL_KEY);
@@ -71,6 +76,10 @@ public class Application extends SpringBootServletInitializer {
         System.out.println("userName:" + MQTTConfig.getUserName());
         System.out.println("topic:" + MQTTConfig.getTopic());
         MQTTService.initMQTT(context);
+
+        // 初始化设备离线
+        log.info("初始化设备,设置为离线状态!");
+        deviceRepository.updateOfflineState(DeviceStateEnum.OFFLINE, new Date());
     }
 
     @Override

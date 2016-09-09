@@ -90,6 +90,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @param deviceTypeName  the device type name
      * @param deviceStateEnum the device state enum
      * @param pageable        the pageable
+     * @param searchKey       the search key
      * @return the page
      */
     Page<Device> search(boolean isRegistered, String deviceTypeName, DeviceStateEnum deviceStateEnum, Pageable pageable, String searchKey);
@@ -174,10 +175,23 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
     List<Device> findAllByPiAndDeviceFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum, String piMacAddress);
 
 
+    /**
+     * Find all by pi and device function type list.
+     *
+     * @param deviceFunctionTypeEnum the device function type enum
+     * @param groupId                the group id
+     * @return the list
+     */
     @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED') and u.pi.deviceGroup.id = ?2")
     List<Device> findAllByPiAndDeviceFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum, long groupId);
 
 
+    /**
+     * Find all by device function type list.
+     *
+     * @param deviceFunctionTypeEnum the device function type enum
+     * @return the list
+     */
     @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED')")
     List<Device> findAllByDeviceFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum);
 
@@ -232,5 +246,17 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * @return the list
      */
     List<Device> findByDeviceType(DeviceType deviceType);
+
+
+    /**
+     * Reset device offline list.
+     *
+     * @param deviceState the device state enum
+     * @return the list
+     */
+    @Modifying
+    @Transactional
+    @Query("update Device u set u.deviceState =?1 where u.deviceState = 'OFFLINE'")
+    List<Device> resetDeviceOffline(DeviceStateEnum deviceState);
 
 }

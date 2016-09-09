@@ -729,5 +729,12 @@ public class DeviceManager {
     public void savePolicy(Policy policy) {
         this.policyRepository.save(policy);
     }
+
+    /**
+     * 更新设备为离线状态
+     */
+    public void resetDeviceOffline() {
+        this.deviceRepository.resetDeviceOffline(DeviceStateEnum.OFFLINE);
+    }
 }
 

@@ -36,7 +36,7 @@ public class PolicyRepositoryImpl {
             dataSql += " and t.deviceState = ?1";
             countSql += " and t.deviceState = ?1";
         }*/
-        dataSql += " order by updateTime desc";
+        dataSql += " order by createTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
@@ -56,7 +56,7 @@ public class PolicyRepositoryImpl {
             dataSql += " and t.policyConfig like ?1";
             countSql += " and t.policyConfig like ?1";
         }
-        dataSql += " order by updateTime desc";
+        dataSql += " order by createTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
@@ -74,6 +74,7 @@ public class PolicyRepositoryImpl {
         if (!StringUtils.isEmpty(name)) {
             dataSql += " and t.name like ?1";
         }
+        dataSql += " order by createTime desc";
         Query dataQuery = em.createQuery(dataSql);
         if (!StringUtils.isEmpty(name)) {
             name = "%" + name + "%";

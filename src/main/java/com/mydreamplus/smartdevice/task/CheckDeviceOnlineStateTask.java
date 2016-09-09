@@ -27,7 +27,7 @@ public class CheckDeviceOnlineStateTask {
     /**
      * 60分钟执行一次
      */
-    @Scheduled(fixedRate = ONE_HOUR, initialDelay = 1000)
+    @Scheduled(fixedRate = ONE_HOUR, initialDelay = 1000 * 60 * 60)
     public void run() {
         log.info("更新设备在线状态,每小时执行");
         // 一小时前的时间

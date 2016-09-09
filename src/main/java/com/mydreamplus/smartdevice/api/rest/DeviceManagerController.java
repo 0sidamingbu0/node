@@ -644,6 +644,7 @@ public class DeviceManagerController extends AbstractRestHandler {
             PolicyDto policyDto = new PolicyDto();
             BeanUtils.copyProperties(policy, policyDto, "pi");
             policyDto.setUpdateTime(policy.getUpdateTime() == null ? policy.getCreateTime().getTime() : policy.getUpdateTime().getTime());
+            policyDto.setCreateTime(policy.getCreateTime().getTime());
             policyDtos.add(policyDto);
         });
         pageResponse.setData(policyDtos);

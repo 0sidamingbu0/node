@@ -85,7 +85,7 @@ public class DeviceRepositoryImpl {
             }
         }
 
-        dataSql += " order by updateTime desc";
+        dataSql += " order by createTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
