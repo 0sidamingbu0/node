@@ -246,6 +246,7 @@ public class DeviceController extends AbstractRestHandler {
         return new BaseResponse(RESPONSE_SUCCESS);
     }
 
+
     /**
      * 响应门事件
      *

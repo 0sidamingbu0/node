@@ -98,4 +98,14 @@ public interface PolicyRepository extends PagingAndSortingRepository<Policy, Lon
      * @return the list
      */
     List<Policy> findAllPolicyByLikeName(String name, boolean disable);
+
+
+    /**
+     * Find all policy by like master symbol list.
+     *
+     * @param masterSymbol the master symbol
+     * @param isDisabled   the is disabled
+     * @return list
+     */
+    Policy findAllPolicyByLikeMasterSymbol(String masterSymbol, boolean isDisabled);
 }

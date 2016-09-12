@@ -49,7 +49,7 @@ public class DeviceRepositoryImpl {
                 countSql += " and t.deviceState = ?3";
             }
         }
-        dataSql += " order by createTime desc";
+        dataSql += " order by deviceState,createTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
@@ -85,7 +85,7 @@ public class DeviceRepositoryImpl {
             }
         }
 
-        dataSql += " order by createTime desc";
+        dataSql += " order by deviceState, createTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 
@@ -143,7 +143,7 @@ public class DeviceRepositoryImpl {
             countSql += " and t.symbol like  ?3 or t.name like ?3 or t.aliases like ?3 or t.macAddress like ?3 or t.factory like ?3";
         }
 
-        dataSql += " order by createTime desc";
+        dataSql += " order by deviceState,createTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
         Query countQuery = em.createQuery(countSql);
 

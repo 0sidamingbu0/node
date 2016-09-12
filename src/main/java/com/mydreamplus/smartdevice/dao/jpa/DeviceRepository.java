@@ -236,7 +236,7 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      */
     @Modifying
     @Transactional
-    @Query("update Device u set u.deviceState =?1 where u.updateTime < ?2")
+    @Query("update Device u set u.deviceState =?1 where u.updateTime < ?2 and u.pi is not null")
     void updateOfflineState(DeviceStateEnum deviceState, Date updateTime);
 
     /**

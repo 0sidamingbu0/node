@@ -4,11 +4,14 @@ import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
 import com.mydreamplus.smartdevice.domain.DoorCode;
 import com.mydreamplus.smartdevice.domain.DoorInfo;
+import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
 import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.DeviceType;
+import com.mydreamplus.smartdevice.entity.Policy;
 import com.mydreamplus.smartdevice.service.DeviceManager;
 import com.mydreamplus.smartdevice.service.DeviceRestService;
+import com.mydreamplus.smartdevice.util.JsonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
@@ -130,6 +133,93 @@ public class DeviceAPIController extends AbstractRestHandler {
         }
         deviceRestService.sendCommandToDevice(device.getMacAddress(), device.getSymbol(), Constant.DEVICE_FUNCTION_OPEN_DOOR);
         return baseResponse;
+    }
+
+    /**
+     * Sets api condition.
+     *
+     * @param conditionRequest the condition request
+     * @return the api condition
+     */
+    @RequestMapping(value = "/policy/setApiCondition",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "设置API条件url")
+    public BaseResponse setApiCondition(@RequestBody ConditionRequest conditionRequest) {
+        BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
+        if (StringUtils.isEmpty(conditionRequest.getMacAddress())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没有找到MAC地址!");
+            return baseResponse;
+        }
+        if (StringUtils.isEmpty(conditionRequest.getHost())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没有设置API Host!");
+            return baseResponse;
+        }
+        Policy policy = this.deviceManager.findPolicyByMasterSymbol(conditionRequest.getMacAddress());
+        if (policy == null) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没有找到设备!");
+            return baseResponse;
+        } else {
+            PolicyConfigDto configDto = JsonUtil.getEntity(policy.getPolicyConfig(), PolicyConfigDto.class);
+            configDto.getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> conditionAndSlaveDto.getConditions().forEach(baseCondition -> baseCondition.setUri(conditionRequest.getHost())));
+            policy.setPolicyConfig(JsonUtil.toJsonString(configDto));
+            this.deviceManager.savePolicy(policy);
+        }
+        return baseResponse;
+    }
+
+    /**
+     * The type Condition request.
+     */
+    static class ConditionRequest {
+        /**
+         * The Mac address.
+         */
+        String macAddress;
+        /**
+         * The Host.
+         */
+        String host;
+
+        /**
+         * Gets mac address.
+         *
+         * @return the mac address
+         */
+        public String getMacAddress() {
+            return macAddress;
+        }
+
+        /**
+         * Sets mac address.
+         *
+         * @param macAddress the mac address
+         */
+        public void setMacAddress(String macAddress) {
+            this.macAddress = macAddress;
+        }
+
+        /**
+         * Gets host.
+         *
+         * @return the host
+         */
+        public String getHost() {
+            return host;
+        }
+
+        /**
+         * Sets host.
+         *
+         * @param host the host
+         */
+        public void setHost(String host) {
+            this.host = host;
+        }
     }
 
 }

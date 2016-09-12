@@ -83,4 +83,22 @@ public class PolicyRepositoryImpl {
         return dataQuery.getResultList();
     }
 
+
+    public Policy findAllPolicyByLikeMasterSymbol(String masterSymbol, boolean isDisabled) {
+        String dataSql = "select t from Policy t where 1=1";
+        if (!StringUtils.isEmpty(masterSymbol)) {
+            dataSql += " and t.masterEvent like ?1";
+        }
+        Query dataQuery = em.createQuery(dataSql);
+        if (!StringUtils.isEmpty(masterSymbol)) {
+            masterSymbol = "%" + masterSymbol + "%";
+            dataQuery.setParameter(1, masterSymbol);
+        }
+        List<Policy> policies = dataQuery.getResultList();
+        if (policies != null && policies.size() > 0) {
+            return policies.iterator().next();
+        } else {
+            return null;
+        }
+    }
 }

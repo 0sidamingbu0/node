@@ -284,6 +284,16 @@ public class DeviceManager {
     }
 
     /**
+     * Find policy by master event policy.
+     *
+     * @param symbol the symbol
+     * @return the policy  {00:15:8d:00:00:f2:44:9e-1=PressDown}
+     */
+    public Policy findPolicyByMasterSymbol(String symbol) {
+        return policyRepository.findAllPolicyByLikeMasterSymbol(symbol, false);
+    }
+
+    /**
      * Save parent device type.
      *
      * @param parentDeviceTypeDto the parent device type dto
