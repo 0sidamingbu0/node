@@ -49,11 +49,11 @@ public class DeviceDto {
      */
     private String deviceType;
 
+    private String additionalAttributes;
     /**
      * 厂家
      */
     private String factory;
-
     private int level;
     /**
      * 设备状态
@@ -91,6 +91,14 @@ public class DeviceDto {
      */
     public DeviceDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public String getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(String additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
     }
 
     public int getLevel() {
