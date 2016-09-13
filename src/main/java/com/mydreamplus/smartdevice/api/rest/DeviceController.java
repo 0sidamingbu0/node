@@ -16,6 +16,7 @@ import com.mydreamplus.smartdevice.util.PolicyParseUtil;
 import com.mydreamplus.smartdevice.util.SymbolUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -292,8 +293,12 @@ public class DeviceController extends AbstractRestHandler {
                 }
                 // 默认使用属性的API Host
                 if (!StringUtils.isEmpty(device.getAdditionalAttributes())) {
-                    log.info("没有配置门的API Host属性!");
-                    externalAPIService.setHost(JsonUtil.getKey(device.getAdditionalAttributes(), Constant.API_CONDITION_URL));
+                    log.info("设备属性:{}", device.getAdditionalAttributes());
+                    try {
+                        externalAPIService.setHost(JsonUtil.getKey(device.getAdditionalAttributes(), Constant.API_CONDITION_URL));
+                    } catch (JSONException exception) {
+//                        exception.printStackTrace();
+                    }
                 }
                 PolicyConfigDto configDto = PolicyParseUtil.josnToPolicyConfigDto(policy.getPolicyConfig());
                 List<ConditionAndSlaveDto> conditionAndSlaveDtos = configDto.getConditionAndSlaveDtos();
