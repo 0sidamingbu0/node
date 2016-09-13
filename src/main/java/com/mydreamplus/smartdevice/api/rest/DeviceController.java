@@ -266,11 +266,11 @@ public class DeviceController extends AbstractRestHandler {
             if (policy != null) {
                 log.info("场景:{} , 云端:{}", policy.getPolicyConfig(), policy.isRootPolicy());
                 if (policy.isRootPolicy()) {
-                    if (Constant.EXECUTE_POLICY_INTERVAL > (System.currentTimeMillis() - request.getOccurTime())) {
-                        executeDoorPolicy(request, policy);
-                    } else {
-                        log.info("事件超时,不执行动作");
-                    }
+//                    if (Constant.EXECUTE_POLICY_INTERVAL > (System.currentTimeMillis() - request.getOccurTime())) {
+                    executeDoorPolicy(request, policy);
+//                    } else {
+//                        log.info("事件超时,不执行动作");
+//                    }
                 }
             }
         }

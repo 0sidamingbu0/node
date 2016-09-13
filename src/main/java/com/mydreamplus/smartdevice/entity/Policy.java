@@ -16,7 +16,7 @@ public class Policy extends BaseEntity {
     /**
      * 场景名称
      */
-    @Column(name = "policy_name")
+    @Column(name = "policy_name", unique = true)
     private String name;
     /**
      * 场景的描述

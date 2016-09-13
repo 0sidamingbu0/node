@@ -213,7 +213,7 @@ public class DeviceAPIController extends AbstractRestHandler {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "设置设备属性")
-    public BaseResponse configDevice(@RequestBody DeviceConfigRequest request) {
+    public BaseResponse configDevice(@RequestBody ConfigRequest request) {
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         if (StringUtils.isEmpty(request.getMacAddress())) {
             baseResponse.setMessage(RESPONSE_FAILURE);
@@ -235,7 +235,7 @@ public class DeviceAPIController extends AbstractRestHandler {
     /**
      * The type Device config request.
      */
-    static class DeviceConfigRequest {
+    static class ConfigRequest {
         /**
          * The Mac address.
          */
