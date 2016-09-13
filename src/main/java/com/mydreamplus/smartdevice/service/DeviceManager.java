@@ -539,7 +539,10 @@ public class DeviceManager {
         Policy policy = this.policyRepository.findOne(ID);
         policy.setDeleted(true);
         policy.setUpdateTime(new Date());
-        this.deviceRestService.removePolicy(policy.getPi().getMacAddress(), JsonUtil.getEntity(policy.getPolicyConfig(), PolicyConfigDto.class));
+        //
+        if(policy.getPi() != null){
+            this.deviceRestService.removePolicy(policy.getPi().getMacAddress(), JsonUtil.getEntity(policy.getPolicyConfig(), PolicyConfigDto.class));
+        }
         this.policyRepository.delete(ID);
         // 下发删除场景
     }
