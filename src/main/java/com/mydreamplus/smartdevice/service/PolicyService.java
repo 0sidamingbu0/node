@@ -93,11 +93,6 @@ public class PolicyService {
         if (request == null || StringUtils.isEmpty(request.getPiMacAddress())) {
             throw new DataInvalidException("PIMac地址不完整");
         }
-
-        if (request == null || StringUtils.isEmpty(request.getMacAddress())) {
-            throw new DataInvalidException("Mac地址不完整");
-        }
-
         PI pi = piRespository.findByMacAddress(request.getPiMacAddress());
         String macAddress = request.getMacAddress();
 

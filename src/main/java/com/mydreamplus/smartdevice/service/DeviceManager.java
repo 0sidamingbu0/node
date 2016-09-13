@@ -412,6 +412,12 @@ public class DeviceManager {
     }
 
 
+    /**
+     * Find all devices by group id for becontrolled list.
+     *
+     * @param groupId the group id
+     * @return the list
+     */
     public List<Device> findAllDevicesByGroupIdForBecontrolled(long groupId) {
         if (groupId == -1) { // 查询全部
             return this.deviceRepository.findAllByDeviceFunctionType(DeviceFunctionTypeEnum.CONTROLLED);
@@ -431,6 +437,13 @@ public class DeviceManager {
         return this.deviceRepository.findAllByPiAndDeviceFunctionType(functionType, piMacAddress);
     }
 
+    /**
+     * Find all devices by mac address and function type list.
+     *
+     * @param functionType the function type
+     * @param groupId      the group id
+     * @return the list
+     */
     public List<Device> findAllDevicesByMacAddressAndFunctionType(DeviceFunctionTypeEnum functionType, long groupId) {
         if (groupId == -1) { // 查询全部
             return this.deviceRepository.findAllByDeviceFunctionType(functionType);
@@ -484,6 +497,7 @@ public class DeviceManager {
         return this.deviceRepository.findBySymbol(symbol);
     }
 
+
     /**
      * Find pi by mac address pi.
      *
@@ -525,7 +539,9 @@ public class DeviceManager {
         Policy policy = this.policyRepository.findOne(ID);
         policy.setDeleted(true);
         policy.setUpdateTime(new Date());
-        this.policyRepository.save(policy);
+        this.deviceRestService.removePolicy(policy.getPi().getMacAddress(), JsonUtil.getEntity(policy.getPolicyConfig(), PolicyConfigDto.class));
+        this.policyRepository.delete(ID);
+        // 下发删除场景
     }
 
     /**
@@ -732,10 +748,21 @@ public class DeviceManager {
     }
 
 
+    /**
+     * Gets policys by name.
+     *
+     * @param name the name
+     * @return the policys by name
+     */
     public List<Policy> getPolicysByName(String name) {
         return this.policyRepository.findAllPolicyByLikeName(name, true);
     }
 
+    /**
+     * Save policy.
+     *
+     * @param policy the policy
+     */
     public void savePolicy(Policy policy) {
         this.policyRepository.save(policy);
     }
@@ -745,6 +772,16 @@ public class DeviceManager {
      */
     public void resetDeviceOffline() {
         this.deviceRepository.resetDeviceOffline(DeviceStateEnum.OFFLINE);
+    }
+
+
+    /**
+     * Save device.
+     *
+     * @param device the device
+     */
+    public void saveDevice(Device device) {
+        this.deviceRepository.save(device);
     }
 }
 

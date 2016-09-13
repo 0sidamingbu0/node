@@ -1,7 +1,6 @@
 package com.mydreamplus.smartdevice.service;
 
 import com.mydreamplus.smartdevice.config.MQTTConfig;
-import com.mydreamplus.smartdevice.domain.DoorInfo;
 import com.mydreamplus.smartdevice.domain.MessageTypeEnum;
 import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
 import com.mydreamplus.smartdevice.domain.message.DeviceMessage;
@@ -361,6 +360,23 @@ public class DeviceRestService {
     public void sendPolicy(String piMacAddress, PolicyConfigDto policyConfigDto) {
         List<PolicyMessage> policyMessageList = new ArrayList<>();
         PolicyMessage message = new PolicyMessage();
+        message.setUpdateTime(System.currentTimeMillis());
+        message.setPolicyConfigDto(policyConfigDto);
+        policyMessageList.add(message);
+        this.sendPolicy(piMacAddress, policyMessageList);
+    }
+
+    /**
+     * remove policy.
+     *
+     * @param piMacAddress    the pi mac address
+     * @param policyConfigDto the policy config dto
+     */
+    @Async(value = "messageExecutor")
+    public void removePolicy(String piMacAddress, PolicyConfigDto policyConfigDto) {
+        List<PolicyMessage> policyMessageList = new ArrayList<>();
+        PolicyMessage message = new PolicyMessage();
+        message.setDeleted(true);
         message.setUpdateTime(System.currentTimeMillis());
         message.setPolicyConfigDto(policyConfigDto);
         policyMessageList.add(message);

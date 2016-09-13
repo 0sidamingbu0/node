@@ -2,21 +2,21 @@ package com.mydreamplus.smartdevice.api.rest;
 
 import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
-import com.mydreamplus.smartdevice.domain.DoorCode;
-import com.mydreamplus.smartdevice.domain.DoorInfo;
-import com.mydreamplus.smartdevice.domain.PolicyConfigDto;
+import com.mydreamplus.smartdevice.domain.*;
 import com.mydreamplus.smartdevice.domain.out.BaseResponse;
 import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.DeviceType;
 import com.mydreamplus.smartdevice.entity.Policy;
 import com.mydreamplus.smartdevice.service.DeviceManager;
 import com.mydreamplus.smartdevice.service.DeviceRestService;
+import com.mydreamplus.smartdevice.service.DeviceService;
 import com.mydreamplus.smartdevice.util.JsonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,6 +51,10 @@ public class DeviceAPIController extends AbstractRestHandler {
     @Autowired
     private DeviceRestService deviceRestService;
 
+    @Autowired
+    private DeviceService deviceService;
+
+
     /**
      * Find doors base response.
      *
@@ -66,13 +70,38 @@ public class DeviceAPIController extends AbstractRestHandler {
         baseResponse.setDetails("门的mac地址");
         DeviceType door = deviceManager.findDeviceTypeByName(Constant.DEVICE_TYPE_DOOR);
         DeviceType doorController = deviceManager.findDeviceTypeByName(Constant.DEVICE_TYPE_PASSWORD_CONTROLLER);
-        Map<String, List<String>> map = new HashMap<>();
-        List<String> list = new ArrayList<>();
-        deviceManager.findAllDevicesByType(door).forEach(device -> list.add(device.getMacAddress()));
-        deviceManager.findAllDevicesByType(doorController).forEach(device -> list.add(device.getMacAddress()));
+        Map<String, List<DeviceDto>> map = new HashMap<>();
+        List<DeviceDto> list = new ArrayList<>();
+        deviceManager.findAllDevicesByType(door).forEach(device -> {
+            if (toDeviceDto(device) != null) {
+                list.add(toDeviceDto(device));
+            }
+        });
+        deviceManager.findAllDevicesByType(doorController).forEach(device -> {
+            if (toDeviceDto(device) != null) {
+                list.add(toDeviceDto(device));
+            }
+        });
         map.put("doors", list);
         baseResponse.setData(map);
         return baseResponse;
+    }
+
+
+    /**
+     * 转换deviceDto
+     *
+     * @param device
+     * @return
+     */
+    private DeviceDto toDeviceDto(Device device) {
+        DeviceDto deviceDto = new DeviceDto();
+        BeanUtils.copyProperties(device, deviceDto, "deviceGroupList");
+        if (device.getDeviceState().equals(DeviceStateEnum.ONLINE)) {
+            return deviceDto;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -145,7 +174,7 @@ public class DeviceAPIController extends AbstractRestHandler {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "设置API条件url")
+    @ApiOperation(value = "设置API条件Host")
     public BaseResponse setApiCondition(@RequestBody ConditionRequest conditionRequest) {
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         if (StringUtils.isEmpty(conditionRequest.getMacAddress())) {
@@ -170,6 +199,87 @@ public class DeviceAPIController extends AbstractRestHandler {
             this.deviceManager.savePolicy(policy);
         }
         return baseResponse;
+    }
+
+
+    /**
+     * Sets api condition.
+     *
+     * @param request the request
+     * @return the api condition
+     */
+    @RequestMapping(value = "/device/config",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "设置设备属性")
+    public BaseResponse configDevice(@RequestBody DeviceConfigRequest request) {
+        BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
+        if (StringUtils.isEmpty(request.getMacAddress())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没有找到MAC地址!");
+            return baseResponse;
+        }
+        if (StringUtils.isEmpty(request.getConfigJSON())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没有配置属性!");
+            return baseResponse;
+        }
+        this.deviceManager.findDevicesByMacAddress(request.getMacAddress()).forEach(device -> {
+            device.setAdditionalAttributes(request.getConfigJSON());
+            this.deviceManager.saveDevice(device);
+        });
+        return baseResponse;
+    }
+
+    /**
+     * The type Device config request.
+     */
+    static class DeviceConfigRequest {
+        /**
+         * The Mac address.
+         */
+        String macAddress;
+        /**
+         * The Config json.
+         */
+        String configJSON;
+
+        /**
+         * Gets mac address.
+         *
+         * @return the mac address
+         */
+        public String getMacAddress() {
+            return macAddress;
+        }
+
+        /**
+         * Sets mac address.
+         *
+         * @param macAddress the mac address
+         */
+        public void setMacAddress(String macAddress) {
+            this.macAddress = macAddress;
+        }
+
+        /**
+         * Gets config json.
+         *
+         * @return the config json
+         */
+        public String getConfigJSON() {
+            return configJSON;
+        }
+
+        /**
+         * Sets config json.
+         *
+         * @param configJSON the config json
+         */
+        public void setConfigJSON(String configJSON) {
+            this.configJSON = configJSON;
+        }
     }
 
     /**

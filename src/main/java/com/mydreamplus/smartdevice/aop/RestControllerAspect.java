@@ -57,11 +57,12 @@ public class RestControllerAspect {
      */
     @Before("execution(public * com.mydreamplus.smartdevice.api.rest.*Controller.*(..)) &&" + "args(deviceRequest,..)")
     public void logBeforeRestCall(BaseDeviceRequest deviceRequest) throws Throwable {
-        if (deviceRequest != null && deviceRequest.getPolicyUpdateTime() != null) {
+        /*if (deviceRequest != null && deviceRequest.getPolicyUpdateTime() != null) {
             // 根据时间戳查询变化的策略集合
             List<PolicyMessage> list = new ArrayList<>();
             PI pi = piRespository.findByMacAddress(deviceRequest.getPiMacAddress());
             if (pi != null) {
+                log.info("=========================== 查询更新场景 ==========================");
                 this.policyRepository.findAllByPiAndUpdateTimeGreaterThan(pi, new Date(deviceRequest.getPolicyUpdateTime())).forEach(policy -> {
                     PolicyMessage policyMessage = new PolicyMessage();
                     policyMessage.setUpdateTime(policy.getUpdateTime().getTime());
@@ -79,7 +80,7 @@ public class RestControllerAspect {
                     deviceRestService.sendPolicy(deviceRequest.getPiMacAddress(), list);
                 }
             }
-        }
+        }*/
         // ======================== 更新 Link Quality、UpdateTime、Status ========================
         int linkQuality = deviceRequest.getLinkQuality();
         log.info("设备Link Quality: " + linkQuality);
