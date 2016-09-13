@@ -9,7 +9,6 @@ import com.mydreamplus.smartdevice.entity.DeviceType;
 import com.mydreamplus.smartdevice.entity.Policy;
 import com.mydreamplus.smartdevice.service.DeviceManager;
 import com.mydreamplus.smartdevice.service.DeviceRestService;
-import com.mydreamplus.smartdevice.service.DeviceService;
 import com.mydreamplus.smartdevice.util.JsonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,9 +50,6 @@ public class DeviceAPIController extends AbstractRestHandler {
     @Autowired
     private DeviceRestService deviceRestService;
 
-    @Autowired
-    private DeviceService deviceService;
-
 
     /**
      * Find doors base response.
@@ -66,6 +62,8 @@ public class DeviceAPIController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "查询门信息", notes = "全部")
     public BaseResponse findDoors() {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("查询门信息!");
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         baseResponse.setDetails("门的mac地址");
         DeviceType door = deviceManager.findDeviceTypeByName(Constant.DEVICE_TYPE_DOOR);
@@ -117,6 +115,7 @@ public class DeviceAPIController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "设置DoorCode", notes = "code为0视为解绑")
     public BaseResponse setDoorCode(@RequestBody DoorCode doorCode) {
+        log.info("--------------------------------- 外部API -----------------------------------");
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         if (StringUtils.isEmpty(doorCode.getMacAddress())) {
             baseResponse.setMessage(RESPONSE_FAILURE);
@@ -153,6 +152,8 @@ public class DeviceAPIController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "开门", notes = "下发命令")
     public BaseResponse code(@RequestBody DoorInfo doorInfo) {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("开门请求:{}:{}:{}", doorInfo.getMacAddress(), doorInfo.getDoorCode(), doorInfo.getCardNo());
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         Device device = deviceManager.getDevice(doorInfo.getMacAddress());
         if (device == null) {
@@ -176,17 +177,19 @@ public class DeviceAPIController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "设置API条件Host")
     public BaseResponse setApiCondition(@RequestBody ConditionRequest conditionRequest) {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("设置API条件:{}:{}", conditionRequest.getMacAddress(), conditionRequest.getHost());
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         if (StringUtils.isEmpty(conditionRequest.getMacAddress())) {
             baseResponse.setMessage(RESPONSE_FAILURE);
             baseResponse.setDetails("没有找到MAC地址!");
             return baseResponse;
         }
-        if (StringUtils.isEmpty(conditionRequest.getHost())) {
-            baseResponse.setMessage(RESPONSE_FAILURE);
-            baseResponse.setDetails("没有设置API Host!");
-            return baseResponse;
-        }
+//        if (StringUtils.isEmpty(conditionRequest.getHost())) {
+//            baseResponse.setMessage(RESPONSE_FAILURE);
+//            baseResponse.setDetails("没有设置API Host!");
+//            return baseResponse;
+//        }
         Policy policy = this.deviceManager.findPolicyByMasterSymbol(conditionRequest.getMacAddress());
         if (policy == null) {
             baseResponse.setMessage(RESPONSE_FAILURE);
@@ -214,6 +217,8 @@ public class DeviceAPIController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "设置设备属性")
     public BaseResponse configDevice(@RequestBody ConfigRequest request) {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("设置设备属性:{}:{}", request.getMacAddress(), request.getConfigJSON());
         BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
         if (StringUtils.isEmpty(request.getMacAddress())) {
             baseResponse.setMessage(RESPONSE_FAILURE);
