@@ -6,7 +6,6 @@ import com.mydreamplus.smartdevice.dao.jpa.DeviceRepository;
 import com.mydreamplus.smartdevice.dao.jpa.PIRespository;
 import com.mydreamplus.smartdevice.domain.DeviceStateEnum;
 import com.mydreamplus.smartdevice.domain.in.*;
-import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.PI;
 import com.mydreamplus.smartdevice.util.JsonUtil;
 import org.eclipse.paho.client.mqttv3.*;
@@ -115,11 +114,11 @@ public class MQTTService {
                 pi.setUpdateTime(new Date());
                 pIRespository.save(pi);
             } else {
-                Device device = deviceRepository.findBySymbol(macAddress + "-1");
-                if (device != null) {
+                deviceRepository.findAllByMacAddress(macAddress).forEach(device -> {
+                    log.info("更新设备为离线状态:{}", device.getMacAddress());
                     device.setDeviceState(DeviceStateEnum.OFFLINE);
                     deviceRepository.save(device);
-                }
+                });
             }
         });
     }

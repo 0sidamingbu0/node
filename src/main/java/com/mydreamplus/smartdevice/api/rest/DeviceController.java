@@ -242,6 +242,7 @@ public class DeviceController extends AbstractRestHandler {
         // 门事件
         if (request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_CARD) || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD)
                 || request.getEventName().equals(Constant.DEVICE_EVENT_REPORT_PASSWORD_OR_CARD)) {
+            log.info("------------------------------>触发门事件 ");
             this.doorAction(request);
         }
         return new BaseResponse(RESPONSE_SUCCESS);
@@ -273,6 +274,9 @@ public class DeviceController extends AbstractRestHandler {
 //                        log.info("事件超时,不执行动作");
 //                    }
                 }
+            }
+            if(policy == null){
+                log.info("!!!!!!!!!!!!!!没有找到场景!!!!!!!!!!!");
             }
         }
     }
