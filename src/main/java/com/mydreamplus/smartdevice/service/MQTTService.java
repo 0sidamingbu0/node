@@ -114,6 +114,7 @@ public class MQTTService {
                 pi.setUpdateTime(new Date());
                 pIRespository.save(pi);
             } else {
+                // 其他非网关设备
                 deviceRepository.findAllByMacAddress(macAddress).forEach(device -> {
                     log.info("更新设备为离线状态:{}", device.getMacAddress());
                     device.setDeviceState(DeviceStateEnum.OFFLINE);
