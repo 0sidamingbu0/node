@@ -243,7 +243,8 @@ public class DeviceManager {
         policyDto.getPolicyConfigDto().getMasterDeviceMap().keySet().forEach(s -> {
             Device masterDevie = deviceRepository.findBySymbol(s);
             log.info("根据场景中主控设备设置场景网关!");
-            policy.setPi(masterDevie.getPi());
+            if (masterDevie != null && masterDevie.getPi() != null)
+                policy.setPi(masterDevie.getPi());
         });
         // 场景存在,更新场景
         Policy old = policyRepository.findByMasterEventAndDeleted(policyDto.getPolicyConfigDto().getMasterDeviceMap().toString(), false);
@@ -540,7 +541,7 @@ public class DeviceManager {
         policy.setDeleted(true);
         policy.setUpdateTime(new Date());
         //
-        if(policy.getPi() != null){
+        if (policy.getPi() != null) {
             this.deviceRestService.removePolicy(policy.getPi().getMacAddress(), JsonUtil.getEntity(policy.getPolicyConfig(), PolicyConfigDto.class));
         }
         this.policyRepository.delete(ID);

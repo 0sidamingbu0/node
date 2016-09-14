@@ -192,14 +192,17 @@ public class DeviceAPIController extends AbstractRestHandler {
 //        }
         Policy policy = this.deviceManager.findPolicyByMasterSymbol(conditionRequest.getMacAddress());
         if (policy == null) {
+            log.info("没有找到相关场景!");
             baseResponse.setMessage(RESPONSE_FAILURE);
-            baseResponse.setDetails("没有找到设备!");
+            baseResponse.setDetails("没有找到相关场景!");
             return baseResponse;
         } else {
+            log.info("找到场景:{}", policy.getName());
             PolicyConfigDto configDto = JsonUtil.getEntity(policy.getPolicyConfig(), PolicyConfigDto.class);
             configDto.getConditionAndSlaveDtos().forEach(conditionAndSlaveDto -> conditionAndSlaveDto.getConditions().forEach(baseCondition -> baseCondition.setUri(conditionRequest.getHost())));
             policy.setPolicyConfig(JsonUtil.toJsonString(configDto));
             this.deviceManager.savePolicy(policy);
+            log.info("保存场景, 场景配置:{}", policy.getPolicyConfig());
         }
         return baseResponse;
     }
