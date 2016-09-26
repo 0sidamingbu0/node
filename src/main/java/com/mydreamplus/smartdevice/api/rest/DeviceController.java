@@ -281,7 +281,7 @@ public class DeviceController extends AbstractRestHandler {
                     if (condition.getConditionType().equals(Constant.CONDITION_TYPE_API)) {
                         Map<String, String> data = new HashMap<>();
                         data.put("data", request.getData());
-                        data.put("piMacAddress", request.getPiMacAddress());
+                        data.put("piMacAddress", masterDevice.getMacAddress());
                         data.put("type", request.getEventName());
                         // 设备的类型
                         data.put("deviceType", masterDevice.getName());

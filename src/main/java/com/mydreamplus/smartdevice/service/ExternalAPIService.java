@@ -69,13 +69,12 @@ public class ExternalAPIService {
         /**
          *
          */
-//        Map<String, String> data = new HashMap<>();
-//        data.put("data", "12321");
-//        data.put("piMacAddress", "12:21:21:22:33");
-//        data.put("type", "ReportCardId");
-//        // 设备的类型
-//        data.put("deviceType", "Door");
-//        externalAPIService.checkPermission(data, "http://10.28.0.115:9090/api/door/authentication/card");
+        Map<String, String> data = new HashMap<>();
+        data.put("data", "67305985");
+        data.put("piMacAddress", "b8:27:eb:94:52:33");
+        data.put("type", "ReportCardId");
+        data.put("deviceType", "MeetingRoomDoor");
+        externalAPIService.checkPermission(data, "http://qa.so.aws.mxj.mx/api/door/authentication/card");
         /**
          *
          */
@@ -199,7 +198,7 @@ public class ExternalAPIService {
      */
     public boolean checkPermission(Map<String, String> data, String url) {
         ResponseMessage responseMessage = (ResponseMessage) callApi(data, url);
-        if (responseMessage.getCode() != 1) {
+        if (responseMessage == null || responseMessage.getCode() != 1) {
             log.info("验证失败!");
             return false;
         } else {

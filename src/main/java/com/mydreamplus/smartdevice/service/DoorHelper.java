@@ -72,9 +72,7 @@ public class DoorHelper {
                 /*
                  * 条件验证失败删除卡号
                  */
-                if(commonDeviceRequest.getDeviceType().equals(Constant.OLD_DOOR_TYPE)){
-                    conditionAndSlaveDtos.add(setConditon(door.getMacAddress(), apiUrl, Constant.DEVICE_FUNCTION_REMOVE_CARD, STATUS_FAILURE));
-                }
+                conditionAndSlaveDtos.add(setConditon(door.getMacAddress(), apiUrl, Constant.DEVICE_FUNCTION_REMOVE_CARD, STATUS_FAILURE));
 
                 policyConfigDto.setConditionAndSlaveDtos(conditionAndSlaveDtos);
                 policy.setPolicyConfig(JsonUtil.toJsonString(policyConfigDto));
