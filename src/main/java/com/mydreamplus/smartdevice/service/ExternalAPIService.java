@@ -66,13 +66,19 @@ public class ExternalAPIService {
 //        externalAPIService.checkPermissionDoor("1","2","card","http://qa.so.aws.mxj.mx/");
 
 //        externalAPIService.proxySensorData(300, "f4:5c:89:c4:24:c7", "PM2.5Sensor", "http://...");
-        Map<String, String> data = new HashMap<>();
-        data.put("data", "12321");
-        data.put("piMacAddress", "12:21:21:22:33");
-        data.put("type", "ReportCardId");
-        // 设备的类型
-        data.put("deviceType", "Door");
-        externalAPIService.checkPermission(data, "http://10.28.0.115:9090/api/door/authentication/card");
+        /**
+         *
+         */
+//        Map<String, String> data = new HashMap<>();
+//        data.put("data", "12321");
+//        data.put("piMacAddress", "12:21:21:22:33");
+//        data.put("type", "ReportCardId");
+//        // 设备的类型
+//        data.put("deviceType", "Door");
+//        externalAPIService.checkPermission(data, "http://10.28.0.115:9090/api/door/authentication/card");
+        /**
+         *
+         */
     }
 
     public String getHost() {

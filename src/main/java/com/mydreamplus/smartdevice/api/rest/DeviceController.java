@@ -284,7 +284,7 @@ public class DeviceController extends AbstractRestHandler {
                         data.put("piMacAddress", request.getPiMacAddress());
                         data.put("type", request.getEventName());
                         // 设备的类型
-                        data.put("deviceType", masterDevice.getDeviceType().getName());
+                        data.put("deviceType", masterDevice.getName());
                         boolean r = externalAPIService.checkPermission(data, condition.getUri());
                         if (r == true && condition.getStatus().equals("1")) {
                             conditionResult[0] = true;
@@ -522,7 +522,7 @@ public class DeviceController extends AbstractRestHandler {
             // ================== 将上报的数据通过代理发送到第三方服务器 ================
             String proxy = device.getEventProxy();
             if (!StringUtils.isEmpty(proxy)) {
-                this.externalAPIService.proxySensorData(sensorData.getData(), device.getMacAddress(), device.getName(), device.getEventProxy());
+                this.externalAPIService.proxySensorData(sensorData.getData(), device.getMacAddress(), s, device.getEventProxy());
             }
         });
         return new BaseResponse(RESPONSE_SUCCESS);
