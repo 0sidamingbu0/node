@@ -10,7 +10,6 @@ package com.mydreamplus.smartdevice.config;
  */
 public class MQTTConfig {
 
-
     private static String topic;
 
     private static int qos;
@@ -24,6 +23,16 @@ public class MQTTConfig {
     private static String password;
 
     private static String deviceWillTopic;
+
+    private static String testTopic;
+
+    public static String getTestTopic() {
+        return testTopic;
+    }
+
+    public static void setTestTopic(String testTopic) {
+        MQTTConfig.testTopic = testTopic;
+    }
 
     public static String getDeviceWillTopic() {
         return deviceWillTopic;

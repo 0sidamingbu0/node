@@ -1,6 +1,7 @@
 package com.mydreamplus.smartdevice.api.rest;
 
 import com.mydreamplus.smartdevice.domain.RestErrorInfo;
+import com.mydreamplus.smartdevice.domain.in.DeviceEventRequest;
 import com.mydreamplus.smartdevice.exception.DataFormatException;
 import com.mydreamplus.smartdevice.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
@@ -69,5 +70,6 @@ public abstract class AbstractRestHandler implements ApplicationEventPublisherAw
         }
         return resource;
     }
+
 
 }

@@ -30,6 +30,8 @@ public class Constant {
     /**
      * 门设备的事件
      */
+    public static final String DEVICE_EVENT_REPORT_DATA = "ReportData";
+
     public static final String DEVICE_EVENT_REPORT_PASSWORD = "ReportPassword";
     public static final String DEVICE_EVENT_REPORT_CARD = "ReportCardId";
     public static final String DEVICE_EVENT_REPORT_PASSWORD_OR_CARD = "ReportPassword|ReportCardId";
@@ -42,6 +44,10 @@ public class Constant {
     public static final String DEFAULT_GROUP_NAME = "DEFAULT_GROUP";
     public static final String CONDITION_TYPE_API = "CONTROLLED";
     public static final String OLD_DOOR_TYPE = "Door";
+    /**
+     * 会议室门禁设备
+     */
+    public static final String MEET_ROOM_DOOR_TYPE = "MeetingRoomDoor";
 
     public static final int LOGIC_TRUE = 1;
 
@@ -49,6 +55,13 @@ public class Constant {
      * 事件超时 8秒 以上则不执行云端场景方法
      */
     public static final long EXECUTE_POLICY_INTERVAL = 1000 * 8;
+
+
+    public static final String PM25_CONTROLLER = "PM2.5Controller";
+    public static final String PM25_SENSOR = "PM2.5Sensor";
+    public static final String PM10_SENSOR = "PM10Sensor";
+
+    public static final String DEVICE_FUNCTION_REMOVE_CARD = "removeCard";
 
 
 }

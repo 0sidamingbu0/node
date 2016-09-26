@@ -25,9 +25,22 @@ public class DeviceEventRequest extends BaseDeviceRequest {
     private long eventTime;
 
     /**
+     * 设备类型
+     */
+    private String deviceType;
+
+    /**
      * 设备上报的数据
      */
     private String data;
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public String getData() {
         return data;

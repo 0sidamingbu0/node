@@ -68,7 +68,11 @@ public class Device extends BaseEntity {
      */
     private boolean isRegistered = false;
 
-
+    /**
+     * 代理设备产生的事件
+     */
+    @Column
+    private String eventProxy;
     /**
      * 开关档位、1、2、3档位
      */
@@ -109,6 +113,14 @@ public class Device extends BaseEntity {
     @Basic(fetch = FetchType.LAZY)
     @Column
     private String additionalAttributes;
+
+    public String getEventProxy() {
+        return eventProxy;
+    }
+
+    public void setEventProxy(String eventProxy) {
+        this.eventProxy = eventProxy;
+    }
 
     public int getLevel() {
         return level;

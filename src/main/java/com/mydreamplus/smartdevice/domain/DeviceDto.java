@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class DeviceDto {
 
-
     /**
      * 拆分前的设备类型
      */
@@ -67,6 +66,8 @@ public class DeviceDto {
      * 设备的注册时间
      */
     private Date registeTime;
+
+    private String eventProxy;
     /**
      * 设备分组
      */
@@ -77,13 +78,11 @@ public class DeviceDto {
     private int linkQuality;
     private boolean isRegistered;
     private String deviceGroupName;
-
     /**
      * Instantiates a new Device dto.
      */
     public DeviceDto() {
     }
-
     /**
      * Instantiates a new Device dto.
      *
@@ -91,6 +90,14 @@ public class DeviceDto {
      */
     public DeviceDto(String symbol) {
         this.symbol = symbol;
+    }
+
+    public String getEventProxy() {
+        return eventProxy;
+    }
+
+    public void setEventProxy(String eventProxy) {
+        this.eventProxy = eventProxy;
     }
 
     public String getAdditionalAttributes() {

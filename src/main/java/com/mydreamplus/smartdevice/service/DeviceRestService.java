@@ -32,6 +32,7 @@ public class DeviceRestService {
 
     private final static String SUCCESS = "Success";
     private final static String FAILURE = "Failure";
+
     private static final int TIME_OUT = 5000;
     private final static Logger log = LoggerFactory.getLogger(DeviceRestService.class);
 
@@ -381,5 +382,25 @@ public class DeviceRestService {
         message.setPolicyConfigDto(policyConfigDto);
         policyMessageList.add(message);
         this.sendPolicy(piMacAddress, policyMessageList);
+    }
+
+
+    /**
+     * 返回设备的测试请求
+     *
+     * @param piMacAddress
+     */
+    @Async(value = "messageExecutor")
+    public void callbackTest(String piMacAddress, String messageTopic) {
+        DeviceMessage deviceMessage = new DeviceMessage();
+        deviceMessage.setAction("/test");
+        deviceMessage.setMessageType(MessageTypeEnum.TEST);
+        deviceMessage.setPiAddress(piMacAddress);
+        Map<String, Object> data = new HashMap<>();
+        data.put("messageTopic", messageTopic);
+        deviceMessage.setData(data);
+        deviceMessage.setMessage(SUCCESS);
+        send(deviceMessage);
+        log.info("::::::::::: 通知服务可用:" + piMacAddress);
     }
 }

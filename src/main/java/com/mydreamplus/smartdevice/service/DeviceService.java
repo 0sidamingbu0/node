@@ -80,6 +80,7 @@ public class DeviceService {
                 newDevice.setFactory(DeviceSourceEnum.DREAMPLUS.toString());
             }
             newDevice.setDeviceType(deviceType);
+            newDevice.setEventProxy(deviceType.getEventProxy());
             newDevice.setDeviceState(DeviceStateEnum.ONLINE);
             newDevice.setMacAddress(request.getMacAddress());
             newDevice.setSymbol(request.getMacAddress());
@@ -127,6 +128,7 @@ public class DeviceService {
             }
             pi.getZbDeviceList().add(device);
             device.setName(deviceType.getName());
+            device.setEventProxy(deviceType.getEventProxy());
             device.setAliases(deviceType.getAliases() + "_" + device.getSymbol());
             device.setPi(pi);
             device.setMacAddress(deviceDto.getMacAddress());

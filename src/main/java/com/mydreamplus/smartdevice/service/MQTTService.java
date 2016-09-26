@@ -28,11 +28,19 @@ import java.util.Date;
 public class MQTTService {
 
     private static final Logger log = LoggerFactory.getLogger(MQTTService.class);
+
+    /**
+     * 设备离线遗言频道
+     */
+    private static final String SMART_DEVICE_WILL = "smartDeviceWill";
     private static org.eclipse.paho.client.mqttv3.MqttClient asyncClient;
     private static int qos = 0;
     private static PIRespository pIRespository;
     private static DeviceController deviceController;
     private static DeviceRepository deviceRepository;
+
+    private static String testTopic;
+    private static String serverTopic;
 
     /**
      * Gets async client.
@@ -60,8 +68,10 @@ public class MQTTService {
         String clientId = MQTTConfig.getClientId();
         String userName = MQTTConfig.getUserName();
         String password = MQTTConfig.getPassword();
-        String serverTopic = MQTTConfig.getTopic();
         String deviceWillTopic = MQTTConfig.getDeviceWillTopic();
+        // 服务器订阅的Topic用于数据通信
+        serverTopic = MQTTConfig.getTopic();
+        testTopic = MQTTConfig.getTestTopic();
 
         qos = MQTTConfig.getQos();
         MemoryPersistence persistence = new MemoryPersistence();
@@ -73,6 +83,7 @@ public class MQTTService {
             op.setBufferSize(100);
             connOpts.setCleanSession(true);
             connOpts.setUserName(userName);
+            connOpts.setWill(SMART_DEVICE_WILL, serverTopic.getBytes(), 1, true);
             connOpts.setPassword(password.toCharArray());
             connOpts.setCleanSession(true);
             log.info("Connecting to broker: " + broker);
@@ -94,6 +105,22 @@ public class MQTTService {
     public static void subscripe(String deviceWillTopic, String serverTopic) throws MqttException {
         subscribeWillTopic(deviceWillTopic);
         subscribeServerTopic(serverTopic);
+        subscribeTestTopic();
+    }
+
+    /**
+     * 订阅测试Topic
+     *
+     * @throws MqttException
+     */
+    private static void subscribeTestTopic() throws MqttException {
+        log.info("订阅频道测试频道: {}", testTopic);
+        asyncClient.subscribe(testTopic, qos, (s, mqttMessage) -> {
+            // 更新状态
+            String piMacaddress = new String(mqttMessage.getPayload(), StandardCharsets.UTF_8);
+            log.info("测试请求来源设备: {}", piMacaddress);
+            deviceController.test(piMacaddress, serverTopic);
+        });
     }
 
     /**
@@ -213,6 +240,7 @@ public class MQTTService {
          * The Server topic.
          */
         String serverTopic;
+
 
         /**
          * Instantiates a new Device mqtt call back.

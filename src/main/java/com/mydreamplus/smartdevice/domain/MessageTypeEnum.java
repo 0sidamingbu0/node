@@ -13,5 +13,5 @@ public enum  MessageTypeEnum {
     /**
      * 删除设备、获取设备状态、下发策略、获取PING值、获取传感器值, 反馈
      */
-    DELETE, GET_INFO, SEND_POLICY, GET_PING, GET_VALUE, FEEDBACK, COMMAND, CONFIG
+    DELETE, GET_INFO, SEND_POLICY, GET_PING, GET_VALUE, FEEDBACK, COMMAND, CONFIG , TEST
 }

@@ -48,6 +48,10 @@ public class DeviceType extends BaseEntity {
 
 
     /**
+     * 代理,通过URL来设置这个设备产生的事件
+     */
+    private String eventProxy;
+    /**
      * 设备事件
      */
     @ManyToMany(mappedBy = "deviceTypes", cascade = CascadeType.ALL)
@@ -64,6 +68,14 @@ public class DeviceType extends BaseEntity {
      */
     @ManyToOne
     private ParentDeviceType parentDeviceType;
+
+    public String getEventProxy() {
+        return eventProxy;
+    }
+
+    public void setEventProxy(String eventProxy) {
+        this.eventProxy = eventProxy;
+    }
 
     public String getAdditionalAttributes() {
         return additionalAttributes;

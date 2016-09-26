@@ -13,4 +13,11 @@ public class DoorApi {
     public static final String DOOR_CARD_API = "/api/door/authentication/card";
     public static final String DOOR_EVENT_API = "/api/door/authentication/event";
 
+//    /**
+//     * 会议室API
+//     */
+//    public static final String MEETING_ROOM_CARD_API = "/api/meeting-room/authentication/card";
+
+
+
 }

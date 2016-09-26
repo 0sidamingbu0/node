@@ -53,8 +53,8 @@ public class PolicyRepositoryImpl {
         String dataSql = "select t from Policy t where deleted = false";
         String countSql = "select count(t) from Policy t where deleted = false";
         if (!StringUtils.isEmpty(searchKey)) {
-            dataSql += " and t.policyConfig like ?1";
-            countSql += " and t.policyConfig like ?1";
+            dataSql += " and t.policyConfig like ?1 or t.name like ?1 or t.description like ?1";
+            countSql += " and t.policyConfig like ?1 or t.name like ?1 or t.description like ?1";
         }
         dataSql += " order by createTime desc";
         Query dataQuery = em.createQuery(dataSql).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());

@@ -179,6 +179,16 @@ public interface DeviceRepository extends PagingAndSortingRepository<Device, Lon
      * Find all by pi and device function type list.
      *
      * @param deviceFunctionTypeEnum the device function type enum
+     * @return the list
+     */
+    @Query("select u from Device u where (u.deviceType.deviceFunctionType = ?1 or u.deviceType.deviceFunctionType = 'SWITCH_CONTROLLED')")
+    List<Device> findAllDeviceFunctionType(DeviceFunctionTypeEnum deviceFunctionTypeEnum);
+
+
+    /**
+     * Find all by pi and device function type list.
+     *
+     * @param deviceFunctionTypeEnum the device function type enum
      * @param groupId                the group id
      * @return the list
      */

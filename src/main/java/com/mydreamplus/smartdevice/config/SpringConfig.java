@@ -2,6 +2,9 @@ package com.mydreamplus.smartdevice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -17,7 +20,15 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Configuration
 @EnableAsync
+@EnableElasticsearchRepositories(basePackages = "org/springframework/data/elasticsearch/repositories")
 public class SpringConfig {
+//
+//    @Bean
+//    public ElasticsearchOperations elasticsearchTemplate() {
+////        return new ElasticsearchTemplate(nodeBuilder().local(true).node().client());
+//        return new ElasticsearchTemplate(new Bui);
+//    }
+
 
     /**
      * 线程池参数配

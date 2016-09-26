@@ -26,7 +26,7 @@ public class ExternalAPIService {
 
     private static final int TIME_OUT = 5000;
     private final static Logger log = LoggerFactory.getLogger(ExternalAPIService.class);
-    private String host = "http://qa.so.aws.mxj.mx/";
+    private String host = "http://dev.so.aws.mxj.mx/";
 
     private static Object callApi(Map<String, String> map, String url) {
         log.info("Send message to url: {}", url);
@@ -61,9 +61,18 @@ public class ExternalAPIService {
      */
     public static void main(String[] args) {
         ExternalAPIService externalAPIService = new ExternalAPIService();
-        externalAPIService.checkPermissionDoorPassword("1", "1");
-        externalAPIService.checkPermissionDoorCard("1", "2");
+//        externalAPIService.checkPermissionDoorPassword("1", "1", "Door");
+//        externalAPIService.checkPermissionDoorCard("1", "2", "Door");
 //        externalAPIService.checkPermissionDoor("1","2","card","http://qa.so.aws.mxj.mx/");
+
+//        externalAPIService.proxySensorData(300, "f4:5c:89:c4:24:c7", "PM2.5Sensor", "http://...");
+        Map<String, String> data = new HashMap<>();
+        data.put("data", "12321");
+        data.put("piMacAddress", "12:21:21:22:33");
+        data.put("type", "ReportCardId");
+        // 设备的类型
+        data.put("deviceType", "Door");
+        externalAPIService.checkPermission(data, "http://10.28.0.115:9090/api/door/authentication/card");
     }
 
     public String getHost() {
@@ -90,11 +99,12 @@ public class ExternalAPIService {
      * @param piMacAddress the pi mac address
      * @return the boolean
      */
-    public boolean checkPermissionDoorPassword(String password, String piMacAddress) {
+    public boolean checkPermissionDoorPassword(String password, String piMacAddress, String deviceType) {
         String url = host + DoorApi.DOOR_PASSWORD_API;
         Map<String, String> map = new HashMap<>();
         map.put("password", password);
         map.put("piMacAddress", piMacAddress);
+        map.put("deviceType", deviceType);
         ResponseMessage responseMessage = (ResponseMessage) callApi(map, url);
         if (responseMessage.getCode() != 1) {
             log.info("密码验证失败:{}", responseMessage.getMessage());
@@ -120,11 +130,12 @@ public class ExternalAPIService {
      * @param piMacAddress the pi mac address
      * @return the boolean
      */
-    public boolean checkPermissionDoorCard(String card, String piMacAddress) {
+    public boolean checkPermissionDoorCard(String card, String piMacAddress, String deviceType) {
         String url = host + DoorApi.DOOR_CARD_API;
         Map<String, String> map = new HashMap<>();
         map.put("card", card);
         map.put("piMacAddress", piMacAddress);
+        map.put("deviceType", deviceType);
         ResponseMessage responseMessage = (ResponseMessage) callApi(map, url);
         if (responseMessage.getCode() != 1) {
             log.info("卡号验证失败:{}", responseMessage.getMessage());
@@ -133,6 +144,20 @@ public class ExternalAPIService {
             log.info("卡号验证成功!");
             return true;
         }
+    }
+
+    /**
+     * 发送数据
+     *
+     * @param value
+     * @param macAddress
+     */
+    public void proxySensorData(float value, String macAddress, String deviceType, String url) {
+        Map<String, String> map = new HashMap<>();
+        map.put("value", String.valueOf(value));
+        map.put("macAddress", macAddress);
+        map.put("deviceType", deviceType);
+        this.callApi(map, url);
     }
 
     /**
@@ -155,6 +180,24 @@ public class ExternalAPIService {
             return false;
         } else {
             log.info("卡号验证成功!, {}", eventType);
+            return true;
+        }
+    }
+
+    /**
+     * 验证API
+     *
+     * @param data
+     * @param url
+     * @return
+     */
+    public boolean checkPermission(Map<String, String> data, String url) {
+        ResponseMessage responseMessage = (ResponseMessage) callApi(data, url);
+        if (responseMessage.getCode() != 1) {
+            log.info("验证失败!");
+            return false;
+        } else {
+            log.info("验证成功!");
             return true;
         }
     }

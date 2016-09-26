@@ -7,6 +7,7 @@ import com.mydreamplus.smartdevice.domain.out.BaseResponse;
 import com.mydreamplus.smartdevice.entity.Device;
 import com.mydreamplus.smartdevice.entity.DeviceType;
 import com.mydreamplus.smartdevice.entity.Policy;
+import com.mydreamplus.smartdevice.exception.DataInvalidException;
 import com.mydreamplus.smartdevice.service.DeviceManager;
 import com.mydreamplus.smartdevice.service.DeviceRestService;
 import com.mydreamplus.smartdevice.util.JsonUtil;
@@ -71,16 +72,82 @@ public class DeviceAPIController extends AbstractRestHandler {
         Map<String, List<DeviceDto>> map = new HashMap<>();
         List<DeviceDto> list = new ArrayList<>();
         deviceManager.findAllDevicesByType(door).forEach(device -> {
-            if (toDeviceDto(device) != null) {
-                list.add(toDeviceDto(device));
+            if (toDeviceDtoOnline(device) != null) {
+                list.add(toDeviceDtoOnline(device));
             }
         });
         deviceManager.findAllDevicesByType(doorController).forEach(device -> {
-            if (toDeviceDto(device) != null) {
-                list.add(toDeviceDto(device));
+            if (toDeviceDtoOnline(device) != null) {
+                list.add(toDeviceDtoOnline(device));
             }
         });
         map.put("doors", list);
+        baseResponse.setData(map);
+        return baseResponse;
+    }
+
+
+    /**
+     * Find doors base response.
+     *
+     * @return the base response
+     */
+    @RequestMapping(value = "/find/device/byType/{types}",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "根据设备类型查询设备", notes = "返回设备列表")
+    public BaseResponse findDevicesByType(@PathVariable String types) {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("查询{}!", types);
+        if (StringUtils.isEmpty(types)) {
+            throw new DataInvalidException("类型为空!");
+        }
+        String type[] = types.split(",");
+        BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
+        baseResponse.setDetails("门的mac地址");
+        Map<String, List<DeviceDto>> map = new HashMap<>();
+        List<DeviceDto> list = new ArrayList<>();
+        if (type != null) {
+            for (String t : type) {
+                DeviceType deviceType = deviceManager.findDeviceTypeByName(t);
+                deviceManager.findAllDevicesByType(deviceType).forEach(device -> {
+                    if (toDeviceDtoOnline(device) != null) {
+                        list.add(toDeviceDtoOnline(device));
+                    }
+                });
+            }
+        }
+        map.put("devices", list);
+        baseResponse.setData(map);
+        return baseResponse;
+    }
+
+
+    /**
+     * Find doors base response.
+     *
+     * @return the base response
+     */
+    @RequestMapping(value = "/find/device/byMacAddress/{macAddress}",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "根据mac地址查询设备信息,有可能一个mac地址对应多个设备", notes = "例如:空气净化器:pm2.5Sensor、pm10、Controller")
+    public BaseResponse findByMacAddress(@PathVariable String macAddress) {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("查询{}!", macAddress);
+        if (StringUtils.isEmpty(macAddress)) {
+            throw new DataInvalidException("macAddress为空!");
+        }
+        BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
+        baseResponse.setDetails("设备信息");
+        Map<String, List<DeviceDto>> map = new HashMap<>();
+        List<DeviceDto> list = new ArrayList<>();
+        deviceManager.findDevicesByMacAddress(macAddress).forEach(device -> {
+            list.add(toDeviceDtoOnline(device));
+        });
+        map.put("devices", list);
         baseResponse.setData(map);
         return baseResponse;
     }
@@ -92,7 +159,7 @@ public class DeviceAPIController extends AbstractRestHandler {
      * @param device
      * @return
      */
-    private DeviceDto toDeviceDto(Device device) {
+    private DeviceDto toDeviceDtoOnline(Device device) {
         DeviceDto deviceDto = new DeviceDto();
         BeanUtils.copyProperties(device, deviceDto, "deviceGroupList");
         if (device.getDeviceState().equals(DeviceStateEnum.ONLINE)) {
@@ -236,9 +303,78 @@ public class DeviceAPIController extends AbstractRestHandler {
         this.deviceManager.findDevicesByMacAddress(request.getMacAddress()).forEach(device -> {
             device.setAdditionalAttributes(request.getConfigJSON());
             this.deviceManager.saveDevice(device);
+            log.info("下发设备配置信息到设备:{}", device.getName());
+            this.deviceRestService.sendConfigProperty(device);
         });
         return baseResponse;
     }
+
+
+    /**
+     * 触发设备方法
+     *
+     * @param request the request
+     * @return the api condition
+     */
+    @RequestMapping(value = "/device/action",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "对设备下发命令")
+    public BaseResponse doFunction(@RequestBody ActionRequest request) {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("下发设备命令:{}:{}", request.getMacAddress(), request.getAction());
+        BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
+        if (StringUtils.isEmpty(request.getMacAddress())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没有找到MAC地址!");
+            return baseResponse;
+        }
+        if (StringUtils.isEmpty(request.getAction())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没设置动作!");
+            return baseResponse;
+        }
+        this.deviceManager.findDevicesByMacAddress(request.getMacAddress()).forEach(device -> {
+            String macAddress = device.getPi() != null ? device.getPi().getMacAddress() : device.getMacAddress();
+            // 被控设备发送指令
+            if (device.getDeviceType().getDeviceFunctionType() == DeviceFunctionTypeEnum.CONTROLLED || device.getDeviceType().getDeviceFunctionType() == DeviceFunctionTypeEnum.SWITCH_CONTROLLED) {
+                this.deviceRestService.sendCommandToDevice(macAddress, device.getSymbol(), request.getAction());
+            }
+        });
+        return baseResponse;
+    }
+
+    /**
+     * 触发设备方法
+     *
+     * @param request the request
+     * @return the api condition
+     */
+    @RequestMapping(value = "/device/action/symbol",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "symbol是设备的唯一标识")
+    public BaseResponse doFunctionSymbol(@RequestBody SymbolActionRequest request) {
+        log.info("--------------------------------- 外部API -----------------------------------");
+        log.info("下发设备命令:{}:{}", request.getSymbol(), request.getAction());
+        BaseResponse baseResponse = new BaseResponse(RESPONSE_SUCCESS);
+        if (StringUtils.isEmpty(request.getSymbol())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没有找到设备Symbol!");
+            return baseResponse;
+        }
+        if (StringUtils.isEmpty(request.getAction())) {
+            baseResponse.setMessage(RESPONSE_FAILURE);
+            baseResponse.setDetails("没设置动作!");
+            return baseResponse;
+        }
+        Device device = this.deviceManager.getDevice(request.getSymbol());
+        this.deviceRestService.sendCommandToDevice(device.getPi() != null ? device.getPi().getMacAddress() : device.getMacAddress(), request.getSymbol(), request.getAction());
+        return baseResponse;
+    }
+
 
     /**
      * The type Device config request.
@@ -337,6 +473,50 @@ public class DeviceAPIController extends AbstractRestHandler {
          */
         public void setHost(String host) {
             this.host = host;
+        }
+    }
+
+    static class ActionRequest {
+        String action;
+        String macAddress;
+
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
+
+        public String getMacAddress() {
+            return macAddress;
+        }
+
+        public void setMacAddress(String macAddress) {
+            this.macAddress = macAddress;
+        }
+    }
+
+    static class SymbolActionRequest {
+        String action;
+        String symbol;
+
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
+
+        public String getSymbol() {
+            return symbol;
+        }
+
+        public void setSymbol(String symbol) {
+            this.symbol = symbol;
         }
     }
 

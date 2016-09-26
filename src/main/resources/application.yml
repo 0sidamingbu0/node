@@ -7,6 +7,10 @@
 websocket:
   url: http://dev.websocket.aws.mxj.mx
 
+#设备的收货地址
+elastic:
+  host: localhost
+
 #etcd
 etcd:
   url: http://localhost:4001
@@ -53,18 +57,20 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   datasource:
     test-on-borrow: true
     validation-query: select 1
 
 # RabbitMQ
 mqtt:
+  # test 可用性
+  testTopic: testTopic
+  # 通讯topic 唯一
   topic: SmartDeviceServerTopic
   deviceWillTopic: device-will
   qos: 0
   clientId: SmartDeviceServer-stable1
   broker: tcp://localhost:1883
-  userName: smartdevice
-  password: f1zzb4ck
-
+  userName: deviceServer
+  password: deviceServer

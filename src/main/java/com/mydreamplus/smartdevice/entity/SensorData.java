@@ -24,7 +24,7 @@ public class SensorData extends BaseEntity {
 
 
     @Column
-    private double data;
+    private float data;
 
     /**
      * 传感器类型
@@ -32,11 +32,11 @@ public class SensorData extends BaseEntity {
     @Column
     private String sensorType;
 
-    public double getData() {
+    public float getData() {
         return data;
     }
 
-    public void setData(double data) {
+    public void setData(float data) {
         this.data = data;
     }
 

@@ -1,5 +1,6 @@
 package com.mydreamplus.smartdevice.service;
 
+import com.mydreamplus.smartdevice.config.Constant;
 import com.mydreamplus.smartdevice.domain.DeviceDto;
 import com.mydreamplus.smartdevice.domain.DeviceRegisterDto;
 import com.mydreamplus.smartdevice.domain.in.DeviceRegisterRequest;
@@ -24,9 +25,6 @@ public class PM25Helper {
 
 
     private final Logger log = LoggerFactory.getLogger(PM25Helper.class);
-    private final String PM25_CONTROLLER = "PM2.5Controller";
-    private final String PM25_SENSOR = "PM2.5Sensor";
-    private final String PM10_SENSOR = "PM10Sensor";
 
     @Autowired
     private DeviceService deviceService;
@@ -40,15 +38,15 @@ public class PM25Helper {
     public void register(DeviceRegisterRequest request) {
         List<DeviceRegisterDto> deviceRegisterDtos = new ArrayList<>();
         DeviceRegisterDto pm10 = new DeviceRegisterDto();
-        pm10.setDeviceType(PM10_SENSOR);
+        pm10.setDeviceType(Constant.PM10_SENSOR);
         pm10.setIndex(1);
         deviceRegisterDtos.add(pm10);
         DeviceRegisterDto pm25 = new DeviceRegisterDto();
-        pm25.setDeviceType(PM25_SENSOR);
+        pm25.setDeviceType(Constant.PM25_SENSOR);
         pm25.setIndex(2);
         deviceRegisterDtos.add(pm25);
         DeviceRegisterDto pmController = new DeviceRegisterDto();
-        pmController.setDeviceType(PM25_CONTROLLER);
+        pmController.setDeviceType(Constant.PM25_CONTROLLER);
         pmController.setIndex(3);
         deviceRegisterDtos.add(pmController);
         deviceRegisterDtos.forEach(deviceRegisterDto -> {

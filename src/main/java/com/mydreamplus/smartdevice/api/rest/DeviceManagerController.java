@@ -472,6 +472,9 @@ public class DeviceManagerController extends AbstractRestHandler {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "查询条件类型的设备")
     public List<DeviceDto> findAllConditionDeviceByType(@PathVariable String piMacAddress, @PathVariable String type) {
+        if (piMacAddress == null || piMacAddress.equals("null")) {
+
+        }
         List<DeviceDto> deviceDtos = new ArrayList<>();
         this.deviceManager.findAllDevicesByMacAddressAndFunctionType(DeviceFunctionTypeEnum.valueOf(type), piMacAddress).forEach(device -> {
             DeviceDto dto = new DeviceDto(device.getSymbol());
@@ -803,6 +806,24 @@ public class DeviceManagerController extends AbstractRestHandler {
         this.deviceManager.removePolicy(ID);
         return new BaseResponse(RESPONSE_SUCCESS);
     }
+
+
+    /**
+     * 删除API url
+     *
+     * @param ID
+     * @return
+     */
+    @RequestMapping(value = "/apiurl/remove/{ID}",
+            method = RequestMethod.POST,
+            consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "删除场景策略")
+    public BaseResponse removeUrl(@PathVariable Long ID) {
+        this.deviceManager.removeUrl(ID);
+        return new BaseResponse(RESPONSE_SUCCESS);
+    }
+
 
     /**
      * Remove gateway base response.
@@ -1169,6 +1190,55 @@ public class DeviceManagerController extends AbstractRestHandler {
             response = new BaseResponse(RESPONSE_FAILURE);
         }
         return response;
+    }
+
+
+    /**
+     * Find all groups page response.
+     *
+     * @param pageDto the page dto
+     * @return the page response
+     */
+    @RequestMapping(value = "/apiurl/findAll",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "查询api")
+    public PageResponse findAllApiUrls(@RequestBody PageDto pageDto) {
+        PageResponse response = new PageResponse();
+        Page<APIUrl> page = deviceManager.findAllApiUrls(pageDto);
+        response.setData(page.getContent());
+        response.setTotalPages(page.getTotalPages());
+        response.setCurrentPage(pageDto.getPage());
+        response.setTotalElements(page.getNumberOfElements());
+        response.setPerPage(pageDto.getSize());
+        return response;
+    }
+
+    @RequestMapping(value = "/apiurl/findAllByType/{type}",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "根据类型查询API")
+    public PageResponse findAllApiUrls(@PathVariable String type) {
+        if (StringUtils.isEmpty(type)) {
+            throw new DataInvalidException("类型为空");
+        }
+
+        PageResponse response = new PageResponse();
+        response.setData(deviceManager.findAllApisByType(type));
+        return response;
+    }
+
+
+    @RequestMapping(value = "/apiurl/create",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "创建场景策略")
+    public BaseResponse createGroup(@RequestBody APIUrl url) {
+        this.deviceManager.saveUrl(url);
+        return new BaseResponse(RESPONSE_SUCCESS);
     }
 
 

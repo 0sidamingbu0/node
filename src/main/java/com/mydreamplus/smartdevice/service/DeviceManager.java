@@ -63,6 +63,9 @@ public class DeviceManager {
     @Autowired
     private PolicyService policyService;
 
+    @Autowired
+    private APIUrlRepository aPIUrlRepository;
+
     /**
      * FinFind device event by id device event.
      *
@@ -322,6 +325,39 @@ public class DeviceManager {
         return this.groupRepository.save(deviceGroup);
     }
 
+
+    /**
+     * save api url
+     *
+     * @param url
+     */
+    public void saveUrl(APIUrl url) {
+        APIUrl apiUrl = this.aPIUrlRepository.findByUrl(url.getUrl());
+        if (apiUrl == null) {
+            this.aPIUrlRepository.save(url);
+        } else {
+            this.aPIUrlRepository.save(apiUrl);
+        }
+    }
+
+    /**
+     * 删除API url
+     */
+    public void removeUrl(Long ID) {
+        this.aPIUrlRepository.delete(ID);
+    }
+
+    /**
+     * 查询全部API
+     *
+     * @param type
+     * @return
+     */
+    public List<APIUrl> findAllApisByType(String type) {
+        return this.aPIUrlRepository.findAllByType(APIUrlTypeEnum.valueOf(type));
+    }
+
+
     /**
      * 查询所有的 景策略
      *
@@ -435,7 +471,11 @@ public class DeviceManager {
      * @return the list
      */
     public List<Device> findAllDevicesByMacAddressAndFunctionType(DeviceFunctionTypeEnum functionType, String piMacAddress) {
-        return this.deviceRepository.findAllByPiAndDeviceFunctionType(functionType, piMacAddress);
+        if (StringUtils.isEmpty(piMacAddress) || piMacAddress.equals("null")) {
+            return this.deviceRepository.findAllDeviceFunctionType(functionType);
+        } else {
+            return this.deviceRepository.findAllByPiAndDeviceFunctionType(functionType, piMacAddress);
+        }
     }
 
     /**
@@ -527,7 +567,7 @@ public class DeviceManager {
      * @return the page
      */
     public Page<PI> findAllPi(PageDto pageDto) {
-        PageRequest pageRequest = new PageRequest(pageDto.getPage() - 1, pageDto.getSize(), Sort.Direction.DESC, "registerTime");
+        PageRequest pageRequest = new PageRequest(pageDto.getPage() - 1, pageDto.getSize(), Sort.Direction.DESC, "registerTime", "isOffLine");
         return this.piRespository.findAll(pageRequest);
     }
 
@@ -786,6 +826,18 @@ public class DeviceManager {
      */
     public void saveDevice(Device device) {
         this.deviceRepository.save(device);
+    }
+
+
+    /**
+     * 查询全部URL
+     *
+     * @param pageDto
+     * @return
+     */
+    public Page<APIUrl> findAllApiUrls(PageDto pageDto) {
+        PageRequest pageRequest = new PageRequest(pageDto.getPage() - 1, pageDto.getSize());
+        return this.aPIUrlRepository.findAll(pageRequest);
     }
 }
 

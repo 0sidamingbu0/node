@@ -26,6 +26,9 @@ import java.util.*;
 @Service
 public class DoorHelper {
 
+    private static final String STATUS_SUCCESS = "1";
+    private static final String STATUS_FAILURE = "-1";
+
     @Autowired
     private DeviceService deviceService;
 
@@ -36,10 +39,15 @@ public class DoorHelper {
     private PolicyRepository policyRepository;
 
 
+    /**
+     * Register door.
+     *
+     * @param commonDeviceRequest the common device request
+     */
     public void registerDoor(CommonDeviceRequest commonDeviceRequest) {
 
         // 老版门禁
-        if (commonDeviceRequest.getDeviceType().equals(Constant.OLD_DOOR_TYPE)) {
+        if (commonDeviceRequest.getDeviceType().equals(Constant.OLD_DOOR_TYPE) || commonDeviceRequest.getDeviceType().equals(Constant.MEET_ROOM_DOOR_TYPE)) {
             deviceService.registerCommonDevice(commonDeviceRequest);
             Device door = this.deviceManager.getDevice(commonDeviceRequest.getMacAddress());
             String policyName = "Default_" + door.getDeviceType().getName() + "_" + door.getMacAddress();
@@ -53,23 +61,21 @@ public class DoorHelper {
                 policy.setPi(null);
                 PolicyConfigDto policyConfigDto = new PolicyConfigDto();
                 Map<String, String> masterDeviceMap = new HashMap<>();
-                masterDeviceMap.put(door.getMacAddress(), Constant.DEVICE_EVENT_REPORT_PASSWORD_OR_CARD);
+                masterDeviceMap.put(door.getMacAddress(), Constant.DEVICE_EVENT_REPORT_CARD);
                 policyConfigDto.setMasterDeviceMap(masterDeviceMap);
-                Map<String, String> slaveDeviceMap = new HashMap<>();
-                slaveDeviceMap.put(door.getMacAddress(), Constant.DEVICE_FUNCTION_OPEN_DOOR);
-                policyConfigDto.setMasterDeviceMap(masterDeviceMap);
-                ConditionAndSlaveDto conditionAndSlaveDto = new ConditionAndSlaveDto();
-                conditionAndSlaveDto.setSlaveDeviceMap(slaveDeviceMap);
-                List<BaseCondition> conditions = new ArrayList<>();
-                BaseCondition condition = new BaseCondition();
-                condition.setConditionType("CONTROLLED");
-                condition.setConditionTypeId(UUID.randomUUID().toString());
-                condition.setLogic(Constant.LOGIC_TRUE);
-                condition.setUri(apiUrl);
-                conditions.add(condition);
-                conditionAndSlaveDto.setConditions(conditions);
                 List<ConditionAndSlaveDto> conditionAndSlaveDtos = new ArrayList<>();
-                conditionAndSlaveDtos.add(conditionAndSlaveDto);
+
+                /*
+                 * 验证成功
+                 */
+                conditionAndSlaveDtos.add(setConditon(door.getMacAddress(), apiUrl, Constant.DEVICE_FUNCTION_OPEN_DOOR, STATUS_SUCCESS));
+                /*
+                 * 条件验证失败删除卡号
+                 */
+                if(commonDeviceRequest.getDeviceType().equals(Constant.OLD_DOOR_TYPE)){
+                    conditionAndSlaveDtos.add(setConditon(door.getMacAddress(), apiUrl, Constant.DEVICE_FUNCTION_REMOVE_CARD, STATUS_FAILURE));
+                }
+
                 policyConfigDto.setConditionAndSlaveDtos(conditionAndSlaveDtos);
                 policy.setPolicyConfig(JsonUtil.toJsonString(policyConfigDto));
                 policy.setDefaultPolicy(true);
@@ -79,6 +85,29 @@ public class DoorHelper {
                 this.policyRepository.save(policy);
             }
         }
+    }
+
+    /**
+     * 设置成功,验证卡号
+     *
+     * @param slaveSymbol
+     * @param apiUrl
+     * @return
+     */
+    private ConditionAndSlaveDto setConditon(String slaveSymbol, String apiUrl, String event, String status) {
+        Map<String, String> slaveDeviceMap = new HashMap<>();
+        slaveDeviceMap.put(slaveSymbol, event);
+        ConditionAndSlaveDto conditionAndSlaveDto = new ConditionAndSlaveDto();
+        conditionAndSlaveDto.setSlaveDeviceMap(slaveDeviceMap);
+        List<BaseCondition> conditions = new ArrayList<>();
+        BaseCondition condition = new BaseCondition();
+        condition.setConditionType("CONTROLLED");
+        condition.setConditionTypeId(UUID.randomUUID().toString());
+        condition.setStatus(status);
+        condition.setUri(apiUrl);
+        conditions.add(condition);
+        conditionAndSlaveDto.setConditions(conditions);
+        return conditionAndSlaveDto;
     }
 }
 
